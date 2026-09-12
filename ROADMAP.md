@@ -2,13 +2,13 @@
 
 ## v0.1 — FinOps gateway MVP (current)
 
-- [ ] OpenAI-compatible proxy (chat completions)
-- [ ] Token metering + estimated USD cost table
-- [ ] Team/app attribution headers
+- [x] OpenAI-compatible proxy (chat completions, mock upstream)
+- [x] Token metering + estimated USD cost table
+- [x] Team/app attribution headers
 - [ ] Budget policy (daily/monthly cap)
 - [ ] Block decision in ledger
-- [ ] Secret-free demo (mock upstream)
-- [ ] CLI: ledger summary + export
+- [x] Secret-free demo (mock upstream)
+- [x] CLI: ledger summary + export
 - [ ] Loopback admin API
 - [ ] Minimal dashboard (spend by team/model)
 

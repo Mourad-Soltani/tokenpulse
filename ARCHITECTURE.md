@@ -26,7 +26,7 @@
 3. Resolve `team` / `app` from header or API key mapping.
 4. Run policy: budget remaining, model allowed, payload heuristics.
 5. On deny → return structured error + ledger `blocked` event.
-6. On allow → forward to upstream (`OPENAI_API_KEY` / `XAI_API_KEY` / `TOKENPULSE_UPSTREAM_*`), meter usage from response, append ledger, return upstream body.
+6. On allow → mock completion when `TOKENPULSE_MOCK_UPSTREAM=1`, else 501 until live forward ships. Meter usage, append ledger, return chat.completion body.
 
 ## Data model (MVP)
 

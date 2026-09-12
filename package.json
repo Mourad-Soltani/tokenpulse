@@ -6,7 +6,9 @@
   "scripts": {
     "test": "tsx --test tests/*.test.ts",
     "demo": "bash demo.sh",
-    "start:gateway": "tsx src/gateway.ts"
+    "start:gateway": "tsx src/gateway.ts",
+    "summary": "tsx src/cli.ts --summary",
+    "export-ledger": "tsx src/cli.ts --export"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

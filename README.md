@@ -16,24 +16,27 @@ Enterprises are losing control of AI cost and data:
 
 Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks before egress, append-only usage ledger, exportable FinOps and security packs.
 
-## What works today (Session 0)
+## What works today (Session 1)
 
 | Capability | Status |
 |------------|--------|
 | Repo + architecture + progress log | Live |
-| OpenAI-compatible gateway (meter + forward) | Next |
-| Budget / rate policy engine | Planned |
-| Sensitive-payload heuristics (block/redact) | Planned |
-| Usage ledger + export | Planned |
-| Local dashboard (spend by team/model) | Planned |
-| Secret-free demo path | Planned |
+| OpenAI-compatible gateway (mock upstream) | Live |
+| Usage ledger + CLI summary/export | Live |
+| Team/app attribution headers | Live |
+| Secret-free demo path | Live |
+| Budget / rate policy engine | Next |
+| Live provider forward | Planned (env keys only) |
+| Sensitive-payload heuristics | Planned |
+| Local dashboard | Planned |
 
-## Quick start (after Session 1+)
+## Quick start
 
 ```bash
 npm install
 npm test
 npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 npm run start:gateway
 ```
 
 ## Security notes
