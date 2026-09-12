@@ -1,0 +1,22 @@
+{
+  "name": "tokenpulse",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Private AI FinOps + shadow-AI control plane for enterprises",
+  "scripts": {
+    "test": "tsx --test tests/*.test.ts",
+    "demo": "bash demo.sh",
+    "start:gateway": "tsx src/gateway.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "tsx": "^4.19.0",
+    "@types/node": "^22.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
