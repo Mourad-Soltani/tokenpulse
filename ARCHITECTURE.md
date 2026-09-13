@@ -26,7 +26,7 @@
 3. Resolve `team` / `app` from header or API key mapping.
 4. Run policy: budget remaining, model allowed, payload heuristics.
 5. On deny → return structured error + ledger `blocked` event.
-6. On allow → mock completion when `TOKENPULSE_MOCK_UPSTREAM=1`, else 501 until live forward ships (Session 3+). Meter usage, append ledger, return chat.completion body.
+6. On allow → mock when `TOKENPULSE_MOCK_UPSTREAM=1`; else live forward via `resolveUpstream()`. Meter provider `usage`, append ledger, return body. Missing live config → 501. Upstream errors → ledger `block` + `upstream_error`.
 
 Daily budget is evaluated **before** upstream. Cap source: `TOKENPULSE_BUDGETS_PATH` (`data/budgets.json` or `budgets.example.json`) then `TOKENPULSE_DEFAULT_DAILY_USD`. No cap configured → allow. `dailyUsd: 0` blocks the team immediately. Blocked calls write `decision: block` with zero tokens and HTTP 429 `budget_exceeded`.
 

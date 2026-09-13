@@ -9,13 +9,14 @@
 - [x] Block decision in ledger
 - [x] Secret-free demo (mock upstream)
 - [x] CLI: ledger summary + export
+- [x] Live provider forward (env keys; mock remains default demo)
+- [ ] Model allow/deny lists
 - [ ] Loopback admin API
 - [ ] Minimal dashboard (spend by team/model)
 
 ## Next
 
 - [ ] Sensitive-payload heuristics (regex + simple detectors)
-- [ ] Model allow/deny lists
 - [ ] Streaming response support
 - [ ] SQLite ledger option
 - [ ] Pilot packaging + landing copy

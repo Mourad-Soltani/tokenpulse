@@ -5,6 +5,7 @@ import { appendEvent, newEvent, requestHash } from "./ledger.js";
 import { estimateCostUsd } from "./pricing.js";
 import { mockChatCompletion } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
+import { isMockUpstream, liveChatCompletion, resolveUpstream } from "./upstream.js";
 
 const DEFAULT_PORT = 8788;
 
@@ -49,7 +50,8 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     json(res, 200, {
       ok: true,
       service: "tokenpulse",
-      mock: process.env.TOKENPULSE_MOCK_UPSTREAM === "1" || process.env.TOKENPULSE_MOCK_UPSTREAM === "true",
+      mock: isMockUpstream(),
+      liveConfigured: Boolean(resolveUpstream()),
       authRequired: Boolean(process.env.TOKENPULSE_GATEWAY_TOKEN),
     });
     return;
@@ -82,10 +84,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
 
     const teamId = header(req, "x-tokenpulse-team") || "default";
     const appId = header(req, "x-tokenpulse-app") || "default";
-    const mock =
-      process.env.TOKENPULSE_MOCK_UPSTREAM === "1" ||
-      process.env.TOKENPULSE_MOCK_UPSTREAM === "true" ||
-      process.env.TOKENPULSE_MOCK_UPSTREAM === "yes";
+    const mock = isMockUpstream();
 
     const budget = await evaluateBudget(teamId);
     if (!budget.allow) {
@@ -115,38 +114,89 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
-    if (!mock) {
+    if (mock) {
+      const mockRes = mockChatCompletion(parsed.data);
+      const latencyMs = Date.now() - started;
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: mockRes.usage.promptTokens,
+        completionTokens: mockRes.usage.completionTokens,
+        totalTokens: mockRes.usage.totalTokens,
+        estimatedCostUsd: estimateCostUsd(
+          parsed.data.model,
+          mockRes.usage.promptTokens,
+          mockRes.usage.completionTokens,
+        ),
+        latencyMs,
+        decision: "allow",
+        policyIds: [budget.policyId, "mock-allow"],
+        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+      });
+      await appendEvent(event);
+      json(res, 200, mockRes.body);
+      return;
+    }
+
+    const upstream = resolveUpstream();
+    if (!upstream) {
       json(res, 501, {
         error: {
-          message: "live upstream not enabled; set TOKENPULSE_MOCK_UPSTREAM=1 or wait for Session 3+",
+          message:
+            "live upstream not configured; set TOKENPULSE_MOCK_UPSTREAM=1 or provide TOKENPULSE_UPSTREAM_* / OPENAI_API_KEY / XAI_API_KEY",
           type: "not_implemented",
         },
       });
       return;
     }
 
-    const mockRes = mockChatCompletion(parsed.data);
-    const latencyMs = Date.now() - started;
-    const event = newEvent({
-      teamId,
-      appId,
-      model: parsed.data.model,
-      promptTokens: mockRes.usage.promptTokens,
-      completionTokens: mockRes.usage.completionTokens,
-      totalTokens: mockRes.usage.totalTokens,
-      estimatedCostUsd: estimateCostUsd(
-        parsed.data.model,
-        mockRes.usage.promptTokens,
-        mockRes.usage.completionTokens,
-      ),
-      latencyMs,
-      decision: "allow",
-      policyIds: [budget.policyId, "mock-allow"],
-      requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
-    });
-    await appendEvent(event);
-    json(res, 200, mockRes.body);
-    return;
+    try {
+      const live = await liveChatCompletion(parsed.data, upstream);
+      const latencyMs = Date.now() - started;
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: live.usage.promptTokens,
+        completionTokens: live.usage.completionTokens,
+        totalTokens: live.usage.totalTokens,
+        estimatedCostUsd: estimateCostUsd(
+          parsed.data.model,
+          live.usage.promptTokens,
+          live.usage.completionTokens,
+        ),
+        latencyMs,
+        decision: "allow",
+        policyIds: [budget.policyId, "live-allow", `upstream:${upstream.source}`],
+        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+      });
+      await appendEvent(event);
+      json(res, 200, live.body);
+      return;
+    } catch (err) {
+      const latencyMs = Date.now() - started;
+      const message = err instanceof Error ? err.message : "upstream_error";
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs,
+        decision: "block",
+        policyIds: [budget.policyId, "upstream_error"],
+        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+      });
+      await appendEvent(event);
+      const status = typeof err === "object" && err && "status" in err ? Number((err as { status: number }).status) || 502 : 502;
+      json(res, status >= 400 && status < 600 ? status : 502, {
+        error: { message, type: "upstream_error" },
+      });
+      return;
+    }
   }
 
   json(res, 404, { error: { message: "not found", type: "invalid_request_error" } });
