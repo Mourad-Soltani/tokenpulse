@@ -1,0 +1,7 @@
+{
+  "defaultDailyUsd": 25,
+  "teams": {
+    "eng": { "dailyUsd": 10 },
+    "finance": { "dailyUsd": 5 }
+  }
+}

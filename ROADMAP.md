@@ -5,8 +5,8 @@
 - [x] OpenAI-compatible proxy (chat completions, mock upstream)
 - [x] Token metering + estimated USD cost table
 - [x] Team/app attribution headers
-- [ ] Budget policy (daily/monthly cap)
-- [ ] Block decision in ledger
+- [x] Budget policy (daily cap per team)
+- [x] Block decision in ledger
 - [x] Secret-free demo (mock upstream)
 - [x] CLI: ledger summary + export
 - [ ] Loopback admin API

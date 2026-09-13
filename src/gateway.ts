@@ -4,6 +4,7 @@ import { ChatCompletionRequestSchema } from "./types.js";
 import { appendEvent, newEvent, requestHash } from "./ledger.js";
 import { estimateCostUsd } from "./pricing.js";
 import { mockChatCompletion } from "./mockUpstream.js";
+import { evaluateBudget } from "./budget.js";
 
 const DEFAULT_PORT = 8788;
 
@@ -86,10 +87,38 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       process.env.TOKENPULSE_MOCK_UPSTREAM === "true" ||
       process.env.TOKENPULSE_MOCK_UPSTREAM === "yes";
 
+    const budget = await evaluateBudget(teamId);
+    if (!budget.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [budget.policyId],
+        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+      });
+      await appendEvent(event);
+      json(res, 429, {
+        error: {
+          message: budget.reason ?? "daily budget exceeded",
+          type: "budget_exceeded",
+          team: teamId,
+          spentUsd: budget.spentUsd,
+          capUsd: budget.capUsd,
+        },
+      });
+      return;
+    }
+
     if (!mock) {
       json(res, 501, {
         error: {
-          message: "live upstream not enabled; set TOKENPULSE_MOCK_UPSTREAM=1 or wait for Session 2+",
+          message: "live upstream not enabled; set TOKENPULSE_MOCK_UPSTREAM=1 or wait for Session 3+",
           type: "not_implemented",
         },
       });
@@ -112,7 +141,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       ),
       latencyMs,
       decision: "allow",
-      policyIds: ["mock-allow"],
+      policyIds: [budget.policyId, "mock-allow"],
       requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
     });
     await appendEvent(event);

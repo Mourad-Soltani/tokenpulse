@@ -1,7 +1,7 @@
 import { describe, it, before } from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
-import { mkdtemp } from "node:fs/promises";
+import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { handleRequest } from "../src/gateway.ts";
@@ -73,6 +73,36 @@ describe("gateway", () => {
       assert.match(body.choices[0].message.content, /tokenpulse-mock/);
       const events = await readEvents();
       assert.ok(events.some((e) => e.teamId === "finance" && e.appId === "closebot" && e.decision === "allow"));
+    } finally {
+      server.close();
+    }
+  });
+
+  it("blocks when daily cap is zero and ledgers block", async () => {
+    const dir = process.env.TOKENPULSE_LEDGER_DIR!;
+    process.env.TOKENPULSE_BUDGETS_PATH = join(dir, "budgets-zero.json");
+    await writeFile(
+      process.env.TOKENPULSE_BUDGETS_PATH,
+      JSON.stringify({ teams: { capped: { dailyUsd: 0 } } }),
+      "utf8",
+    );
+    const { server, url } = await listen();
+    try {
+      const res = await fetch(`${url}/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: "Bearer test-token",
+          "x-tokenpulse-team": "capped",
+          "x-tokenpulse-app": "bot",
+        },
+        body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: "should block" }] }),
+      });
+      assert.equal(res.status, 429);
+      const body = (await res.json()) as { error: { type: string } };
+      assert.equal(body.error.type, "budget_exceeded");
+      const events = await readEvents();
+      assert.ok(events.some((e) => e.teamId === "capped" && e.decision === "block"));
     } finally {
       server.close();
     }
