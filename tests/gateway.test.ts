@@ -107,4 +107,34 @@ describe("gateway", () => {
       server.close();
     }
   });
+
+  it("blocks denied models with 403 and ledgers block", async () => {
+    const dir = process.env.TOKENPULSE_LEDGER_DIR!;
+    process.env.TOKENPULSE_MODELS_PATH = join(dir, "models-deny.json");
+    await writeFile(
+      process.env.TOKENPULSE_MODELS_PATH,
+      JSON.stringify({ deny: ["banned-model"] }),
+      "utf8",
+    );
+    const { server, url } = await listen();
+    try {
+      const res = await fetch(`${url}/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: "Bearer test-token",
+          "x-tokenpulse-team": "sec",
+          "x-tokenpulse-app": "bot",
+        },
+        body: JSON.stringify({ model: "banned-model", messages: [{ role: "user", content: "nope" }] }),
+      });
+      assert.equal(res.status, 403);
+      const body = (await res.json()) as { error: { type: string } };
+      assert.equal(body.error.type, "model_denied");
+      const events = await readEvents();
+      assert.ok(events.some((e) => e.model === "banned-model" && e.decision === "block"));
+    } finally {
+      server.close();
+    }
+  });
 });

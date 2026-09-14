@@ -70,3 +70,11 @@ Later: SQLite or Postgres.
 - Loopback default
 - Timing-safe token compare
 - Prompt storage opt-in and redacted
+
+## Model policy (Session 4)
+
+- Config file: `TOKENPULSE_MODELS_PATH` (default `data/models.json`). Example: `models.example.json`.
+- Env overrides: `TOKENPULSE_MODEL_ALLOW` / `TOKENPULSE_MODEL_DENY` (comma-separated). Env replaces the matching file list when non-empty.
+- Empty lists = all models allowed (`policyId: model-open`).
+- Deny is evaluated first. Then a non-empty allow list must include the model.
+- Denied requests: HTTP 403 `model_denied`, ledger `decision: block`, zero tokens. Evaluated before budget and upstream.

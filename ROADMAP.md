@@ -10,7 +10,7 @@
 - [x] Secret-free demo (mock upstream)
 - [x] CLI: ledger summary + export
 - [x] Live provider forward (env keys; mock remains default demo)
-- [ ] Model allow/deny lists
+- [x] Model allow/deny lists
 - [ ] Loopback admin API
 - [ ] Minimal dashboard (spend by team/model)
 

@@ -9,6 +9,7 @@ export TOKENPULSE_GATEWAY_TOKEN=demo-token
 export TOKENPULSE_GATEWAY_PORT="${TOKENPULSE_GATEWAY_PORT:-8799}"
 export TOKENPULSE_LEDGER_DIR="${TOKENPULSE_LEDGER_DIR:-$ROOT/data/ledger-demo}"
 export TOKENPULSE_BUDGETS_PATH="${TOKENPULSE_BUDGETS_PATH:-$ROOT/data/budgets.demo.json}"
+export TOKENPULSE_MODELS_PATH="${TOKENPULSE_MODELS_PATH:-$ROOT/data/models.demo.json}"
 mkdir -p "$TOKENPULSE_LEDGER_DIR"
 
 cat > "$TOKENPULSE_BUDGETS_PATH" <<JSON
@@ -21,7 +22,14 @@ cat > "$TOKENPULSE_BUDGETS_PATH" <<JSON
 }
 JSON
 
-echo "== Tokenpulse demo (secret-free mock upstream + daily budget) =="
+cat > "$TOKENPULSE_MODELS_PATH" <<JSON
+{
+  "allow": ["gpt-4o-mini"],
+  "deny": ["banned-model"]
+}
+JSON
+
+echo "== Tokenpulse demo (secret-free mock upstream + budget + model policy) =="
 
 npx tsx src/gateway.ts &
 PID=$!
@@ -43,6 +51,17 @@ RESP=$(curl -sf -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/com
   -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"ping from demo.sh"}]}')
 
 echo "$RESP" | python3 -c "import json,sys; b=json.load(sys.stdin); assert b['object']=='chat.completion'; print('chat ok:', b['choices'][0]['message']['content'][:80])"
+
+
+echo "-- model deny --"
+MDENY=$(curl -s -o /tmp/tp-model.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: demo-team" \
+  -H "X-Tokenpulse-App: demo-app" \
+  -d '{"model":"banned-model","messages":[{"role":"user","content":"should be model-denied"}]}')
+python3 -c "import json; b=json.load(open('/tmp/tp-model.json')); assert b['error']['type']=='model_denied', b; print('model deny ok:', b['error']['message'])"
+test "$MDENY" = "403"
 
 echo "-- budget block --"
 BLOCK=$(curl -s -o /tmp/tp-block.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \

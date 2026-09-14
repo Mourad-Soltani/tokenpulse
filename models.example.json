@@ -1,0 +1,4 @@
+{
+  "allow": ["gpt-4o-mini", "gpt-4o", "grok-2"],
+  "deny": ["gpt-4"]
+}
