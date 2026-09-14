@@ -1,12 +1,13 @@
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { timingSafeEqual } from "node:crypto";
 import { ChatCompletionRequestSchema } from "./types.js";
-import { appendEvent, newEvent, requestHash } from "./ledger.js";
+import { appendEvent, newEvent, readEvents, requestHash } from "./ledger.js";
 import { estimateCostUsd } from "./pricing.js";
 import { mockChatCompletion } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
 import { evaluateModelPolicy } from "./models.js";
 import { isMockUpstream, liveChatCompletion, resolveUpstream } from "./upstream.js";
+import { adminSummary, dashboardHtml } from "./admin.js";
 
 const DEFAULT_PORT = 8788;
 
@@ -224,6 +225,35 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       });
       return;
     }
+  }
+
+  if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/dashboard")) {
+    const html = dashboardHtml();
+    res.writeHead(200, {
+      "content-type": "text/html; charset=utf-8",
+      "content-length": Buffer.byteLength(html),
+    });
+    res.end(html);
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/admin/summary") {
+    const day = url.searchParams.get("day") ?? undefined;
+    const summary = await adminSummary({ day });
+    json(res, 200, summary);
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/admin/events") {
+    const day = url.searchParams.get("day") ?? undefined;
+    const decision = url.searchParams.get("decision");
+    let events = await readEvents({ day });
+    if (decision === "allow" || decision === "block") {
+      events = events.filter((e) => e.decision === decision);
+    }
+    const limit = Math.min(Math.max(Number(url.searchParams.get("limit") ?? 50) || 50, 1), 200);
+    json(res, 200, { events: events.slice(-limit).reverse() });
+    return;
   }
 
   json(res, 404, { error: { message: "not found", type: "invalid_request_error" } });

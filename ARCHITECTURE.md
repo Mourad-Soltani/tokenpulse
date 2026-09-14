@@ -78,3 +78,12 @@ Later: SQLite or Postgres.
 - Empty lists = all models allowed (`policyId: model-open`).
 - Deny is evaluated first. Then a non-empty allow list must include the model.
 - Denied requests: HTTP 403 `model_denied`, ledger `decision: block`, zero tokens. Evaluated before budget and upstream.
+
+
+## Admin surface (Session 5)
+
+- Same process as the gateway. Loopback default. Auth matches `TOKENPULSE_GATEWAY_TOKEN`.
+- `GET /` and `GET /dashboard` — static HTML spend view (token in localStorage).
+- `GET /v1/admin/summary` — CLI-equivalent rollup plus `recentBlocked`.
+- `GET /v1/admin/events?decision=block|allow&day=YYYY-MM-DD&limit=50`.
+- No raw prompts. Dashboard never reads JSONL from the browser.

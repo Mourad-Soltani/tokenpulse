@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 4 — 2026-09-14)
+## Current Status (Session 5 — 2026-09-15)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -20,13 +20,15 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Live upstream forward (`TOKENPULSE_UPSTREAM_*` / `OPENAI_API_KEY` / `XAI_API_KEY`)
 - [x] Model allow/deny list (`TOKENPULSE_MODELS_PATH` / `TOKENPULSE_MODEL_ALLOW` / `TOKENPULSE_MODEL_DENY`)
 - [x] HTTP 403 `model_denied` + ledger `decision: block`
-- [ ] Minimal dashboard
+- [x] Loopback admin API (`GET /v1/admin/summary`, `GET /v1/admin/events`)
+- [x] Minimal dashboard (`GET /`, `GET /dashboard`)
+- [ ] Sensitive-payload heuristics
 
 ## Next Up (highest priority)
 
-1. **Session 5:** Minimal loopback dashboard or admin summary API (spend by team/model; blocked events). Keep mock-gated.
+1. **Session 6:** Sensitive-payload heuristics (regex + simple detectors) before egress. Block + ledger without storing raw prompts.
 2. Optional operator live proof against a real provider using a **rotated** key **outside git/chat**. Demo remains mock-default.
-3. Sensitive-payload heuristics after dashboard slice.
+3. After heuristics: pilot packaging / landing copy. Rate limits still later.
 
 ## Decisions So Far
 
@@ -43,13 +45,16 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Session 3: mock flag still wins. Else resolve `TOKENPULSE_UPSTREAM_BASE_URL`+`TOKENPULSE_UPSTREAM_API_KEY`, then `XAI_API_KEY` (`https://api.x.ai/v1`), then `OPENAI_API_KEY` (`https://api.openai.com/v1`). Timeout `TOKENPULSE_UPSTREAM_TIMEOUT_MS` (default 20s, cap 60s). Upstream failures ledger `decision: block` + `upstream_error`. No keys in git or chat.
 - Session 4: model policy runs after request validation and before budget/upstream. Empty lists = open. Deny wins over allow. Env CSV lists override the matching file field when non-empty. File path `TOKENPULSE_MODELS_PATH` default `data/models.json`. Example committed as `models.example.json`.
 
+- Session 5: admin routes share gateway auth. Dashboard is static HTML in-process (no Next.js yet). Browser talks only to `/v1/admin/*`. No raw prompts on the admin surface.
+
 ## Handoff for next session
 
-Session 4 ships model allow/deny. Next slice is a minimal dashboard or admin summary API. Never paste provider keys into chat.
+Session 5 ships loopback admin summary + dashboard. Next slice is sensitive-payload heuristics. Never paste provider keys into chat.
 
 ```bash
 npm install
 npm test
 npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# open http://127.0.0.1:8788/ and paste the token
 ```

@@ -11,8 +11,8 @@
 - [x] CLI: ledger summary + export
 - [x] Live provider forward (env keys; mock remains default demo)
 - [x] Model allow/deny lists
-- [ ] Loopback admin API
-- [ ] Minimal dashboard (spend by team/model)
+- [x] Loopback admin API (`GET /v1/admin/summary`, `GET /v1/admin/events`)
+- [x] Minimal dashboard (`GET /`)
 
 ## Next
 
