@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 6 — 2026-09-15)
+## Current Status (Session 7 — 2026-09-16)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -23,12 +23,15 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Loopback admin API (`GET /v1/admin/summary`, `GET /v1/admin/events`)
 - [x] Minimal dashboard (`GET /`, `GET /dashboard`)
 - [x] Sensitive-payload heuristics (regex detectors; no raw prompt storage)
+- [x] Per-team RPM rate limits (`TOKENPULSE_RATES_PATH` / `TOKENPULSE_DEFAULT_RPM`)
+- [x] HTTP 429 `rate_limited` + ledger `decision: block`
+- [x] Pilot landing copy (`LANDING.md`)
 
 ## Next Up (highest priority)
 
-1. **Session 7:** Pilot packaging + landing copy, or a thin rate-limit slice. Prefer packaging if demo stays green.
-2. Optional operator live proof against a real provider using a **rotated** key **outside git/chat**. Demo remains mock-default.
-3. Streaming and SQLite remain later.
+1. **Session 8:** Optional operator live proof against a real provider using a **rotated** key **outside git/chat**. Demo remains mock-default. Or SQLite ledger option if live proof stays blocked.
+2. Streaming remains later.
+3. Do not start bulk buyer outreach until one recorded live-upstream proof exists.
 
 ## Decisions So Far
 
@@ -49,9 +52,11 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 
 - Session 6: message text is scanned before model/budget/upstream. Default on (`TOKENPULSE_SENSITIVE=off` disables). Hits ledger as `sensitive-block` plus `sensitive:<category>`. Matched substrings are never persisted.
 
+- Session 7: per-team sliding-window RPM. File + env. In-process only. Evaluated after model policy, before budget. `rpm: 0` hard-blocks. Pilot copy lives in `LANDING.md`. No outreach until live-upstream proof.
+
 ## Handoff for next session
 
-Session 6 ships sensitive-payload heuristics (secrets/PII detectors) with a secret-free demo block path. Next: packaging/landing or rate limits. Never paste provider keys into chat.
+Session 7 ships per-team rate limits and landing copy. Next: live upstream proof with a rotated key outside chat, or SQLite ledger. Never paste provider keys into chat.
 
 ```bash
 npm install

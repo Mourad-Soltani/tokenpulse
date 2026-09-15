@@ -10,6 +10,7 @@ export TOKENPULSE_GATEWAY_PORT="${TOKENPULSE_GATEWAY_PORT:-8799}"
 export TOKENPULSE_LEDGER_DIR="${TOKENPULSE_LEDGER_DIR:-$ROOT/data/ledger-demo}"
 export TOKENPULSE_BUDGETS_PATH="${TOKENPULSE_BUDGETS_PATH:-$ROOT/data/budgets.demo.json}"
 export TOKENPULSE_MODELS_PATH="${TOKENPULSE_MODELS_PATH:-$ROOT/data/models.demo.json}"
+export TOKENPULSE_RATES_PATH="${TOKENPULSE_RATES_PATH:-$ROOT/data/rates.demo.json}"
 mkdir -p "$TOKENPULSE_LEDGER_DIR"
 
 cat > "$TOKENPULSE_BUDGETS_PATH" <<JSON
@@ -29,7 +30,16 @@ cat > "$TOKENPULSE_MODELS_PATH" <<JSON
 }
 JSON
 
-echo "== Tokenpulse demo (secret-free mock + budget + model + sensitive policy) =="
+cat > "$TOKENPULSE_RATES_PATH" <<JSON
+{
+  "windowMs": 60000,
+  "teams": {
+    "burst": { "rpm": 1 }
+  }
+}
+JSON
+
+echo "== Tokenpulse demo (secret-free mock + budget + model + sensitive + rate policy) =="
 
 npx tsx src/gateway.ts &
 PID=$!
@@ -73,6 +83,23 @@ MDENY=$(curl -s -o /tmp/tp-model.json -w "%{http_code}" -X POST "http://127.0.0.
   -d '{"model":"banned-model","messages":[{"role":"user","content":"should be model-denied"}]}')
 python3 -c "import json; b=json.load(open('/tmp/tp-model.json')); assert b['error']['type']=='model_denied', b; print('model deny ok:', b['error']['message'])"
 test "$MDENY" = "403"
+
+echo "-- rate limit --"
+RATE1=$(curl -s -o /tmp/tp-rate1.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: burst" \
+  -H "X-Tokenpulse-App: demo-app" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"rate first"}]}')
+RATE2=$(curl -s -o /tmp/tp-rate2.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: burst" \
+  -H "X-Tokenpulse-App: demo-app" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"rate second"}]}')
+python3 -c "import json; b=json.load(open('/tmp/tp-rate2.json')); assert b['error']['type']=='rate_limited', b; print('rate ok:', b['error']['message'])"
+test "$RATE1" = "200"
+test "$RATE2" = "429"
 
 echo "-- budget block --"
 BLOCK=$(curl -s -o /tmp/tp-block.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \

@@ -1,0 +1,8 @@
+{
+  "defaultRpm": 60,
+  "windowMs": 60000,
+  "teams": {
+    "broke": { "rpm": 0 },
+    "burst": { "rpm": 1 }
+  }
+}

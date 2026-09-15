@@ -7,6 +7,7 @@ import { mockChatCompletion } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
 import { evaluateModelPolicy } from "./models.js";
 import { evaluateSensitive } from "./sensitive.js";
+import { evaluateRateLimit } from "./ratelimit.js";
 import { isMockUpstream, liveChatCompletion, resolveUpstream } from "./upstream.js";
 import { adminSummary, dashboardHtml } from "./admin.js";
 
@@ -136,6 +137,35 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           message: modelPolicy.reason ?? "model not allowed",
           type: "model_denied",
           model: parsed.data.model,
+        },
+      });
+      return;
+    }
+
+    const rate = await evaluateRateLimit(teamId);
+    if (!rate.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [rate.policyId],
+        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+      });
+      await appendEvent(event);
+      res.setHeader("Retry-After", String(Math.ceil(rate.retryAfterMs / 1000)));
+      json(res, 429, {
+        error: {
+          message: rate.reason ?? "rate limited",
+          type: "rate_limited",
+          team: teamId,
+          capRpm: rate.capRpm,
+          retryAfterMs: rate.retryAfterMs,
         },
       });
       return;

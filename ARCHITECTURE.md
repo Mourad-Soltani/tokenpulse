@@ -95,3 +95,13 @@ Later: SQLite or Postgres.
 - Default on. Disable with `TOKENPULSE_SENSITIVE=off`.
 - Detectors: common API keys/PATs, PEM private keys, Bearer tokens, email, SSN-shaped, PAN-shaped numbers. Optional `TOKENPULSE_SENSITIVE_EXTRA` (`;;`-separated regexes) adds `custom`.
 - Block: HTTP 403 `sensitive_payload`. Ledger `decision: block` with `policyIds` like `sensitive-block` + `sensitive:secret`. Matched text is never written.
+
+
+## Rate limits (Session 7)
+
+- Config file: `TOKENPULSE_RATES_PATH` (default `data/rates.json`). Example: `rates.example.json`.
+- Env: `TOKENPULSE_DEFAULT_RPM`, `TOKENPULSE_RATE_WINDOW_MS` (default 60s).
+- Per-team `rpm` overrides default. Missing config = unlimited. `rpm: 0` hard-blocks.
+- In-process sliding window (single gateway process). Counts attempts that pass earlier policies.
+- Denied: HTTP 429 `rate_limited`, `Retry-After`, ledger `decision: block`, `policyId: rate-limited`.
+- Evaluated after model policy and before budget/upstream.

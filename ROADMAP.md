@@ -14,12 +14,13 @@
 - [x] Loopback admin API (`GET /v1/admin/summary`, `GET /v1/admin/events`)
 - [x] Minimal dashboard (`GET /`)
 - [x] Sensitive-payload heuristics (regex + simple detectors)
+- [x] Per-team request rate limits
+- [x] Pilot landing copy (`LANDING.md`)
 
 ## Next
 
 - [ ] Streaming response support
 - [ ] SQLite ledger option
-- [ ] Pilot packaging + landing copy
 
 ## Later
 
