@@ -29,7 +29,7 @@ cat > "$TOKENPULSE_MODELS_PATH" <<JSON
 }
 JSON
 
-echo "== Tokenpulse demo (secret-free mock upstream + budget + model policy) =="
+echo "== Tokenpulse demo (secret-free mock + budget + model + sensitive policy) =="
 
 npx tsx src/gateway.ts &
 PID=$!
@@ -53,7 +53,18 @@ RESP=$(curl -sf -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/com
 echo "$RESP" | python3 -c "import json,sys; b=json.load(sys.stdin); assert b['object']=='chat.completion'; print('chat ok:', b['choices'][0]['message']['content'][:80])"
 
 
+echo "-- sensitive block --"
+SENS=$(curl -s -o /tmp/tp-sens.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: demo-team" \
+  -H "X-Tokenpulse-App: demo-app" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"rotate sk-abcdefghijklmnopqrstuvwxyz0123"}]}')
+python3 -c "import json; b=json.load(open('/tmp/tp-sens.json')); assert b['error']['type']=='sensitive_payload', b; print('sensitive ok:', b['error']['message'])"
+test "$SENS" = "403"
+
 echo "-- model deny --"
+
 MDENY=$(curl -s -o /tmp/tp-model.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
   -H "Authorization: Bearer demo-token" \
   -H "Content-Type: application/json" \

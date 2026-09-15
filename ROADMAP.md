@@ -13,10 +13,10 @@
 - [x] Model allow/deny lists
 - [x] Loopback admin API (`GET /v1/admin/summary`, `GET /v1/admin/events`)
 - [x] Minimal dashboard (`GET /`)
+- [x] Sensitive-payload heuristics (regex + simple detectors)
 
 ## Next
 
-- [ ] Sensitive-payload heuristics (regex + simple detectors)
 - [ ] Streaming response support
 - [ ] SQLite ledger option
 - [ ] Pilot packaging + landing copy

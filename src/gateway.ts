@@ -6,6 +6,7 @@ import { estimateCostUsd } from "./pricing.js";
 import { mockChatCompletion } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
 import { evaluateModelPolicy } from "./models.js";
+import { evaluateSensitive } from "./sensitive.js";
 import { isMockUpstream, liveChatCompletion, resolveUpstream } from "./upstream.js";
 import { adminSummary, dashboardHtml } from "./admin.js";
 
@@ -87,6 +88,32 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     const teamId = header(req, "x-tokenpulse-team") || "default";
     const appId = header(req, "x-tokenpulse-app") || "default";
     const mock = isMockUpstream();
+
+    const sensitive = evaluateSensitive(parsed.data.messages);
+    if (!sensitive.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [sensitive.policyId, ...sensitive.categories.map((c) => `sensitive:${c}`)],
+        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+      });
+      await appendEvent(event);
+      json(res, 403, {
+        error: {
+          message: sensitive.reason ?? "sensitive payload blocked",
+          type: "sensitive_payload",
+          categories: sensitive.categories,
+        },
+      });
+      return;
+    }
 
     const modelPolicy = await evaluateModelPolicy(parsed.data.model);
     if (!modelPolicy.allow) {

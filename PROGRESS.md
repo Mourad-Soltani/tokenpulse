@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 5 — 2026-09-15)
+## Current Status (Session 6 — 2026-09-15)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -22,13 +22,13 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] HTTP 403 `model_denied` + ledger `decision: block`
 - [x] Loopback admin API (`GET /v1/admin/summary`, `GET /v1/admin/events`)
 - [x] Minimal dashboard (`GET /`, `GET /dashboard`)
-- [ ] Sensitive-payload heuristics
+- [x] Sensitive-payload heuristics (regex detectors; no raw prompt storage)
 
 ## Next Up (highest priority)
 
-1. **Session 6:** Sensitive-payload heuristics (regex + simple detectors) before egress. Block + ledger without storing raw prompts.
+1. **Session 7:** Pilot packaging + landing copy, or a thin rate-limit slice. Prefer packaging if demo stays green.
 2. Optional operator live proof against a real provider using a **rotated** key **outside git/chat**. Demo remains mock-default.
-3. After heuristics: pilot packaging / landing copy. Rate limits still later.
+3. Streaming and SQLite remain later.
 
 ## Decisions So Far
 
@@ -47,9 +47,11 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 
 - Session 5: admin routes share gateway auth. Dashboard is static HTML in-process (no Next.js yet). Browser talks only to `/v1/admin/*`. No raw prompts on the admin surface.
 
+- Session 6: message text is scanned before model/budget/upstream. Default on (`TOKENPULSE_SENSITIVE=off` disables). Hits ledger as `sensitive-block` plus `sensitive:<category>`. Matched substrings are never persisted.
+
 ## Handoff for next session
 
-Session 5 ships loopback admin summary + dashboard. Next slice is sensitive-payload heuristics. Never paste provider keys into chat.
+Session 6 ships sensitive-payload heuristics (secrets/PII detectors) with a secret-free demo block path. Next: packaging/landing or rate limits. Never paste provider keys into chat.
 
 ```bash
 npm install

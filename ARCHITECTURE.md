@@ -87,3 +87,11 @@ Later: SQLite or Postgres.
 - `GET /v1/admin/summary` — CLI-equivalent rollup plus `recentBlocked`.
 - `GET /v1/admin/events?decision=block|allow&day=YYYY-MM-DD&limit=50`.
 - No raw prompts. Dashboard never reads JSONL from the browser.
+
+
+## Sensitive payload heuristics (Session 6)
+
+- Runs on message text after JSON validation and before model/budget/upstream.
+- Default on. Disable with `TOKENPULSE_SENSITIVE=off`.
+- Detectors: common API keys/PATs, PEM private keys, Bearer tokens, email, SSN-shaped, PAN-shaped numbers. Optional `TOKENPULSE_SENSITIVE_EXTRA` (`;;`-separated regexes) adds `custom`.
+- Block: HTTP 403 `sensitive_payload`. Ledger `decision: block` with `policyIds` like `sensitive-block` + `sensitive:secret`. Matched text is never written.
