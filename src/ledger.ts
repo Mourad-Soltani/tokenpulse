@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { appendFile, mkdir, readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { UsageEvent, UsageEventSchema } from "./types.js";
+import { appendSqlite, ledgerDriver, readSqlite } from "./sqliteLedger.js";
 
 export function ledgerRoot(): string {
   return process.env.TOKENPULSE_LEDGER_DIR ?? join(process.cwd(), "data", "ledger");
@@ -23,7 +24,7 @@ export function newEvent(partial: Omit<UsageEvent, "id" | "timestamp"> & { times
   });
 }
 
-export async function appendEvent(event: UsageEvent): Promise<string> {
+async function appendJsonl(event: UsageEvent): Promise<string> {
   const dir = ledgerRoot();
   await mkdir(dir, { recursive: true });
   const file = join(dir, `${dayKey(event.timestamp)}.jsonl`);
@@ -31,7 +32,12 @@ export async function appendEvent(event: UsageEvent): Promise<string> {
   return file;
 }
 
-export async function readEvents(opts?: { day?: string }): Promise<UsageEvent[]> {
+export async function appendEvent(event: UsageEvent): Promise<string> {
+  if (ledgerDriver() === "sqlite") return appendSqlite(event);
+  return appendJsonl(event);
+}
+
+async function readJsonl(opts?: { day?: string }): Promise<UsageEvent[]> {
   const dir = ledgerRoot();
   let files: string[] = [];
   try {
@@ -50,6 +56,11 @@ export async function readEvents(opts?: { day?: string }): Promise<UsageEvent[]>
     }
   }
   return events;
+}
+
+export async function readEvents(opts?: { day?: string }): Promise<UsageEvent[]> {
+  if (ledgerDriver() === "sqlite") return readSqlite(opts);
+  return readJsonl(opts);
 }
 
 export function summarize(events: UsageEvent[]) {

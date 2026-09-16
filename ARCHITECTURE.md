@@ -47,8 +47,9 @@ Raw prompts are **off by default**. Optional redacted preview for blocked reques
 
 ## Persistence
 
-MVP: `data/ledger/<day>.jsonl` + `data/budgets.json`.
-Later: SQLite or Postgres.
+Default: `data/ledger/<day>.jsonl` + `data/budgets.json`.
+
+Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional `TOKENPULSE_SQLITE_PATH` (default `data/ledger.sqlite`). Same `UsageEvent` schema. JSONL remains the demo default. Uses Node built-in `node:sqlite` (no native addon).
 
 ## Non-goals for MVP
 

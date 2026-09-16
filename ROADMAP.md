@@ -20,7 +20,7 @@
 ## Next
 
 - [ ] Streaming response support
-- [ ] SQLite ledger option
+- [x] SQLite ledger option
 
 ## Later
 
