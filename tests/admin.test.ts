@@ -74,6 +74,21 @@ describe("admin api", () => {
       const body = (await res.json()) as { allowed: number; byTeam: Record<string, { calls: number }> };
       assert.ok(body.allowed >= 1);
       assert.ok(body.byTeam.ops?.calls >= 1);
+
+      const fin = await fetch(`${url}/v1/admin/export/finops`, {
+        headers: { authorization: "Bearer test-token" },
+      });
+      assert.equal(fin.status, 200);
+      const pack = (await fin.json()) as { version: string; events: unknown[] };
+      assert.equal(pack.version, "tokenpulse-finops-v1");
+      assert.ok(pack.events.length >= 1);
+
+      const sec = await fetch(`${url}/v1/admin/export/security`, {
+        headers: { authorization: "Bearer test-token" },
+      });
+      assert.equal(sec.status, 200);
+      const sp = (await sec.json()) as { version: string };
+      assert.equal(sp.version, "tokenpulse-security-v1");
     } finally {
       server.close();
     }

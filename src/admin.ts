@@ -51,6 +51,8 @@ export function dashboardHtml(): string {
   <div class="row">
     <input id="token" placeholder="Gateway token (if required)" />
     <button id="load">Refresh</button>
+    <button id="finops" type="button">FinOps pack</button>
+    <button id="security" type="button">CISO pack</button>
   </div>
   <div class="grid" id="kpis"></div>
   <div class="card" style="margin-top:16px">
@@ -66,11 +68,25 @@ export function dashboardHtml(): string {
 const tokenEl = document.getElementById('token');
 tokenEl.value = localStorage.getItem('tokenpulse.token') || '';
 document.getElementById('load').onclick = load;
+document.getElementById('finops').onclick = () => download('/v1/admin/export/finops');
+document.getElementById('security').onclick = () => download('/v1/admin/export/security');
+function headers() {
+  const token = tokenEl.value.trim();
+  return token ? { 'X-Tokenpulse-Token': token } : {};
+}
+async function download(path) {
+  const res = await fetch(path, { headers: headers() });
+  if (!res.ok) { alert(path + ' ' + res.status); return; }
+  const blob = await res.blob();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = path.includes('security') ? 'tokenpulse-security.json' : 'tokenpulse-finops.json';
+  a.click();
+}
 async function load() {
   const token = tokenEl.value.trim();
   localStorage.setItem('tokenpulse.token', token);
-  const headers = token ? { 'X-Tokenpulse-Token': token } : {};
-  const res = await fetch('/v1/admin/summary', { headers });
+  const res = await fetch('/v1/admin/summary', { headers: headers() });
   if (!res.ok) { alert('summary ' + res.status); return; }
   const s = await res.json();
   document.getElementById('kpis').innerHTML = [

@@ -114,6 +114,12 @@ test "$BLOCK" = "429"
 echo "-- ledger summary --"
 npx tsx src/cli.ts --summary
 
+echo "-- finops pack --"
+npx tsx src/cli.ts --export-finops | python3 -c "import json,sys; p=json.load(sys.stdin); assert p['version']=='tokenpulse-finops-v1', p; print('finops ok events', len(p['events']))"
+
+echo "-- security pack --"
+npx tsx src/cli.ts --export-security | python3 -c "import json,sys; p=json.load(sys.stdin); assert p['version']=='tokenpulse-security-v1', p; print('security ok blocked', p['blocked'])"
+
 echo "-- admin summary --"
 curl -s "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/admin/summary"   -H "Authorization: Bearer demo-token" | python3 -c "import json,sys; s=json.load(sys.stdin); assert 'byTeam' in s and s['calls']>=1, s; print('admin ok calls', s['calls'], 'blocked', s['blocked'])"
 

@@ -10,6 +10,7 @@ import { evaluateSensitive } from "./sensitive.js";
 import { evaluateRateLimit } from "./ratelimit.js";
 import { isMockUpstream, liveChatCompletion, resolveUpstream } from "./upstream.js";
 import { adminSummary, dashboardHtml } from "./admin.js";
+import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
 const DEFAULT_PORT = 8788;
 
@@ -310,6 +311,42 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     }
     const limit = Math.min(Math.max(Number(url.searchParams.get("limit") ?? 50) || 50, 1), 200);
     json(res, 200, { events: events.slice(-limit).reverse() });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/admin/export/finops") {
+    const day = url.searchParams.get("day") ?? undefined;
+    const events = await readEvents({ day });
+    const pack = buildFinopsPack(events, { day });
+    if (url.searchParams.get("format") === "csv") {
+      const csv = finopsCsv(pack);
+      res.writeHead(200, {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": 'attachment; filename="tokenpulse-finops.csv"',
+        "content-length": Buffer.byteLength(csv),
+      });
+      res.end(csv);
+      return;
+    }
+    json(res, 200, pack);
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/admin/export/security") {
+    const day = url.searchParams.get("day") ?? undefined;
+    const events = await readEvents({ day });
+    const pack = buildSecurityPack(events, { day });
+    if (url.searchParams.get("format") === "csv") {
+      const csv = securityCsv(pack);
+      res.writeHead(200, {
+        "content-type": "text/csv; charset=utf-8",
+        "content-disposition": 'attachment; filename="tokenpulse-security.csv"',
+        "content-length": Buffer.byteLength(csv),
+      });
+      res.end(csv);
+      return;
+    }
+    json(res, 200, pack);
     return;
   }
 

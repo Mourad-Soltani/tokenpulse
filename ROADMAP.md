@@ -16,11 +16,13 @@
 - [x] Sensitive-payload heuristics (regex + simple detectors)
 - [x] Per-team request rate limits
 - [x] Pilot landing copy (`LANDING.md`)
+- [x] SQLite ledger option
+- [x] FinOps + CISO export packs
 
 ## Next
 
 - [ ] Streaming response support
-- [x] SQLite ledger option
+- [ ] Recorded live-upstream proof (operator key outside git/chat)
 
 ## Later
 

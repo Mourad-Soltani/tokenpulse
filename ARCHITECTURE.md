@@ -87,7 +87,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `GET /` and `GET /dashboard` — static HTML spend view (token in localStorage).
 - `GET /v1/admin/summary` — CLI-equivalent rollup plus `recentBlocked`.
 - `GET /v1/admin/events?decision=block|allow&day=YYYY-MM-DD&limit=50`.
+- `GET /v1/admin/export/finops` and `/v1/admin/export/security` (`format=csv` optional).
 - No raw prompts. Dashboard never reads JSONL from the browser.
+
+## Export packs (Session 9)
+
+- FinOps pack `tokenpulse-finops-v1`: summary + per-event token/cost rows. No latency, no prompt text.
+- Security pack `tokenpulse-security-v1`: blocked events only, policy hit counts, `requestHash` only.
+- CLI: `--export-finops` / `--export-security` with optional `--csv` and `--day=YYYY-MM-DD`.
 
 
 ## Sensitive payload heuristics (Session 6)
