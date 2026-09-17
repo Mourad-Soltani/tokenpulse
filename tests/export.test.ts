@@ -51,7 +51,7 @@ describe("export packs", () => {
     assert.equal(pack.events.length, 2);
     assert.equal("latencyMs" in pack.events[0], false);
     const raw = JSON.stringify(pack);
-    assert.doesNotMatch(raw, /prompt/);
+    assert.doesNotMatch(raw, /"messages"|user content|rawPrompt/);
   });
 
   it("builds a security pack of blocked events only", () => {

@@ -31,3 +31,16 @@ export const ChatCompletionRequestSchema = z.object({
 });
 
 export type ChatCompletionRequest = z.infer<typeof ChatCompletionRequestSchema>;
+
+export const EmbeddingRequestSchema = z.object({
+  model: z.string().min(1),
+  input: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]),
+  encoding_format: z.string().optional(),
+  dimensions: z.number().int().positive().optional(),
+});
+
+export type EmbeddingRequest = z.infer<typeof EmbeddingRequestSchema>;
+
+export function embeddingInputs(req: EmbeddingRequest): string[] {
+  return Array.isArray(req.input) ? req.input : [req.input];
+}

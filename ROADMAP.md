@@ -18,6 +18,7 @@
 - [x] Pilot landing copy (`LANDING.md`)
 - [x] SQLite ledger option
 - [x] FinOps + CISO export packs
+- [x] Embeddings proxy (`POST /v1/embeddings`)
 
 ## Next
 

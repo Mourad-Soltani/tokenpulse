@@ -6,6 +6,9 @@ const TABLE: Record<string, { input: number; output: number }> = {
   "o4-mini": { input: 1.1, output: 4.4 },
   "grok-3": { input: 3, output: 15 },
   "grok-2": { input: 2, output: 10 },
+  "text-embedding-3-small": { input: 0.02, output: 0 },
+  "text-embedding-3-large": { input: 0.13, output: 0 },
+  "text-embedding-ada-002": { input: 0.1, output: 0 },
 };
 
 const FALLBACK = { input: 1, output: 3 };

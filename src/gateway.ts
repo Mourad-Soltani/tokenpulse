@@ -1,14 +1,14 @@
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { timingSafeEqual } from "node:crypto";
-import { ChatCompletionRequestSchema } from "./types.js";
+import { ChatCompletionRequestSchema, EmbeddingRequestSchema, embeddingInputs } from "./types.js";
 import { appendEvent, newEvent, readEvents, requestHash } from "./ledger.js";
 import { estimateCostUsd } from "./pricing.js";
-import { mockChatCompletion } from "./mockUpstream.js";
+import { mockChatCompletion, mockEmbeddings } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
 import { evaluateModelPolicy } from "./models.js";
 import { evaluateSensitive } from "./sensitive.js";
 import { evaluateRateLimit } from "./ratelimit.js";
-import { isMockUpstream, liveChatCompletion, resolveUpstream } from "./upstream.js";
+import { isMockUpstream, liveChatCompletion, liveEmbeddings, resolveUpstream } from "./upstream.js";
 import { adminSummary, dashboardHtml } from "./admin.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
@@ -275,6 +275,214 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         decision: "block",
         policyIds: [modelPolicy.policyId, budget.policyId, "upstream_error"],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+      });
+      await appendEvent(event);
+      const status = typeof err === "object" && err && "status" in err ? Number((err as { status: number }).status) || 502 : 502;
+      json(res, status >= 400 && status < 600 ? status : 502, {
+        error: { message, type: "upstream_error" },
+      });
+      return;
+    }
+  }
+
+
+  if (req.method === "POST" && (url.pathname === "/v1/embeddings" || url.pathname === "/embeddings")) {
+    const started = Date.now();
+    let parsedJson: unknown;
+    try {
+      parsedJson = JSON.parse(await readBody(req));
+    } catch {
+      json(res, 400, { error: { message: "invalid json", type: "invalid_request_error" } });
+      return;
+    }
+    const parsed = EmbeddingRequestSchema.safeParse(parsedJson);
+    if (!parsed.success) {
+      json(res, 400, { error: { message: parsed.error.message, type: "invalid_request_error" } });
+      return;
+    }
+
+    const texts = embeddingInputs(parsed.data);
+    const teamId = header(req, "x-tokenpulse-team") || "default";
+    const appId = header(req, "x-tokenpulse-app") || "default";
+    const mock = isMockUpstream();
+
+    const sensitive = evaluateSensitive(texts.map((content) => ({ content })));
+    if (!sensitive.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [sensitive.policyId, ...sensitive.categories.map((c) => `sensitive:${c}`), "endpoint:embeddings"],
+        requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
+      });
+      await appendEvent(event);
+      json(res, 403, {
+        error: {
+          message: sensitive.reason ?? "sensitive payload blocked",
+          type: "sensitive_payload",
+          categories: sensitive.categories,
+        },
+      });
+      return;
+    }
+
+    const modelPolicy = await evaluateModelPolicy(parsed.data.model);
+    if (!modelPolicy.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [modelPolicy.policyId, "endpoint:embeddings"],
+        requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
+      });
+      await appendEvent(event);
+      json(res, 403, {
+        error: {
+          message: modelPolicy.reason ?? "model not allowed",
+          type: "model_denied",
+          model: parsed.data.model,
+        },
+      });
+      return;
+    }
+
+    const rate = await evaluateRateLimit(teamId);
+    if (!rate.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [rate.policyId, "endpoint:embeddings"],
+        requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
+      });
+      await appendEvent(event);
+      res.setHeader("Retry-After", String(Math.ceil((rate.retryAfterMs ?? 1000) / 1000)));
+      json(res, 429, {
+        error: {
+          message: rate.reason ?? "rate limited",
+          type: "rate_limited",
+          team: teamId,
+          capRpm: rate.capRpm,
+          retryAfterMs: rate.retryAfterMs,
+        },
+      });
+      return;
+    }
+
+    const budget = await evaluateBudget(teamId);
+    if (!budget.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [budget.policyId, "endpoint:embeddings"],
+        requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
+      });
+      await appendEvent(event);
+      json(res, 429, {
+        error: {
+          message: budget.reason ?? "budget exceeded",
+          type: "budget_exceeded",
+        },
+      });
+      return;
+    }
+
+    if (mock) {
+      const mockRes = mockEmbeddings(parsed.data);
+      const latencyMs = Date.now() - started;
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: mockRes.usage.promptTokens,
+        completionTokens: 0,
+        totalTokens: mockRes.usage.totalTokens,
+        estimatedCostUsd: estimateCostUsd(parsed.data.model, mockRes.usage.promptTokens, 0),
+        latencyMs,
+        decision: "allow",
+        policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", "endpoint:embeddings"],
+        requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
+      });
+      await appendEvent(event);
+      json(res, 200, mockRes.body);
+      return;
+    }
+
+    const upstream = resolveUpstream();
+    if (!upstream) {
+      json(res, 501, {
+        error: {
+          message:
+            "live upstream not configured; set TOKENPULSE_MOCK_UPSTREAM=1 or provide TOKENPULSE_UPSTREAM_* / OPENAI_API_KEY / XAI_API_KEY",
+          type: "not_implemented",
+        },
+      });
+      return;
+    }
+
+    try {
+      const live = await liveEmbeddings(parsed.data, upstream);
+      const latencyMs = Date.now() - started;
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: live.usage.promptTokens,
+        completionTokens: live.usage.completionTokens,
+        totalTokens: live.usage.totalTokens,
+        estimatedCostUsd: estimateCostUsd(
+          parsed.data.model,
+          live.usage.promptTokens,
+          live.usage.completionTokens,
+        ),
+        latencyMs,
+        decision: "allow",
+        policyIds: [modelPolicy.policyId, budget.policyId, "live-allow", `upstream:${upstream.source}`, "endpoint:embeddings"],
+        requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
+      });
+      await appendEvent(event);
+      json(res, 200, live.body);
+      return;
+    } catch (err) {
+      const latencyMs = Date.now() - started;
+      const message = err instanceof Error ? err.message : "upstream_error";
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs,
+        decision: "block",
+        policyIds: [modelPolicy.policyId, budget.policyId, "upstream_error", "endpoint:embeddings"],
+        requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
       await appendEvent(event);
       const status = typeof err === "object" && err && "status" in err ? Number((err as { status: number }).status) || 502 : 502;

@@ -25,7 +25,7 @@ JSON
 
 cat > "$TOKENPULSE_MODELS_PATH" <<JSON
 {
-  "allow": ["gpt-4o-mini"],
+  "allow": ["gpt-4o-mini", "text-embedding-3-small"],
   "deny": ["banned-model"]
 }
 JSON
@@ -62,6 +62,16 @@ RESP=$(curl -sf -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/com
 
 echo "$RESP" | python3 -c "import json,sys; b=json.load(sys.stdin); assert b['object']=='chat.completion'; print('chat ok:', b['choices'][0]['message']['content'][:80])"
 
+
+
+echo "-- embeddings mock --"
+EMB=$(curl -sf -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/embeddings" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: demo-team" \
+  -H "X-Tokenpulse-App: demo-app" \
+  -d '{"model":"text-embedding-3-small","input":"tokenpulse embedding demo"}')
+echo "$EMB" | python3 -c "import json,sys; b=json.load(sys.stdin); assert b['object']=='list' and len(b['data'][0]['embedding'])>=4; print('embeddings ok dim', len(b['data'][0]['embedding']))"
 
 echo "-- sensitive block --"
 SENS=$(curl -s -o /tmp/tp-sens.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \

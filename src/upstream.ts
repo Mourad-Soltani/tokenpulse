@@ -1,4 +1,4 @@
-import type { ChatCompletionRequest } from "./types.js";
+import type { ChatCompletionRequest, EmbeddingRequest } from "./types.js";
 
 export type UpstreamConfig = {
   baseUrl: string;
@@ -66,6 +66,52 @@ export async function liveChatCompletion(
         messages: req.messages,
         max_tokens: req.max_tokens,
         stream: false,
+      }),
+      signal: ac.signal,
+    });
+    const text = await res.text();
+    let parsed: unknown;
+    try {
+      parsed = text ? JSON.parse(text) : {};
+    } catch {
+      throw Object.assign(new Error("upstream returned non-json"), { status: res.status, type: "upstream_error" });
+    }
+    if (!res.ok) {
+      const msg =
+        typeof parsed === "object" && parsed && "error" in parsed
+          ? String((parsed as { error?: { message?: string } }).error?.message ?? `upstream ${res.status}`)
+          : `upstream ${res.status}`;
+      throw Object.assign(new Error(msg), { status: res.status, type: "upstream_error", body: parsed });
+    }
+    const usage = extractUsage(parsed);
+    return { body: parsed as Record<string, unknown>, usage };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+
+export async function liveEmbeddings(
+  req: EmbeddingRequest,
+  cfg: UpstreamConfig,
+  opts?: { timeoutMs?: number; fetchImpl?: typeof fetch },
+): Promise<LiveCompletion> {
+  const timeoutMs = opts?.timeoutMs ?? Number(process.env.TOKENPULSE_UPSTREAM_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const fetchImpl = opts?.fetchImpl ?? fetch;
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), Number.isFinite(timeoutMs) ? Math.min(Math.max(timeoutMs, 500), 60_000) : DEFAULT_TIMEOUT_MS);
+  try {
+    const res = await fetchImpl(`${cfg.baseUrl}/embeddings`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${cfg.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: req.model,
+        input: req.input,
+        encoding_format: req.encoding_format,
+        dimensions: req.dimensions,
       }),
       signal: ac.signal,
     });

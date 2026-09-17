@@ -21,7 +21,7 @@
 
 ## Request path (v0.1)
 
-1. Client sends OpenAI-compatible chat/completions (or embeddings) to gateway.
+1. Client sends OpenAI-compatible chat/completions or embeddings to gateway.
 2. Authenticate gateway token (`TOKENPULSE_GATEWAY_TOKEN`).
 3. Resolve `team` / `app` from header or API key mapping.
 4. Run policy: budget remaining, model allowed, payload heuristics.
@@ -113,3 +113,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - In-process sliding window (single gateway process). Counts attempts that pass earlier policies.
 - Denied: HTTP 429 `rate_limited`, `Retry-After`, ledger `decision: block`, `policyId: rate-limited`.
 - Evaluated after model policy and before budget/upstream.
+
+
+## Embeddings (Session 10)
+
+- `POST /v1/embeddings` and `/embeddings` accept `model` + `input` (string or string[]).
+- Same policy order as chat: sensitive → model → rate → budget → mock or live upstream.
+- Ledger `policyIds` include `endpoint:embeddings`. Completion tokens are zero; cost uses input price only.
+- Mock returns a short deterministic vector (default dim 8, cap 32). Live forwards to `{baseUrl}/embeddings`.
+- Streaming remains out of scope.
