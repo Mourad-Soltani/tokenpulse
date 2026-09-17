@@ -1,0 +1,8 @@
+{
+  "defaultMaxPromptChars": 32000,
+  "defaultMaxTokens": 4096,
+  "teams": {
+    "tight": { "maxPromptChars": 200, "maxTokens": 64 },
+    "blocked": { "maxTokens": 0 }
+  }
+}

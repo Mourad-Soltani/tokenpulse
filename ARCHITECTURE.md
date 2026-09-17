@@ -24,7 +24,7 @@
 1. Client sends OpenAI-compatible chat/completions or embeddings to gateway.
 2. Authenticate gateway token (`TOKENPULSE_GATEWAY_TOKEN`).
 3. Resolve `team` / `app` from header or API key mapping.
-4. Run policy: budget remaining, model allowed, payload heuristics.
+4. Run policy: request size limits, payload heuristics, model allowed, rate, budget remaining.
 5. On deny → return structured error + ledger `blocked` event.
 6. On allow → mock when `TOKENPULSE_MOCK_UPSTREAM=1`; else live forward via `resolveUpstream()`. Meter provider `usage`, append ledger, return body. Missing live config → 501. Upstream errors → ledger `block` + `upstream_error`.
 
@@ -113,6 +113,16 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - In-process sliding window (single gateway process). Counts attempts that pass earlier policies.
 - Denied: HTTP 429 `rate_limited`, `Retry-After`, ledger `decision: block`, `policyId: rate-limited`.
 - Evaluated after model policy and before budget/upstream.
+
+## Request size limits (Session 11)
+
+- Config file: `TOKENPULSE_LIMITS_PATH` (default `data/limits.json`). Example: `limits.example.json`.
+- Env: `TOKENPULSE_MAX_PROMPT_CHARS`, `TOKENPULSE_MAX_TOKENS` as defaults when the file omits them.
+- Per-team `maxPromptChars` / `maxTokens`. Missing config = unlimited. `maxTokens: 0` hard-blocks.
+- Prompt char count is the sum of message / embedding input string lengths (no raw text stored).
+- Requested `max_tokens` above the team cap is denied. Requests that omit `max_tokens` are allowed unless the cap is 0.
+- Denied: HTTP 413 `limit_exceeded`, ledger `decision: block`, `policyId: limit-prompt-chars` or `limit-max-tokens`.
+- Evaluated after JSON validation and before sensitive / model / rate / budget / upstream.
 
 
 ## Embeddings (Session 10)

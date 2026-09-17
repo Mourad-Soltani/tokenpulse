@@ -11,6 +11,7 @@ export TOKENPULSE_LEDGER_DIR="${TOKENPULSE_LEDGER_DIR:-$ROOT/data/ledger-demo}"
 export TOKENPULSE_BUDGETS_PATH="${TOKENPULSE_BUDGETS_PATH:-$ROOT/data/budgets.demo.json}"
 export TOKENPULSE_MODELS_PATH="${TOKENPULSE_MODELS_PATH:-$ROOT/data/models.demo.json}"
 export TOKENPULSE_RATES_PATH="${TOKENPULSE_RATES_PATH:-$ROOT/data/rates.demo.json}"
+export TOKENPULSE_LIMITS_PATH="${TOKENPULSE_LIMITS_PATH:-$ROOT/data/limits.demo.json}"
 mkdir -p "$TOKENPULSE_LEDGER_DIR"
 
 cat > "$TOKENPULSE_BUDGETS_PATH" <<JSON
@@ -35,6 +36,16 @@ cat > "$TOKENPULSE_RATES_PATH" <<JSON
   "windowMs": 60000,
   "teams": {
     "burst": { "rpm": 1 }
+  }
+}
+JSON
+
+cat > "$TOKENPULSE_LIMITS_PATH" <<JSON
+{
+  "defaultMaxPromptChars": 8000,
+  "defaultMaxTokens": 2048,
+  "teams": {
+    "tiny": { "maxPromptChars": 8 }
   }
 }
 JSON
@@ -110,6 +121,16 @@ RATE2=$(curl -s -o /tmp/tp-rate2.json -w "%{http_code}" -X POST "http://127.0.0.
 python3 -c "import json; b=json.load(open('/tmp/tp-rate2.json')); assert b['error']['type']=='rate_limited', b; print('rate ok:', b['error']['message'])"
 test "$RATE1" = "200"
 test "$RATE2" = "429"
+
+echo "-- request size limit --"
+LIM=$(curl -s -o /tmp/tp-limit.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: tiny" \
+  -H "X-Tokenpulse-App: demo-app" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"this is too long for tiny"}]}')
+python3 -c "import json; b=json.load(open('/tmp/tp-limit.json')); assert b['error']['type']=='limit_exceeded', b; print('limit ok:', b['error']['message'])"
+test "$LIM" = "413"
 
 echo "-- budget block --"
 BLOCK=$(curl -s -o /tmp/tp-block.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \

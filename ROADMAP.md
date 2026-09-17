@@ -19,6 +19,7 @@
 - [x] SQLite ledger option
 - [x] FinOps + CISO export packs
 - [x] Embeddings proxy (`POST /v1/embeddings`)
+- [x] Per-request prompt / max_tokens caps
 
 ## Next
 

@@ -28,11 +28,13 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Pilot landing copy (`LANDING.md`)
 - [x] Optional SQLite ledger (`TOKENPULSE_LEDGER_DRIVER=sqlite`, Node `node:sqlite`)
 - [x] FinOps pack `tokenpulse-finops-v1` + CISO pack `tokenpulse-security-v1` (CLI + admin + dashboard)
+- [x] Session 10 — OpenAI-compatible embeddings proxy (`POST /v1/embeddings`)
+- [x] Session 11 — per-request size limits (`maxPromptChars` / `max_tokens`; HTTP 413 `limit_exceeded`)
 - [x] Embeddings proxy `POST /v1/embeddings` (mock + live forward, same policy path)
 
 ## Next Up (highest priority)
 
-1. **Session 11:** Optional operator live proof against a real provider using a **rotated** key **outside git/chat**. Demo remains mock-default.
+1. Optional operator live proof against a real provider using a **rotated** key **outside git/chat**. Demo remains mock-default.
 2. Streaming remains later.
 3. Do not start bulk buyer outreach until one recorded live-upstream proof exists.
 
@@ -58,11 +60,13 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Session 8: optional SQLite driver (`TOKENPULSE_LEDGER_DRIVER=sqlite`). Default remains JSONL. Path `TOKENPULSE_SQLITE_PATH` (default `data/ledger.sqlite`). Built-in `node:sqlite`. Same read/append API so budget and admin stay driver-agnostic.
 - Session 7: per-team sliding-window RPM. File + env. In-process only. Evaluated after model policy, before budget. `rpm: 0` hard-blocks. Pilot copy lives in `LANDING.md`. No outreach until live-upstream proof.
 - Session 9: export packs omit raw prompts. FinOps includes allow+block cost rows. Security includes blocked events, policyHits, requestHash. CSV via `--csv` or `?format=csv`.
+- Session 10: `POST /v1/embeddings` shares auth, team headers, sensitive/model/rate/budget, mock + live upstream, and ledger (`endpoint:embeddings`).
+- Session 11: request size policy via `TOKENPULSE_LIMITS_PATH` / `TOKENPULSE_MAX_PROMPT_CHARS` / `TOKENPULSE_MAX_TOKENS`. Team overrides. 413 `limit_exceeded`. Runs before sensitive scan. `maxTokens: 0` hard-blocks. Omit `max_tokens` = allowed unless cap is 0.
 - Session 10: embeddings share the chat policy path. Mock vectors are deterministic and short. Live uses `/embeddings`. Allow-lists must include embedding model ids.
 
 ## Handoff for next session
 
-Session 10 ships OpenAI-compatible embeddings through the same meter + policy path. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
+Session 11 ships per-request prompt/`max_tokens` caps (HTTP 413). Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
 
 ```bash
 npm install

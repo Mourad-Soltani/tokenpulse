@@ -8,6 +8,7 @@ import { evaluateBudget } from "./budget.js";
 import { evaluateModelPolicy } from "./models.js";
 import { evaluateSensitive } from "./sensitive.js";
 import { evaluateRateLimit } from "./ratelimit.js";
+import { evaluateLimits, promptCharCount } from "./limits.js";
 import { isMockUpstream, liveChatCompletion, liveEmbeddings, resolveUpstream } from "./upstream.js";
 import { adminSummary, dashboardHtml } from "./admin.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
@@ -90,6 +91,39 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     const teamId = header(req, "x-tokenpulse-team") || "default";
     const appId = header(req, "x-tokenpulse-app") || "default";
     const mock = isMockUpstream();
+
+    const limits = await evaluateLimits({
+      teamId,
+      promptChars: promptCharCount(parsed.data.messages),
+      requestedMaxTokens: parsed.data.max_tokens,
+    });
+    if (!limits.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [limits.policyId],
+        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+      });
+      await appendEvent(event);
+      json(res, 413, {
+        error: {
+          message: limits.reason ?? "request exceeds size limits",
+          type: "limit_exceeded",
+          promptChars: limits.promptChars,
+          maxPromptChars: limits.maxPromptChars,
+          requestedMaxTokens: limits.requestedMaxTokens,
+          capMaxTokens: limits.capMaxTokens,
+        },
+      });
+      return;
+    }
 
     const sensitive = evaluateSensitive(parsed.data.messages);
     if (!sensitive.allow) {
@@ -305,6 +339,36 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     const teamId = header(req, "x-tokenpulse-team") || "default";
     const appId = header(req, "x-tokenpulse-app") || "default";
     const mock = isMockUpstream();
+
+    const limits = await evaluateLimits({
+      teamId,
+      promptChars: promptCharCount(texts),
+    });
+    if (!limits.allow) {
+      const event = newEvent({
+        teamId,
+        appId,
+        model: parsed.data.model,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        estimatedCostUsd: 0,
+        latencyMs: Date.now() - started,
+        decision: "block",
+        policyIds: [limits.policyId, "endpoint:embeddings"],
+        requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
+      });
+      await appendEvent(event);
+      json(res, 413, {
+        error: {
+          message: limits.reason ?? "request exceeds size limits",
+          type: "limit_exceeded",
+          promptChars: limits.promptChars,
+          maxPromptChars: limits.maxPromptChars,
+        },
+      });
+      return;
+    }
 
     const sensitive = evaluateSensitive(texts.map((content) => ({ content })));
     if (!sensitive.allow) {
