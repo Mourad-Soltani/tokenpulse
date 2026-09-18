@@ -76,13 +76,17 @@ export async function appendSqlite(event: UsageEvent): Promise<string> {
   return sqlitePath();
 }
 
-export async function readSqlite(opts?: { day?: string }): Promise<UsageEvent[]> {
+export async function readSqlite(opts?: { day?: string; month?: string }): Promise<UsageEvent[]> {
   const conn = open();
   const rows = opts?.day
     ? conn
         .prepare(`SELECT * FROM usage_events WHERE substr(timestamp, 1, 10) = ? ORDER BY timestamp, id`)
         .all(opts.day)
-    : conn.prepare(`SELECT * FROM usage_events ORDER BY timestamp, id`).all();
+    : opts?.month
+      ? conn
+          .prepare(`SELECT * FROM usage_events WHERE substr(timestamp, 1, 7) = ? ORDER BY timestamp, id`)
+          .all(opts.month)
+      : conn.prepare(`SELECT * FROM usage_events ORDER BY timestamp, id`).all();
 
   const events: UsageEvent[] = [];
   for (const row of rows) {

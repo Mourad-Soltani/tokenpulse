@@ -1,7 +1,8 @@
 {
   "defaultDailyUsd": 25,
+  "defaultMonthlyUsd": 400,
   "teams": {
-    "eng": { "dailyUsd": 10 },
-    "finance": { "dailyUsd": 5 }
+    "eng": { "dailyUsd": 10, "monthlyUsd": 200 },
+    "finance": { "dailyUsd": 5, "monthlyUsd": 80 }
   }
 }

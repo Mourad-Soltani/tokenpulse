@@ -224,11 +224,12 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       await appendEvent(event);
       json(res, 429, {
         error: {
-          message: budget.reason ?? "daily budget exceeded",
+          message: budget.reason ?? "budget exceeded",
           type: "budget_exceeded",
           team: teamId,
           spentUsd: budget.spentUsd,
           capUsd: budget.capUsd,
+          period: budget.period,
         },
       });
       return;
@@ -471,6 +472,10 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         error: {
           message: budget.reason ?? "budget exceeded",
           type: "budget_exceeded",
+          team: teamId,
+          spentUsd: budget.spentUsd,
+          capUsd: budget.capUsd,
+          period: budget.period,
         },
       });
       return;

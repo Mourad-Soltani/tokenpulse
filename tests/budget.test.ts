@@ -52,3 +52,41 @@ describe("budget", () => {
     assert.ok(d.spentUsd >= 1);
   });
 });
+
+  it("blocks when monthly cap is exhausted even if daily remains", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "tp-budget-m-"));
+    process.env.TOKENPULSE_LEDGER_DIR = dir;
+    process.env.TOKENPULSE_BUDGETS_PATH = join(dir, "budgets.json");
+    delete process.env.TOKENPULSE_DEFAULT_DAILY_USD;
+    delete process.env.TOKENPULSE_DEFAULT_MONTHLY_USD;
+    await writeFile(
+      process.env.TOKENPULSE_BUDGETS_PATH,
+      JSON.stringify({
+        teams: { monthly: { dailyUsd: 100, monthlyUsd: 2 } },
+      }),
+      "utf8",
+    );
+    const earlier = new Date();
+    earlier.setUTCDate(1);
+    earlier.setUTCHours(1, 0, 0, 0);
+    await appendEvent(
+      newEvent({
+        timestamp: earlier.toISOString(),
+        teamId: "monthly",
+        appId: "bot",
+        model: "gpt-4o-mini",
+        promptTokens: 1,
+        completionTokens: 1,
+        totalTokens: 2,
+        estimatedCostUsd: 2,
+        latencyMs: 1,
+        decision: "allow",
+        policyIds: ["seed-month"],
+      }),
+    );
+    const d = await evaluateBudget("monthly");
+    assert.equal(d.allow, false);
+    assert.equal(d.policyId, "budget-monthly-team");
+    assert.equal(d.period, "monthly");
+    assert.ok(d.spentUsd >= 2);
+  });

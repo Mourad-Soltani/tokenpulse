@@ -28,7 +28,7 @@
 5. On deny → return structured error + ledger `blocked` event.
 6. On allow → mock when `TOKENPULSE_MOCK_UPSTREAM=1`; else live forward via `resolveUpstream()`. Meter provider `usage`, append ledger, return body. Missing live config → 501. Upstream errors → ledger `block` + `upstream_error`.
 
-Daily budget is evaluated **before** upstream. Cap source: `TOKENPULSE_BUDGETS_PATH` (`data/budgets.json` or `budgets.example.json`) then `TOKENPULSE_DEFAULT_DAILY_USD`. No cap configured → allow. `dailyUsd: 0` blocks the team immediately. Blocked calls write `decision: block` with zero tokens and HTTP 429 `budget_exceeded`.
+Daily and monthly budgets are evaluated **before** upstream. Cap source: `TOKENPULSE_BUDGETS_PATH` then `TOKENPULSE_DEFAULT_DAILY_USD` / `TOKENPULSE_DEFAULT_MONTHLY_USD`. No cap configured → allow. `dailyUsd: 0` or `monthlyUsd: 0` hard-blocks. Daily is checked first, then monthly. Blocked calls write `decision: block` with zero tokens and HTTP 429 `budget_exceeded` (`period: daily|monthly`).
 
 ## Data model (MVP)
 
@@ -132,3 +132,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Ledger `policyIds` include `endpoint:embeddings`. Completion tokens are zero; cost uses input price only.
 - Mock returns a short deterministic vector (default dim 8, cap 32). Live forwards to `{baseUrl}/embeddings`.
 - Streaming remains out of scope.
+
+
+## Monthly budget (Session 12)
+
+- Team field `monthlyUsd` and optional `defaultMonthlyUsd` / `TOKENPULSE_DEFAULT_MONTHLY_USD`.
+- Spend is allowed events in the UTC month (`YYYY-MM`) across JSONL day files or SQLite.
+- Policy id `budget-monthly-team`. Daily cap still wins when both are exhausted the same request.

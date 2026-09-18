@@ -20,6 +20,7 @@
 - [x] FinOps + CISO export packs
 - [x] Embeddings proxy (`POST /v1/embeddings`)
 - [x] Per-request prompt / max_tokens caps
+- [x] Monthly team spend caps
 
 ## Next
 

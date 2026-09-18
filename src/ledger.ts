@@ -37,7 +37,7 @@ export async function appendEvent(event: UsageEvent): Promise<string> {
   return appendJsonl(event);
 }
 
-async function readJsonl(opts?: { day?: string }): Promise<UsageEvent[]> {
+async function readJsonl(opts?: { day?: string; month?: string }): Promise<UsageEvent[]> {
   const dir = ledgerRoot();
   let files: string[] = [];
   try {
@@ -46,6 +46,7 @@ async function readJsonl(opts?: { day?: string }): Promise<UsageEvent[]> {
     return [];
   }
   if (opts?.day) files = files.filter((f) => f.startsWith(opts.day));
+  else if (opts?.month) files = files.filter((f) => f.startsWith(opts.month));
   const events: UsageEvent[] = [];
   for (const f of files) {
     const raw = await readFile(join(dir, f), "utf8");
@@ -58,7 +59,7 @@ async function readJsonl(opts?: { day?: string }): Promise<UsageEvent[]> {
   return events;
 }
 
-export async function readEvents(opts?: { day?: string }): Promise<UsageEvent[]> {
+export async function readEvents(opts?: { day?: string; month?: string }): Promise<UsageEvent[]> {
   if (ledgerDriver() === "sqlite") return readSqlite(opts);
   return readJsonl(opts);
 }

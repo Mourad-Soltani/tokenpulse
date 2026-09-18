@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 10 — 2026-09-17)
+## Current Status (Session 12 — 2026-09-18)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -31,6 +31,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 10 — OpenAI-compatible embeddings proxy (`POST /v1/embeddings`)
 - [x] Session 11 — per-request size limits (`maxPromptChars` / `max_tokens`; HTTP 413 `limit_exceeded`)
 - [x] Embeddings proxy `POST /v1/embeddings` (mock + live forward, same policy path)
+- [x] Session 12 — monthly team spend caps (`monthlyUsd` / `TOKENPULSE_DEFAULT_MONTHLY_USD`)
 
 ## Next Up (highest priority)
 
@@ -63,10 +64,11 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Session 10: `POST /v1/embeddings` shares auth, team headers, sensitive/model/rate/budget, mock + live upstream, and ledger (`endpoint:embeddings`).
 - Session 11: request size policy via `TOKENPULSE_LIMITS_PATH` / `TOKENPULSE_MAX_PROMPT_CHARS` / `TOKENPULSE_MAX_TOKENS`. Team overrides. 413 `limit_exceeded`. Runs before sensitive scan. `maxTokens: 0` hard-blocks. Omit `max_tokens` = allowed unless cap is 0.
 - Session 10: embeddings share the chat policy path. Mock vectors are deterministic and short. Live uses `/embeddings`. Allow-lists must include embedding model ids.
+- Session 12: monthly USD cap per team from allowed events in the UTC month. Daily checked first. `monthlyUsd: 0` hard-blocks. Ledger `readEvents` accepts `month`. Error payload includes `period`.
 
 ## Handoff for next session
 
-Session 11 ships per-request prompt/`max_tokens` caps (HTTP 413). Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
+Session 12 ships monthly team spend caps (HTTP 429 `budget_exceeded`, policy `budget-monthly-team`). Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
 
 ```bash
 npm install

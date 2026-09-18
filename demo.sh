@@ -17,8 +17,9 @@ mkdir -p "$TOKENPULSE_LEDGER_DIR"
 cat > "$TOKENPULSE_BUDGETS_PATH" <<JSON
 {
   "defaultDailyUsd": 25,
+  "defaultMonthlyUsd": 200,
   "teams": {
-    "demo-team": { "dailyUsd": 10 },
+    "demo-team": { "dailyUsd": 10, "monthlyUsd": 80 },
     "broke": { "dailyUsd": 0 }
   }
 }
