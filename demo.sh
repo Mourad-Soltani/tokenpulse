@@ -74,6 +74,15 @@ RESP=$(curl -sf -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/com
 
 echo "$RESP" | python3 -c "import json,sys; b=json.load(sys.stdin); assert b['object']=='chat.completion'; print('chat ok:', b['choices'][0]['message']['content'][:80])"
 
+echo "-- chat stream mock --"
+STREAM=$(curl -sf -N -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: demo-team" \
+  -H "X-Tokenpulse-App: demo-app" \
+  -d '{"model":"gpt-4o-mini","stream":true,"messages":[{"role":"user","content":"stream from demo.sh"}]}')
+echo "$STREAM" | python3 -c "import sys; t=sys.stdin.read(); assert 'chat.completion.chunk' in t and '[DONE]' in t; print('stream ok: sse chunks received')"
+
 
 
 echo "-- embeddings mock --"

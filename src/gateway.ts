@@ -3,13 +3,13 @@ import { timingSafeEqual } from "node:crypto";
 import { ChatCompletionRequestSchema, EmbeddingRequestSchema, embeddingInputs } from "./types.js";
 import { appendEvent, newEvent, readEvents, requestHash } from "./ledger.js";
 import { estimateCostUsd } from "./pricing.js";
-import { mockChatCompletion, mockEmbeddings } from "./mockUpstream.js";
+import { mockChatCompletion, mockChatCompletionStream, mockEmbeddings } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
 import { evaluateModelPolicy } from "./models.js";
 import { evaluateSensitive } from "./sensitive.js";
 import { evaluateRateLimit } from "./ratelimit.js";
 import { evaluateLimits, promptCharCount } from "./limits.js";
-import { isMockUpstream, liveChatCompletion, liveEmbeddings, resolveUpstream } from "./upstream.js";
+import { isMockUpstream, liveChatCompletion, liveChatCompletionStream, liveEmbeddings, resolveUpstream } from "./upstream.js";
 import { adminSummary, dashboardHtml } from "./admin.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
@@ -83,10 +83,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       json(res, 400, { error: { message: parsed.error.message, type: "invalid_request_error" } });
       return;
     }
-    if (parsed.data.stream) {
-      json(res, 400, { error: { message: "streaming not supported in v0.1", type: "invalid_request_error" } });
-      return;
-    }
+    const wantStream = Boolean(parsed.data.stream);
 
     const teamId = header(req, "x-tokenpulse-team") || "default";
     const appId = header(req, "x-tokenpulse-app") || "default";
@@ -236,6 +233,38 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     }
 
     if (mock) {
+      if (wantStream) {
+        const streamRes = mockChatCompletionStream(parsed.data);
+        res.writeHead(200, {
+          "content-type": "text/event-stream; charset=utf-8",
+          "cache-control": "no-cache",
+          connection: "keep-alive",
+        });
+        for (const chunk of streamRes.chunks) {
+          res.write(chunk);
+        }
+        const latencyMs = Date.now() - started;
+        const event = newEvent({
+          teamId,
+          appId,
+          model: parsed.data.model,
+          promptTokens: streamRes.usage.promptTokens,
+          completionTokens: streamRes.usage.completionTokens,
+          totalTokens: streamRes.usage.totalTokens,
+          estimatedCostUsd: estimateCostUsd(
+            parsed.data.model,
+            streamRes.usage.promptTokens,
+            streamRes.usage.completionTokens,
+          ),
+          latencyMs,
+          decision: "allow",
+          policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", "stream"],
+          requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: true }),
+        });
+        await appendEvent(event);
+        res.end();
+        return;
+      }
       const mockRes = mockChatCompletion(parsed.data);
       const latencyMs = Date.now() - started;
       const event = newEvent({
@@ -273,6 +302,43 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     }
 
     try {
+      if (wantStream) {
+        res.writeHead(200, {
+          "content-type": "text/event-stream; charset=utf-8",
+          "cache-control": "no-cache",
+          connection: "keep-alive",
+        });
+        const streamResult = await liveChatCompletionStream(parsed.data, upstream, (chunk) => {
+          res.write(chunk);
+        });
+        const latencyMs = Date.now() - started;
+        const event = newEvent({
+          teamId,
+          appId,
+          model: parsed.data.model,
+          promptTokens: streamResult.usage.promptTokens,
+          completionTokens: streamResult.usage.completionTokens,
+          totalTokens: streamResult.usage.totalTokens,
+          estimatedCostUsd: estimateCostUsd(
+            parsed.data.model,
+            streamResult.usage.promptTokens,
+            streamResult.usage.completionTokens,
+          ),
+          latencyMs,
+          decision: "allow",
+          policyIds: [
+            modelPolicy.policyId,
+            budget.policyId,
+            "live-allow",
+            `upstream:${upstream.source}`,
+            "stream",
+          ],
+          requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: true }),
+        });
+        await appendEvent(event);
+        res.end();
+        return;
+      }
       const live = await liveChatCompletion(parsed.data, upstream);
       const latencyMs = Date.now() - started;
       const event = newEvent({
@@ -308,14 +374,18 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         estimatedCostUsd: 0,
         latencyMs,
         decision: "block",
-        policyIds: [modelPolicy.policyId, budget.policyId, "upstream_error"],
-        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
+        policyIds: [modelPolicy.policyId, budget.policyId, "upstream_error", ...(wantStream ? ["stream"] : [])],
+        requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: wantStream }),
       });
       await appendEvent(event);
       const status = typeof err === "object" && err && "status" in err ? Number((err as { status: number }).status) || 502 : 502;
-      json(res, status >= 400 && status < 600 ? status : 502, {
-        error: { message, type: "upstream_error" },
-      });
+      if (!res.headersSent) {
+        json(res, status >= 400 && status < 600 ? status : 502, {
+          error: { message, type: "upstream_error" },
+        });
+      } else {
+        res.end();
+      }
       return;
     }
   }

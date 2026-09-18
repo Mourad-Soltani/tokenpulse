@@ -21,11 +21,12 @@
 - [x] Embeddings proxy (`POST /v1/embeddings`)
 - [x] Per-request prompt / max_tokens caps
 - [x] Monthly team spend caps
+- [x] Streaming chat completions (SSE)
 
 ## Next
 
-- [ ] Streaming response support
 - [ ] Recorded live-upstream proof (operator key outside git/chat)
+- [ ] Pilot packaging (one-pager + demo recording)
 
 ## Later
 

@@ -146,3 +146,108 @@ function extractUsage(body: unknown): LiveCompletion["usage"] {
   const totalTokens = Math.max(promptTokens + completionTokens, Number(u?.total_tokens ?? 0));
   return { promptTokens, completionTokens, totalTokens };
 }
+
+export type StreamResult = {
+  usage: LiveCompletion["usage"];
+};
+
+/** Forward upstream SSE stream; parse usage from final chunk when present. */
+export async function liveChatCompletionStream(
+  req: ChatCompletionRequest,
+  cfg: UpstreamConfig,
+  onChunk: (chunk: string) => void,
+  opts?: { timeoutMs?: number; fetchImpl?: typeof fetch },
+): Promise<StreamResult> {
+  const timeoutMs = opts?.timeoutMs ?? Number(process.env.TOKENPULSE_UPSTREAM_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const fetchImpl = opts?.fetchImpl ?? fetch;
+  const ac = new AbortController();
+  const timer = setTimeout(
+    () => ac.abort(),
+    Number.isFinite(timeoutMs) ? Math.min(Math.max(timeoutMs, 500), 60_000) : DEFAULT_TIMEOUT_MS,
+  );
+  try {
+    const res = await fetchImpl(`${cfg.baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${cfg.apiKey}`,
+        accept: "text/event-stream",
+      },
+      body: JSON.stringify({
+        model: req.model,
+        messages: req.messages,
+        max_tokens: req.max_tokens,
+        stream: true,
+        stream_options: { include_usage: true },
+      }),
+      signal: ac.signal,
+    });
+    if (!res.ok || !res.body) {
+      const text = await res.text().catch(() => "");
+      let msg = `upstream ${res.status}`;
+      try {
+        const parsed = text ? JSON.parse(text) : {};
+        if (typeof parsed === "object" && parsed && "error" in parsed) {
+          msg = String((parsed as { error?: { message?: string } }).error?.message ?? msg);
+        }
+      } catch {
+        /* ignore */
+      }
+      throw Object.assign(new Error(msg), { status: res.status, type: "upstream_error" });
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let usage = { promptTokens: 0, completionTokens: 0, totalTokens: 0 };
+    let completionChars = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const text = decoder.decode(value, { stream: true });
+      buffer += text;
+      onChunk(text);
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        const data = trimmed.slice(5).trim();
+        if (!data || data === "[DONE]") continue;
+        try {
+          const parsed = JSON.parse(data) as {
+            usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+            choices?: Array<{ delta?: { content?: string } }>;
+          };
+          if (parsed.usage) {
+            usage = {
+              promptTokens: Math.max(0, Number(parsed.usage.prompt_tokens ?? 0)),
+              completionTokens: Math.max(0, Number(parsed.usage.completion_tokens ?? 0)),
+              totalTokens: Math.max(
+                0,
+                Number(parsed.usage.total_tokens ?? 0) ||
+                  Number(parsed.usage.prompt_tokens ?? 0) + Number(parsed.usage.completion_tokens ?? 0),
+              ),
+            };
+          }
+          const delta = parsed.choices?.[0]?.delta?.content;
+          if (typeof delta === "string") completionChars += delta.length;
+        } catch {
+          /* ignore partial JSON */
+        }
+      }
+    }
+    if (usage.totalTokens === 0) {
+      const promptChars = req.messages.reduce((n, m) => n + (m.content?.length ?? 0), 0);
+      const promptTokens = Math.max(1, Math.ceil(promptChars / 4));
+      const completionTokens = Math.max(1, Math.ceil(completionChars / 4));
+      usage = {
+        promptTokens,
+        completionTokens,
+        totalTokens: promptTokens + completionTokens,
+      };
+    }
+    return { usage };
+  } finally {
+    clearTimeout(timer);
+  }
+}

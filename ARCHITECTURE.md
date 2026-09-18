@@ -139,3 +139,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Team field `monthlyUsd` and optional `defaultMonthlyUsd` / `TOKENPULSE_DEFAULT_MONTHLY_USD`.
 - Spend is allowed events in the UTC month (`YYYY-MM`) across JSONL day files or SQLite.
 - Policy id `budget-monthly-team`. Daily cap still wins when both are exhausted the same request.
+
+
+## Streaming (Session 13)
+
+- `stream: true` on chat completions returns OpenAI-compatible SSE (`text/event-stream`).
+- Policy denials remain JSON errors (stream starts only after allow).
+- Mock emits chunked deltas + final usage + `data: [DONE]`.
+- Live upstream is forwarded with `stream_options.include_usage` when supported; usage falls back to char estimates if missing.
+- Ledger records allow with policyId `stream` after the stream completes (before response end).
+- Embeddings are non-streaming.

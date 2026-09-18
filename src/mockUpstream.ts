@@ -81,3 +81,60 @@ export function mockEmbeddings(req: EmbeddingRequest) {
     },
   };
 }
+
+/** OpenAI-style SSE chunks for stream:true (mock). */
+export function mockChatCompletionStream(req: ChatCompletionRequest) {
+  const full = mockChatCompletion(req);
+  const id = full.body.id as string;
+  const created = full.body.created as number;
+  const content = full.body.choices[0].message.content as string;
+  const parts = splitContent(content, 24);
+  const chunks: string[] = [];
+  chunks.push(
+    sseLine({
+      id,
+      object: "chat.completion.chunk",
+      created,
+      model: req.model,
+      choices: [{ index: 0, delta: { role: "assistant", content: "" }, finish_reason: null }],
+    }),
+  );
+  for (const part of parts) {
+    chunks.push(
+      sseLine({
+        id,
+        object: "chat.completion.chunk",
+        created,
+        model: req.model,
+        choices: [{ index: 0, delta: { content: part }, finish_reason: null }],
+      }),
+    );
+  }
+  chunks.push(
+    sseLine({
+      id,
+      object: "chat.completion.chunk",
+      created,
+      model: req.model,
+      choices: [{ index: 0, delta: {}, finish_reason: "stop" }],
+      usage: {
+        prompt_tokens: full.usage.promptTokens,
+        completion_tokens: full.usage.completionTokens,
+        total_tokens: full.usage.totalTokens,
+      },
+    }),
+  );
+  chunks.push("data: [DONE]\n\n");
+  return { chunks, usage: full.usage, id };
+}
+
+function splitContent(text: string, size: number): string[] {
+  if (!text) return [""];
+  const out: string[] = [];
+  for (let i = 0; i < text.length; i += size) out.push(text.slice(i, i + size));
+  return out;
+}
+
+function sseLine(obj: unknown): string {
+  return `data: ${JSON.stringify(obj)}\n\n`;
+}
