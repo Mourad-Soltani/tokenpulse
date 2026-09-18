@@ -1,9 +1,11 @@
-import { readEvents, summarize } from "./ledger.js";
+import { readEvents, summarize, verifyChain } from "./ledger.js";
 import type { UsageEvent } from "./types.js";
 
 export type AdminSummary = ReturnType<typeof summarize> & {
   day?: string;
   recentBlocked: UsageEvent[];
+  chainOk: boolean;
+  chainChecked: number;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -13,10 +15,13 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     .filter((e) => e.decision === "block")
     .slice(-blockedLimit)
     .reverse();
+  const chain = verifyChain(events);
   return {
     ...summarize(events),
     day: opts?.day,
     recentBlocked,
+    chainOk: chain.ok,
+    chainChecked: chain.checked,
   };
 }
 
@@ -94,7 +99,8 @@ async function load() {
     ['Allowed', s.allowed],
     ['Blocked', s.blocked],
     ['Tokens', s.tokens],
-    ['USD', s.costUsd]
+    ['USD', s.costUsd],
+    ['Chain', s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>

@@ -149,3 +149,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Live upstream is forwarded with `stream_options.include_usage` when supported; usage falls back to char estimates if missing.
 - Ledger records allow with policyId `stream` after the stream completes (before response end).
 - Embeddings are non-streaming.
+
+
+## Hash-chained ledger (Session 14)
+
+- Each new `UsageEvent` is sealed with `prevHash` (previous event `hash`, or `""` for genesis) and `hash` (SHA-256 of canonical fields + prevHash).
+- JSONL and SQLite both persist the two fields.
+- `verifyChain` skips legacy events that have no `hash`.
+- CLI: `npx tsx src/cli.ts --verify-ledger` (exit 1 if broken).
+- Admin summary and CISO pack expose `chainOk` / `chainChecked`.
+- Raw prompts remain off the chain body except `requestHash`.

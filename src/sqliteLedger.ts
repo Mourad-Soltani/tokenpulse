@@ -28,11 +28,23 @@ function open(): DatabaseSync {
       latency_ms REAL NOT NULL,
       decision TEXT NOT NULL,
       policy_ids TEXT NOT NULL,
-      request_hash TEXT
+      request_hash TEXT,
+      prev_hash TEXT,
+      hash TEXT
     );
     CREATE INDEX IF NOT EXISTS idx_usage_ts ON usage_events(timestamp);
     CREATE INDEX IF NOT EXISTS idx_usage_day_team ON usage_events(timestamp, team_id);
   `);
+  try {
+    db.exec(`ALTER TABLE usage_events ADD COLUMN prev_hash TEXT`);
+  } catch {
+    /* already present */
+  }
+  try {
+    db.exec(`ALTER TABLE usage_events ADD COLUMN hash TEXT`);
+  } catch {
+    /* already present */
+  }
   return db;
 }
 
@@ -55,8 +67,8 @@ export async function appendSqlite(event: UsageEvent): Promise<string> {
       `INSERT INTO usage_events (
         id, timestamp, team_id, app_id, model,
         prompt_tokens, completion_tokens, total_tokens,
-        estimated_cost_usd, latency_ms, decision, policy_ids, request_hash
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        estimated_cost_usd, latency_ms, decision, policy_ids, request_hash, prev_hash, hash
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       event.id,
@@ -72,6 +84,8 @@ export async function appendSqlite(event: UsageEvent): Promise<string> {
       event.decision,
       JSON.stringify(event.policyIds),
       event.requestHash ?? null,
+      event.prevHash ?? null,
+      event.hash ?? null,
     );
   return sqlitePath();
 }
@@ -104,6 +118,8 @@ export async function readSqlite(opts?: { day?: string; month?: string }): Promi
       decision: row.decision,
       policyIds: JSON.parse(String(row.policy_ids || "[]")),
       requestHash: row.request_hash ?? undefined,
+      prevHash: row.prev_hash ?? undefined,
+      hash: row.hash ?? undefined,
     });
     if (parsed.success) events.push(parsed.data);
   }

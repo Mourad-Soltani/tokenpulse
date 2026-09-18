@@ -1,4 +1,4 @@
-import { readEvents, summarize } from "./ledger.js";
+import { readEvents, summarize, verifyChain } from "./ledger.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
 async function main() {
@@ -27,7 +27,13 @@ async function main() {
     for (const e of events) console.log(JSON.stringify(e));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security] [--csv] [--day=YYYY-MM-DD]");
+  if (args.includes("--verify-ledger")) {
+    const report = verifyChain(events);
+    console.log(JSON.stringify(report, null, 2));
+    if (!report.ok) process.exit(1);
+    return;
+  }
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

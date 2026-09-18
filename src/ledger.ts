@@ -3,6 +3,7 @@ import { appendFile, mkdir, readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { UsageEvent, UsageEventSchema } from "./types.js";
 import { appendSqlite, ledgerDriver, readSqlite } from "./sqliteLedger.js";
+import { lastHash, sealEvent, verifyChain } from "./chain.js";
 
 export function ledgerRoot(): string {
   return process.env.TOKENPULSE_LEDGER_DIR ?? join(process.cwd(), "data", "ledger");
@@ -33,9 +34,13 @@ async function appendJsonl(event: UsageEvent): Promise<string> {
 }
 
 export async function appendEvent(event: UsageEvent): Promise<string> {
-  if (ledgerDriver() === "sqlite") return appendSqlite(event);
-  return appendJsonl(event);
+  const existing = await readEvents();
+  const sealed = event.hash ? event : sealEvent(event, lastHash(existing));
+  if (ledgerDriver() === "sqlite") return appendSqlite(sealed);
+  return appendJsonl(sealed);
 }
+
+export { verifyChain, lastHash, sealEvent } from "./chain.js";
 
 async function readJsonl(opts?: { day?: string; month?: string }): Promise<UsageEvent[]> {
   const dir = ledgerRoot();

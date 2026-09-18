@@ -1,4 +1,4 @@
-import { summarize } from "./ledger.js";
+import { summarize, verifyChain } from "./ledger.js";
 import type { UsageEvent } from "./types.js";
 
 export const FINOPS_PACK_VERSION = "tokenpulse-finops-v1";
@@ -27,6 +27,8 @@ export type SecurityPack = {
   version: typeof SECURITY_PACK_VERSION;
   generatedAt: string;
   day?: string;
+  chainOk: boolean;
+  chainChecked: number;
   blocked: number;
   allowed: number;
   policyHits: Record<string, number>;
@@ -74,10 +76,13 @@ export function buildSecurityPack(events: UsageEvent[], opts?: { day?: string; n
       policyHits[id] = (policyHits[id] ?? 0) + 1;
     }
   }
+  const chain = verifyChain(events);
   return {
     version: SECURITY_PACK_VERSION,
     generatedAt: opts?.now ?? new Date().toISOString(),
     day: opts?.day,
+    chainOk: chain.ok,
+    chainChecked: chain.checked,
     blocked: blocked.length,
     allowed: events.filter((e) => e.decision === "allow").length,
     policyHits,

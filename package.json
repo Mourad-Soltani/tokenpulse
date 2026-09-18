@@ -10,7 +10,8 @@
     "summary": "tsx src/cli.ts --summary",
     "export-ledger": "tsx src/cli.ts --export",
     "export-finops": "tsx src/cli.ts --export-finops",
-    "export-security": "tsx src/cli.ts --export-security"
+    "export-security": "tsx src/cli.ts --export-security",
+    "verify-ledger": "tsx src/cli.ts --verify-ledger"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

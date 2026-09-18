@@ -22,6 +22,7 @@
 - [x] Per-request prompt / max_tokens caps
 - [x] Monthly team spend caps
 - [x] Streaming chat completions (SSE)
+- [x] Hash-chained usage ledger (`--verify-ledger`)
 
 ## Next
 

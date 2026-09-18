@@ -14,6 +14,8 @@ export const UsageEventSchema = z.object({
   decision: z.enum(["allow", "block"]),
   policyIds: z.array(z.string()),
   requestHash: z.string().optional(),
+  prevHash: z.string().optional(),
+  hash: z.string().optional(),
 });
 
 export type UsageEvent = z.infer<typeof UsageEventSchema>;

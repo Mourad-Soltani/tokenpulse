@@ -33,6 +33,8 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Embeddings proxy `POST /v1/embeddings` (mock + live forward, same policy path)
 - [x] Session 12 — monthly team spend caps (`monthlyUsd` / `TOKENPULSE_DEFAULT_MONTHLY_USD`)
 - [x] Session 13 — OpenAI-compatible chat streaming (SSE)
+- [x] Session 14 — SHA-256 hash chain on usage events (`prevHash` + `hash`, `--verify-ledger`)
+- [x] Session 13 — OpenAI-compatible chat streaming (SSE)
 
 ## Next Up (highest priority)
 
@@ -66,6 +68,8 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Session 11: request size policy via `TOKENPULSE_LIMITS_PATH` / `TOKENPULSE_MAX_PROMPT_CHARS` / `TOKENPULSE_MAX_TOKENS`. Team overrides. 413 `limit_exceeded`. Runs before sensitive scan. `maxTokens: 0` hard-blocks. Omit `max_tokens` = allowed unless cap is 0.
 - Session 10: embeddings share the chat policy path. Mock vectors are deterministic and short. Live uses `/embeddings`. Allow-lists must include embedding model ids.
 - Session 12: monthly USD cap per team from allowed events in the UTC month. Daily checked first. `monthlyUsd: 0` hard-blocks. Ledger `readEvents` accepts `month`. Error payload includes `period`.
+- Session 13: chat `stream: true` returns SSE; policy still runs before upstream; mock and live both supported.
+- Session 14: each appended usage event is SHA-256 chained (`prevHash` + `hash`). `--verify-ledger` exits 1 when broken. Admin summary and security pack include `chainOk`. Legacy events without hash are skipped. Genesis `prevHash` is empty string.
 - Session 13: `stream: true` returns SSE. Policies still block as JSON. Ledger appends after stream body is fully written; policyIds include `stream`. Live forwards upstream SSE with include_usage when available.
 
 ## Handoff for next session
