@@ -21,8 +21,8 @@
 
 ## Request path (v0.1)
 
-1. Client sends OpenAI-compatible chat/completions or embeddings to gateway.
-2. Authenticate gateway token (`TOKENPULSE_GATEWAY_TOKEN`).
+1. Client sends OpenAI-compatible chat/completions, embeddings, or `GET /v1/models` to gateway.
+2. Authenticate gateway token (`TOKENPULSE_GATEWAY_TOKEN`). `GET /v1/models` lists pricing-catalog + extra allow-list ids that pass deny/allow; it does not write the ledger.
 3. Resolve `team` / `app` from header or API key mapping.
 4. Run policy: request size limits, payload heuristics, model allowed, rate, budget remaining.
 5. On deny → return structured error + ledger `blocked` event.

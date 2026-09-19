@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { z } from "zod";
+import { catalogModelIds } from "./pricing.js";
 
 export const ModelPolicySchema = z.object({
   allow: z.array(z.string().min(1)).optional(),
@@ -76,4 +77,29 @@ export function evaluateModel(model: string, policy: ModelPolicy): ModelDecision
 export async function evaluateModelPolicy(model: string): Promise<ModelDecision> {
   const policy = await loadModelPolicy();
   return evaluateModel(model, policy);
+}
+
+export type ListedModel = {
+  id: string;
+  object: "model";
+  created: number;
+  owned_by: "tokenpulse";
+};
+
+/** Catalog ids that pass the current allow/deny policy. Allow-list models not in the pricing table are still listed. */
+export function listVisibleModels(policy: ModelPolicy, created = 0): ListedModel[] {
+  const fromCatalog = catalogModelIds().filter((id) => evaluateModel(id, policy).allow);
+  const extra = (policy.allow ?? []).filter((id) => !fromCatalog.includes(id) && evaluateModel(id, policy).allow);
+  const ids = [...fromCatalog, ...extra].sort();
+  return ids.map((id) => ({
+    id,
+    object: "model" as const,
+    created,
+    owned_by: "tokenpulse" as const,
+  }));
+}
+
+export async function listVisibleModelsAsync(): Promise<ListedModel[]> {
+  const policy = await loadModelPolicy();
+  return listVisibleModels(policy);
 }

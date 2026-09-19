@@ -16,7 +16,7 @@ Enterprises are losing control of AI cost and data:
 
 Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks before egress, append-only usage ledger, exportable FinOps and security packs.
 
-## What works today (Session 15)
+## What works today (Session 16)
 
 | Capability | Status |
 |------------|--------|
@@ -39,6 +39,7 @@ Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks
 | Chat streaming (SSE) | Live |
 | Hash-chained ledger | Live (`--verify-ledger`) |
 | Operator notes | Live (`--note` / `POST /v1/admin/note`) |
+| Models list | Live (`GET /v1/models`, filtered by allow/deny) |
 
 ## Quick start
 

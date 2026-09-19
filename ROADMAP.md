@@ -24,6 +24,7 @@
 - [x] Streaming chat completions (SSE)
 - [x] Hash-chained usage ledger (`--verify-ledger`)
 - [x] Operator notes on the ledger (`--note` / `POST /v1/admin/note`)
+- [x] OpenAI-compatible models list (`GET /v1/models`, policy-filtered)
 
 ## Next
 

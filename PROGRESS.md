@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 15 — 2026-09-19)
+## Current Status (Session 16 — 2026-09-20)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -35,6 +35,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 13 — OpenAI-compatible chat streaming (SSE)
 - [x] Session 14 — SHA-256 hash chain on usage events (`prevHash` + `hash`, `--verify-ledger`)
 - [x] Session 15 — operator notes (`decision: note`, CLI `--note`, `POST /v1/admin/note`)
+- [x] Session 16 — OpenAI-compatible `GET /v1/models` filtered by allow/deny
 
 ## Next Up (highest priority)
 
@@ -72,10 +73,11 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Session 14: each appended usage event is SHA-256 chained (`prevHash` + `hash`). `--verify-ledger` exits 1 when broken. Admin summary and security pack include `chainOk`. Legacy events without hash are skipped. Genesis `prevHash` is empty string.
 - Session 13: `stream: true` returns SSE. Policies still block as JSON. Ledger appends after stream body is fully written; policyIds include `stream`. Live forwards upstream SSE with include_usage when available.
 - Session 15: operators may append a `note` decision. Required normalized text (max 500). Zero tokens / cost. Notes are excluded from spend rollups and FinOps event rows. Empty notes rejected. Notes participate in the hash chain.
+- Session 16: `GET /v1/models` (and `/models`) returns an OpenAI-style `{ object: list, data }` catalog. Visibility uses the same allow/deny policy as chat/embeddings. Pricing-table ids are the default catalog; extra allow-list ids are included. Denied models are omitted. Auth matches other gateway routes (`/health` stays open). No ledger write for list.
 
 ## Handoff for next session
 
-Session 15 ships append-only operator notes on the usage ledger. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
+Session 16 ships policy-filtered `GET /v1/models`. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
 
 ```bash
 npm install

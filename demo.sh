@@ -85,6 +85,10 @@ echo "$STREAM" | python3 -c "import sys; t=sys.stdin.read(); assert 'chat.comple
 
 
 
+echo "-- models list --"
+MODELS=$(curl -sf "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/models" -H "Authorization: Bearer demo-token")
+echo "$MODELS" | python3 -c "import json,sys; b=json.load(sys.stdin); ids=[m['id'] for m in b['data']]; assert b['object']=='list'; assert 'gpt-4o-mini' in ids and 'text-embedding-3-small' in ids; assert 'banned-model' not in ids and 'grok-3' not in ids; print('models ok:', ','.join(ids))"
+
 echo "-- embeddings mock --"
 EMB=$(curl -sf -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/embeddings" \
   -H "Authorization: Bearer demo-token" \

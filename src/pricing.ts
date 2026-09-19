@@ -1,5 +1,5 @@
 /** Approximate list prices USD per 1M tokens. Operators can override later. */
-const TABLE: Record<string, { input: number; output: number }> = {
+export const PRICING_TABLE: Record<string, { input: number; output: number }> = {
   "gpt-4o": { input: 2.5, output: 10 },
   "gpt-4o-mini": { input: 0.15, output: 0.6 },
   "gpt-4.1": { input: 2, output: 8 },
@@ -15,7 +15,11 @@ const FALLBACK = { input: 1, output: 3 };
 
 export function priceFor(model: string): { input: number; output: number } {
   const key = model.toLowerCase();
-  return TABLE[key] ?? TABLE[key.split("/").pop() ?? ""] ?? FALLBACK;
+  return PRICING_TABLE[key] ?? PRICING_TABLE[key.split("/").pop() ?? ""] ?? FALLBACK;
+}
+
+export function catalogModelIds(): string[] {
+  return Object.keys(PRICING_TABLE).sort();
 }
 
 export function estimateCostUsd(

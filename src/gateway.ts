@@ -5,7 +5,7 @@ import { appendEvent, appendOperatorNote, newEvent, readEvents, requestHash } fr
 import { estimateCostUsd } from "./pricing.js";
 import { mockChatCompletion, mockChatCompletionStream, mockEmbeddings } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
-import { evaluateModelPolicy } from "./models.js";
+import { evaluateModelPolicy, listVisibleModelsAsync } from "./models.js";
 import { evaluateSensitive } from "./sensitive.js";
 import { evaluateRateLimit } from "./ratelimit.js";
 import { evaluateLimits, promptCharCount } from "./limits.js";
@@ -65,6 +65,12 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
 
   if (!authOk(req)) {
     json(res, 401, { error: { message: "unauthorized", type: "auth_error" } });
+    return;
+  }
+
+  if (req.method === "GET" && (url.pathname === "/v1/models" || url.pathname === "/models")) {
+    const data = await listVisibleModelsAsync();
+    json(res, 200, { object: "list", data });
     return;
   }
 
