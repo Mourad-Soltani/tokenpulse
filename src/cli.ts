@@ -1,4 +1,4 @@
-import { readEvents, summarize, verifyChain } from "./ledger.js";
+import { appendOperatorNote, readEvents, summarize, verifyChain } from "./ledger.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
 async function main() {
@@ -33,7 +33,15 @@ async function main() {
     if (!report.ok) process.exit(1);
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger] [--csv] [--day=YYYY-MM-DD]");
+  const noteArg = args.find((a) => a.startsWith("--note="));
+  if (noteArg) {
+    const team = args.find((a) => a.startsWith("--team="))?.slice("--team=".length);
+    const app = args.find((a) => a.startsWith("--app="))?.slice("--app=".length);
+    const event = await appendOperatorNote({ text: noteArg.slice("--note=".length), teamId: team, appId: app });
+    console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
+    return;
+  }
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

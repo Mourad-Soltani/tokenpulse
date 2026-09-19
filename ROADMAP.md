@@ -23,6 +23,7 @@
 - [x] Monthly team spend caps
 - [x] Streaming chat completions (SSE)
 - [x] Hash-chained usage ledger (`--verify-ledger`)
+- [x] Operator notes on the ledger (`--note` / `POST /v1/admin/note`)
 
 ## Next
 

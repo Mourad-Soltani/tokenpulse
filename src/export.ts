@@ -51,7 +51,7 @@ export function buildFinopsPack(events: UsageEvent[], opts?: { day?: string; now
     generatedAt: opts?.now ?? new Date().toISOString(),
     day: opts?.day,
     summary: summarize(events),
-    events: events.map((e) => ({
+    events: events.filter((e) => e.decision !== "note").map((e) => ({
       id: e.id,
       timestamp: e.timestamp,
       teamId: e.teamId,

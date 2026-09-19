@@ -1,7 +1,7 @@
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { timingSafeEqual } from "node:crypto";
 import { ChatCompletionRequestSchema, EmbeddingRequestSchema, embeddingInputs } from "./types.js";
-import { appendEvent, newEvent, readEvents, requestHash } from "./ledger.js";
+import { appendEvent, appendOperatorNote, newEvent, readEvents, requestHash } from "./ledger.js";
 import { estimateCostUsd } from "./pricing.js";
 import { mockChatCompletion, mockChatCompletionStream, mockEmbeddings } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
@@ -639,6 +639,29 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       "content-length": Buffer.byteLength(html),
     });
     res.end(html);
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/v1/admin/note") {
+    const raw = await readBody(req);
+    let body: { text?: string; teamId?: string; appId?: string } = {};
+    try {
+      body = raw ? JSON.parse(raw) : {};
+    } catch {
+      json(res, 400, { error: { message: "invalid json", type: "invalid_request_error" } });
+      return;
+    }
+    try {
+      const event = await appendOperatorNote({
+        text: String(body.text ?? ""),
+        teamId: body.teamId,
+        appId: body.appId,
+      });
+      json(res, 200, { ok: true, event });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "note_invalid";
+      json(res, 400, { error: { message, type: "invalid_request_error" } });
+    }
     return;
   }
 

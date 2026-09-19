@@ -45,6 +45,11 @@ function open(): DatabaseSync {
   } catch {
     /* already present */
   }
+  try {
+    db.exec(`ALTER TABLE usage_events ADD COLUMN note TEXT`);
+  } catch {
+    /* already present */
+  }
   return db;
 }
 
@@ -67,8 +72,8 @@ export async function appendSqlite(event: UsageEvent): Promise<string> {
       `INSERT INTO usage_events (
         id, timestamp, team_id, app_id, model,
         prompt_tokens, completion_tokens, total_tokens,
-        estimated_cost_usd, latency_ms, decision, policy_ids, request_hash, prev_hash, hash
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        estimated_cost_usd, latency_ms, decision, policy_ids, request_hash, prev_hash, hash, note
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       event.id,
@@ -86,6 +91,7 @@ export async function appendSqlite(event: UsageEvent): Promise<string> {
       event.requestHash ?? null,
       event.prevHash ?? null,
       event.hash ?? null,
+      event.note ?? null,
     );
   return sqlitePath();
 }
@@ -120,6 +126,7 @@ export async function readSqlite(opts?: { day?: string; month?: string }): Promi
       requestHash: row.request_hash ?? undefined,
       prevHash: row.prev_hash ?? undefined,
       hash: row.hash ?? undefined,
+      note: row.note ?? undefined,
     });
     if (parsed.success) events.push(parsed.data);
   }

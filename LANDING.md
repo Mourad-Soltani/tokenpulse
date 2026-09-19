@@ -19,6 +19,6 @@ Tokenpulse is a self-hosted OpenAI-compatible gateway that meters tokens, attrib
 
 ## Non-goals for the pilot
 
-Streaming, multi-tenant SaaS, replacing workflow orchestrators.
+Multi-tenant SaaS, replacing workflow orchestrators. Streaming chat is supported on the gateway.
 
 Contact: repository maintainer on GitHub (`Mourad-Soltani/tokenpulse`).

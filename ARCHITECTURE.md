@@ -157,5 +157,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - JSONL and SQLite both persist the two fields.
 - `verifyChain` skips legacy events that have no `hash`.
 - CLI: `npx tsx src/cli.ts --verify-ledger` (exit 1 if broken).
+
+## Operator notes (Session 15)
+
+- `decision: note` is an append-only ledger event. Status of prior usage events is not rewritten.
+- Required `note` text, normalized, max 500 characters. Empty notes rejected.
+- Zero tokens and cost. Policy id `operator-note`. Default team `ops` / app `admin`.
+- Notes are omitted from FinOps cost rows and from spend / budget sums.
+- CLI: `--note="text" [--team=id] [--app=id]`. API: `POST /v1/admin/note`. Dashboard has an Add note field.
+- Notes are included in the SHA-256 digest.
 - Admin summary and CISO pack expose `chainOk` / `chainChecked`.
 - Raw prompts remain off the chain body except `requestHash`.

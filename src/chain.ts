@@ -17,6 +17,7 @@ export function eventDigest(event: UsageEvent, prevHash: string): string {
     decision: event.decision,
     policyIds: event.policyIds,
     requestHash: event.requestHash ?? "",
+    note: event.note ?? "",
     prevHash,
   };
   return createHash("sha256").update(JSON.stringify(body)).digest("hex");

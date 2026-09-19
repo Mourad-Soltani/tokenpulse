@@ -72,11 +72,13 @@ export async function readEvents(opts?: { day?: string; month?: string }): Promi
 export function summarize(events: UsageEvent[]) {
   const allowed = events.filter((e) => e.decision === "allow");
   const blocked = events.filter((e) => e.decision === "block");
+  const notes = events.filter((e) => e.decision === "note");
   const byTeam: Record<string, { tokens: number; costUsd: number; calls: number }> = {};
   const byModel: Record<string, { tokens: number; costUsd: number; calls: number }> = {};
   let tokens = 0;
   let costUsd = 0;
   for (const e of events) {
+    if (e.decision === "note") continue;
     tokens += e.totalTokens;
     costUsd += e.estimatedCostUsd;
     const t = (byTeam[e.teamId] ??= { tokens: 0, costUsd: 0, calls: 0 });
@@ -92,9 +94,40 @@ export function summarize(events: UsageEvent[]) {
     calls: events.length,
     allowed: allowed.length,
     blocked: blocked.length,
+    notes: notes.length,
     tokens,
     costUsd: Math.round(costUsd * 1_000_000) / 1_000_000,
     byTeam,
     byModel,
   };
+}
+
+export function normalizeNote(raw: string): string {
+  const text = raw.replace(/\s+/g, " ").trim();
+  if (!text) throw new Error("note_empty");
+  if (text.length > 500) throw new Error("note_too_long");
+  return text;
+}
+
+export async function appendOperatorNote(opts: {
+  text: string;
+  teamId?: string;
+  appId?: string;
+}): Promise<UsageEvent> {
+  const text = normalizeNote(opts.text);
+  const event = newEvent({
+    teamId: opts.teamId?.trim() || "ops",
+    appId: opts.appId?.trim() || "admin",
+    model: "operator",
+    promptTokens: 0,
+    completionTokens: 0,
+    totalTokens: 0,
+    estimatedCostUsd: 0,
+    latencyMs: 0,
+    decision: "note",
+    policyIds: ["operator-note"],
+    note: text,
+  });
+  await appendEvent(event);
+  return event;
 }

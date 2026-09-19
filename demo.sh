@@ -164,6 +164,9 @@ npx tsx src/cli.ts --export-security | python3 -c "import json,sys; p=json.load(
 echo "-- admin summary --"
 curl -s "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/admin/summary"   -H "Authorization: Bearer demo-token" | python3 -c "import json,sys; s=json.load(sys.stdin); assert 'byTeam' in s and s['calls']>=1, s; print('admin ok calls', s['calls'], 'blocked', s['blocked'])"
 
+echo "-- operator note --"
+npx tsx src/cli.ts --note="demo reviewed spend pack" --team=demo | python3 -c "import json,sys; r=json.load(sys.stdin); assert r['ok'] is True and r['decision']=='note', r; print('note ok', r['id'])"
+
 echo "-- verify ledger chain --"
 npx tsx src/cli.ts --verify-ledger | python3 -c "import json,sys; r=json.load(sys.stdin); assert r['ok'] is True, r; print('chain ok checked', r['checked'])"
 

@@ -58,6 +58,8 @@ export function dashboardHtml(): string {
     <button id="load">Refresh</button>
     <button id="finops" type="button">FinOps pack</button>
     <button id="security" type="button">CISO pack</button>
+    <input id="note" placeholder="Operator note (append-only)" />
+    <button id="savenote" type="button">Add note</button>
   </div>
   <div class="grid" id="kpis"></div>
   <div class="card" style="margin-top:16px">
@@ -75,6 +77,13 @@ tokenEl.value = localStorage.getItem('tokenpulse.token') || '';
 document.getElementById('load').onclick = load;
 document.getElementById('finops').onclick = () => download('/v1/admin/export/finops');
 document.getElementById('security').onclick = () => download('/v1/admin/export/security');
+document.getElementById('savenote').onclick = async () => {
+  const text = document.getElementById('note').value;
+  const res = await fetch('/v1/admin/note', { method:'POST', headers:{...headers(),'content-type':'application/json'}, body: JSON.stringify({ text, teamId:'ops' }) });
+  if (!res.ok) { alert('note ' + res.status); return; }
+  document.getElementById('note').value = '';
+  load();
+};
 function headers() {
   const token = tokenEl.value.trim();
   return token ? { 'X-Tokenpulse-Token': token } : {};
@@ -100,6 +109,7 @@ async function load() {
     ['Blocked', s.blocked],
     ['Tokens', s.tokens],
     ['USD', s.costUsd],
+    ['Notes', s.notes ?? 0],
     ['Chain', s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const tb = document.querySelector('#teams tbody');
