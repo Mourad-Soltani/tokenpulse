@@ -31,5 +31,6 @@ describe("ledger", () => {
     assert.equal(s.calls, 1);
     assert.equal(s.tokens, 30);
     assert.equal(s.byTeam.eng.calls, 1);
+    assert.equal(s.byApp.bot.calls, 1);
   });
 });

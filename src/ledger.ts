@@ -73,7 +73,9 @@ export function summarize(events: UsageEvent[]) {
   const allowed = events.filter((e) => e.decision === "allow");
   const blocked = events.filter((e) => e.decision === "block");
   const notes = events.filter((e) => e.decision === "note");
+  const bucket = () => ({ tokens: 0, costUsd: 0, calls: 0 });
   const byTeam: Record<string, { tokens: number; costUsd: number; calls: number }> = {};
+  const byApp: Record<string, { tokens: number; costUsd: number; calls: number }> = {};
   const byModel: Record<string, { tokens: number; costUsd: number; calls: number }> = {};
   let tokens = 0;
   let costUsd = 0;
@@ -81,11 +83,15 @@ export function summarize(events: UsageEvent[]) {
     if (e.decision === "note") continue;
     tokens += e.totalTokens;
     costUsd += e.estimatedCostUsd;
-    const t = (byTeam[e.teamId] ??= { tokens: 0, costUsd: 0, calls: 0 });
+    const t = (byTeam[e.teamId] ??= bucket());
     t.tokens += e.totalTokens;
     t.costUsd += e.estimatedCostUsd;
     t.calls += 1;
-    const m = (byModel[e.model] ??= { tokens: 0, costUsd: 0, calls: 0 });
+    const a = (byApp[e.appId] ??= bucket());
+    a.tokens += e.totalTokens;
+    a.costUsd += e.estimatedCostUsd;
+    a.calls += 1;
+    const m = (byModel[e.model] ??= bucket());
     m.tokens += e.totalTokens;
     m.costUsd += e.estimatedCostUsd;
     m.calls += 1;
@@ -98,6 +104,7 @@ export function summarize(events: UsageEvent[]) {
     tokens,
     costUsd: Math.round(costUsd * 1_000_000) / 1_000_000,
     byTeam,
+    byApp,
     byModel,
   };
 }

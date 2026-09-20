@@ -168,3 +168,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Notes are included in the SHA-256 digest.
 - Admin summary and CISO pack expose `chainOk` / `chainChecked`.
 - Raw prompts remain off the chain body except `requestHash`.
+
+
+## App rollups (Session 17)
+
+- `summarize()` includes `byApp` keyed by `appId` (`X-Tokenpulse-App`).
+- Dashboard renders a By app table next to By team.
+- FinOps pack `summary.byApp` comes from the same function. Notes stay out of spend.
+- Pilot recording script: `DEMO.md`.

@@ -67,6 +67,10 @@ export function dashboardHtml(): string {
     <table id="teams"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">By app</h2>
+    <table id="apps"><thead><tr><th>App</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Recent blocks</h2>
     <table id="blocks"><thead><tr><th>Time</th><th>Team</th><th>Model</th><th>Policy</th></tr></thead><tbody></tbody></table>
   </div>
@@ -114,6 +118,9 @@ async function load() {
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>
+    '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';
+  const ab = document.querySelector('#apps tbody');
+  ab.innerHTML = Object.entries(s.byApp || {}).map(([id,t]) =>
     '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';
   const bb = document.querySelector('#blocks tbody');
   bb.innerHTML = (s.recentBlocked || []).map(e =>

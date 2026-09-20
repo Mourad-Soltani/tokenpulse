@@ -25,11 +25,13 @@
 - [x] Hash-chained usage ledger (`--verify-ledger`)
 - [x] Operator notes on the ledger (`--note` / `POST /v1/admin/note`)
 - [x] OpenAI-compatible models list (`GET /v1/models`, policy-filtered)
+- [x] Spend rollup by app (`byApp` on summary / dashboard / FinOps pack)
+- [x] Secret-free demo walkthrough (`DEMO.md`)
 
 ## Next
 
 - [ ] Recorded live-upstream proof (operator key outside git/chat)
-- [ ] Pilot packaging (one-pager + demo recording)
+- [ ] Record `DEMO.md` locally (packaging copy is in-repo)
 
 ## Later
 

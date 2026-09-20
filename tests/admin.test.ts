@@ -71,9 +71,10 @@ describe("admin api", () => {
         headers: { authorization: "Bearer test-token" },
       });
       assert.equal(res.status, 200);
-      const body = (await res.json()) as { allowed: number; byTeam: Record<string, { calls: number }> };
+      const body = (await res.json()) as { allowed: number; byTeam: Record<string, { calls: number }>; byApp: Record<string, { calls: number }> };
       assert.ok(body.allowed >= 1);
       assert.ok(body.byTeam.ops?.calls >= 1);
+      assert.ok(body.byApp.cli?.calls >= 1);
 
       const fin = await fetch(`${url}/v1/admin/export/finops`, {
         headers: { authorization: "Bearer test-token" },

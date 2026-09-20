@@ -64,3 +64,5 @@ MIT
 ## Related
 
 Successor to the Aether Forge daily-builder loop (workflow HITL/orchestration). Tokenpulse focuses on **spend, discovery, and policy** rather than multi-step agent workflows.
+
+See `DEMO.md` for the secret-free recorded walkthrough and `LANDING.md` for pilot copy.

@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 16 — 2026-09-20)
+## Current Status (Session 17 — 2026-09-20)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -36,11 +36,12 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 14 — SHA-256 hash chain on usage events (`prevHash` + `hash`, `--verify-ledger`)
 - [x] Session 15 — operator notes (`decision: note`, CLI `--note`, `POST /v1/admin/note`)
 - [x] Session 16 — OpenAI-compatible `GET /v1/models` filtered by allow/deny
+- [x] Session 17 — spend rollup `byApp` + secret-free `DEMO.md` walkthrough
 
 ## Next Up (highest priority)
 
 1. Optional operator live proof against a real provider using a **rotated** key **outside git/chat**. Demo remains mock-default.
-2. Pilot packaging polish (one-pager + recorded demo walkthrough).
+2. Record the `DEMO.md` walkthrough locally (no keys on camera).
 3. Do not start bulk buyer outreach until one recorded live-upstream proof exists.
 
 ## Decisions So Far
@@ -75,9 +76,17 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Session 15: operators may append a `note` decision. Required normalized text (max 500). Zero tokens / cost. Notes are excluded from spend rollups and FinOps event rows. Empty notes rejected. Notes participate in the hash chain.
 - Session 16: `GET /v1/models` (and `/models`) returns an OpenAI-style `{ object: list, data }` catalog. Visibility uses the same allow/deny policy as chat/embeddings. Pricing-table ids are the default catalog; extra allow-list ids are included. Denied models are omitted. Auth matches other gateway routes (`/health` stays open). No ledger write for list.
 
+## Decisions (Session 17)
+
+- `summarize()` exposes `byApp` using `UsageEvent.appId` (same bucket shape as `byTeam` / `byModel`).
+- Notes still skip spend buckets.
+- FinOps pack inherits `byApp` via the shared summary object.
+- `DEMO.md` is the operator recording script. `LANDING.md` stays the one-pager.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
 ## Handoff for next session
 
-Session 16 ships policy-filtered `GET /v1/models`. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
+Session 17 ships app-level spend rollups and a secret-free demo script. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
 
 ```bash
 npm install
