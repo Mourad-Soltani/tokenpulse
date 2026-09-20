@@ -4,5 +4,9 @@
   "teams": {
     "eng": { "dailyUsd": 10, "monthlyUsd": 200 },
     "finance": { "dailyUsd": 5, "monthlyUsd": 80 }
+  },
+  "apps": {
+    "support-bot": { "dailyUsd": 3, "monthlyUsd": 40 },
+    "research": { "dailyUsd": 8, "monthlyUsd": 120 }
   }
 }

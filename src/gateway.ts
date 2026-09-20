@@ -209,7 +209,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
-    const budget = await evaluateBudget(teamId);
+    const budget = await evaluateBudget(teamId, appId);
     if (!budget.allow) {
       const event = newEvent({
         teamId,
@@ -230,6 +230,8 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           message: budget.reason ?? "budget exceeded",
           type: "budget_exceeded",
           team: teamId,
+          app: appId,
+          scope: budget.scope,
           spentUsd: budget.spentUsd,
           capUsd: budget.capUsd,
           period: budget.period,
@@ -528,7 +530,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
-    const budget = await evaluateBudget(teamId);
+    const budget = await evaluateBudget(teamId, appId);
     if (!budget.allow) {
       const event = newEvent({
         teamId,
@@ -549,6 +551,8 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           message: budget.reason ?? "budget exceeded",
           type: "budget_exceeded",
           team: teamId,
+          app: appId,
+          scope: budget.scope,
           spentUsd: budget.spentUsd,
           capUsd: budget.capUsd,
           period: budget.period,

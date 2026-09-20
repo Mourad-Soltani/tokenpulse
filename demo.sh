@@ -21,6 +21,9 @@ cat > "$TOKENPULSE_BUDGETS_PATH" <<JSON
   "teams": {
     "demo-team": { "dailyUsd": 10, "monthlyUsd": 80 },
     "broke": { "dailyUsd": 0 }
+  },
+  "apps": {
+    "capped-app": { "dailyUsd": 0 }
   }
 }
 JSON
@@ -155,6 +158,16 @@ BLOCK=$(curl -s -o /tmp/tp-block.json -w "%{http_code}" -X POST "http://127.0.0.
   -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"should be blocked"}]}')
 python3 -c "import json; b=json.load(open('/tmp/tp-block.json')); assert b['error']['type']=='budget_exceeded', b; print('block ok:', b['error']['message'])"
 test "$BLOCK" = "429"
+
+echo "-- app budget block --"
+ABLOCK=$(curl -s -o /tmp/tp-app-block.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: demo-team" \
+  -H "X-Tokenpulse-App: capped-app" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"app cap"}]}')
+python3 -c "import json; b=json.load(open('/tmp/tp-app-block.json')); assert b['error']['type']=='budget_exceeded', b; assert b['error']['scope']=='app', b; print('app block ok:', b['error']['message'])"
+test "$ABLOCK" = "429"
 
 echo "-- ledger summary --"
 npx tsx src/cli.ts --summary

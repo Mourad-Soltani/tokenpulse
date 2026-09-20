@@ -176,3 +176,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Dashboard renders a By app table next to By team.
 - FinOps pack `summary.byApp` comes from the same function. Notes stay out of spend.
 - Pilot recording script: `DEMO.md`.
+
+
+## App budgets (Session 18)
+
+- Optional `apps` map in the budget file (`TOKENPULSE_BUDGETS_PATH`).
+- Keys match `X-Tokenpulse-App`. No default app cap from `defaultDailyUsd`.
+- Evaluated after team daily and team monthly. Team deny wins.
+- App spend is allowed events for that `appId` in the UTC day/month (all teams).
+- Denied: HTTP 429 `budget_exceeded` with `scope: app` and policy `budget-daily-app` or `budget-monthly-app`.

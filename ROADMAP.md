@@ -27,6 +27,7 @@
 - [x] OpenAI-compatible models list (`GET /v1/models`, policy-filtered)
 - [x] Spend rollup by app (`byApp` on summary / dashboard / FinOps pack)
 - [x] Secret-free demo walkthrough (`DEMO.md`)
+- [x] Per-app daily/monthly spend caps
 
 ## Next
 
