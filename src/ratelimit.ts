@@ -12,6 +12,13 @@ export const RateConfigSchema = z.object({
       }),
     )
     .optional(),
+  apps: z
+    .record(
+      z.object({
+        rpm: z.number().int().nonnegative(),
+      }),
+    )
+    .optional(),
 });
 
 export type RateConfig = z.infer<typeof RateConfigSchema>;
@@ -19,10 +26,12 @@ export type RateConfig = z.infer<typeof RateConfigSchema>;
 export type RateDecision = {
   allow: boolean;
   teamId: string;
+  appId: string;
   used: number;
   capRpm: number | null;
   retryAfterMs: number;
   policyId: string;
+  scope: "team" | "app" | "none";
   reason?: string;
 };
 
@@ -52,6 +61,7 @@ export async function loadRates(): Promise<RateConfig> {
     defaultRpm: fileCfg.defaultRpm ?? (Number.isFinite(envDefault) ? envDefault : undefined),
     windowMs: fileCfg.windowMs ?? (envWindow && Number.isFinite(Number(envWindow)) ? Number(envWindow) : 60_000),
     teams: fileCfg.teams,
+    apps: fileCfg.apps,
   };
 }
 
@@ -62,31 +72,82 @@ export function capForTeam(cfg: RateConfig, teamId: string): number | null {
   return null;
 }
 
-export async function evaluateRateLimit(teamId: string, now = Date.now()): Promise<RateDecision> {
-  const cfg = await loadRates();
-  const windowMs = cfg.windowMs ?? 60_000;
-  const capRpm = capForTeam(cfg, teamId);
-  const series = (hits.get(teamId) ?? []).filter((t) => now - t < windowMs);
-  hits.set(teamId, series);
+export function capForApp(cfg: RateConfig, appId: string): number | null {
+  const appCap = cfg.apps?.[appId]?.rpm;
+  if (typeof appCap === "number") return appCap;
+  return null;
+}
+
+function consume(key: string, capRpm: number | null, now: number, windowMs: number): {
+  allow: boolean;
+  used: number;
+  retryAfterMs: number;
+} {
+  const series = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
+  hits.set(key, series);
   if (capRpm === null) {
     series.push(now);
-    hits.set(teamId, series);
-    return { allow: true, teamId, used: series.length, capRpm: null, retryAfterMs: 0, policyId: "rate-unlimited" };
+    hits.set(key, series);
+    return { allow: true, used: series.length, retryAfterMs: 0 };
   }
   if (capRpm === 0 || series.length >= capRpm) {
     const oldest = series[0];
     const retryAfterMs = oldest !== undefined ? Math.max(1, windowMs - (now - oldest)) : windowMs;
+    return { allow: false, used: series.length, retryAfterMs };
+  }
+  series.push(now);
+  hits.set(key, series);
+  return { allow: true, used: series.length, retryAfterMs: 0 };
+}
+
+export async function evaluateRateLimit(
+  teamId: string,
+  appId = "default",
+  now = Date.now(),
+): Promise<RateDecision> {
+  const cfg = await loadRates();
+  const windowMs = cfg.windowMs ?? 60_000;
+  const teamCap = capForTeam(cfg, teamId);
+  const teamHit = consume(`team:${teamId}`, teamCap, now, windowMs);
+  if (teamCap !== null && !teamHit.allow) {
     return {
       allow: false,
       teamId,
-      used: series.length,
-      capRpm,
-      retryAfterMs,
+      appId,
+      used: teamHit.used,
+      capRpm: teamCap,
+      retryAfterMs: teamHit.retryAfterMs,
       policyId: "rate-limited",
-      reason: `team ${teamId} exceeded ${capRpm} requests per window`,
+      scope: "team",
+      reason: `team ${teamId} exceeded ${teamCap} requests per window`,
     };
   }
-  series.push(now);
-  hits.set(teamId, series);
-  return { allow: true, teamId, used: series.length, capRpm, retryAfterMs: 0, policyId: "rate-ok" };
+
+  const appCap = capForApp(cfg, appId);
+  const appHit = consume(`app:${appId}`, appCap, now, windowMs);
+  if (appCap !== null && !appHit.allow) {
+    return {
+      allow: false,
+      teamId,
+      appId,
+      used: appHit.used,
+      capRpm: appCap,
+      retryAfterMs: appHit.retryAfterMs,
+      policyId: "rate-limited-app",
+      scope: "app",
+      reason: `app ${appId} exceeded ${appCap} requests per window`,
+    };
+  }
+
+  const unlimited = teamCap === null && appCap === null;
+  return {
+    allow: true,
+    teamId,
+    appId,
+    used: teamHit.used,
+    capRpm: teamCap ?? appCap,
+    retryAfterMs: 0,
+    policyId: unlimited ? "rate-unlimited" : "rate-ok",
+    scope: teamCap !== null ? "team" : appCap !== null ? "app" : "none",
+  };
 }

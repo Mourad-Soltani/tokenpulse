@@ -4,5 +4,8 @@
   "teams": {
     "broke": { "rpm": 0 },
     "burst": { "rpm": 1 }
+  },
+  "apps": {
+    "burst-app": { "rpm": 0 }
   }
 }

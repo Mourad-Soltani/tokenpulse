@@ -28,6 +28,7 @@
 - [x] Spend rollup by app (`byApp` on summary / dashboard / FinOps pack)
 - [x] Secret-free demo walkthrough (`DEMO.md`)
 - [x] Per-app daily/monthly spend caps
+- [x] Per-app request rate limits
 
 ## Next
 

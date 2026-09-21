@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 18 — 2026-09-21)
+## Current Status (Session 19 — 2026-09-22)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -38,6 +38,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 16 — OpenAI-compatible `GET /v1/models` filtered by allow/deny
 - [x] Session 17 — spend rollup `byApp` + secret-free `DEMO.md` walkthrough
 - [x] Session 18 — per-app daily/monthly spend caps (`apps` in budget file)
+- [x] Session 19 — per-app RPM (`apps` in rates file)
 
 ## Next Up (highest priority)
 
@@ -95,9 +96,19 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - App spend is summed across teams for that `appId` (same as `byApp` rollup).
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+## Decisions (Session 19)
+
+- Rates file may include `apps` keyed by `appId`.
+- Team RPM is evaluated first. App RPM applies only if the team still has room.
+- App RPM does not inherit `defaultRpm`. Missing `apps` entry = no app-level cap.
+- `rpm: 0` on an app hard-blocks that app.
+- Policy id `rate-limited-app`. Error payload includes `scope` (`team` | `app` | `none`) and `app`.
+- App RPM is counted across teams for that `appId` (in-process window).
+- Chat-pasted tokens remain unusable for live provider calls. Live upstream stays operator-env only.
+
 ## Handoff for next session
 
-Session 18 ships per-app spend caps on top of team budgets. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
+Session 19 ships per-app RPM on top of team rate limits. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
 
 ```bash
 npm install

@@ -40,6 +40,9 @@ cat > "$TOKENPULSE_RATES_PATH" <<JSON
   "windowMs": 60000,
   "teams": {
     "burst": { "rpm": 1 }
+  },
+  "apps": {
+    "burst-app": { "rpm": 0 }
   }
 }
 JSON
@@ -138,6 +141,16 @@ RATE2=$(curl -s -o /tmp/tp-rate2.json -w "%{http_code}" -X POST "http://127.0.0.
 python3 -c "import json; b=json.load(open('/tmp/tp-rate2.json')); assert b['error']['type']=='rate_limited', b; print('rate ok:', b['error']['message'])"
 test "$RATE1" = "200"
 test "$RATE2" = "429"
+
+echo "-- app rate limit --"
+ARATE=$(curl -s -o /tmp/tp-app-rate.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \
+  -H "Authorization: Bearer demo-token" \
+  -H "Content-Type: application/json" \
+  -H "X-Tokenpulse-Team: demo-team" \
+  -H "X-Tokenpulse-App: burst-app" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"app rate"}]}')
+python3 -c "import json; b=json.load(open('/tmp/tp-app-rate.json')); assert b['error']['type']=='rate_limited', b; assert b['error']['scope']=='app', b; print('app rate ok:', b['error']['message'])"
+test "$ARATE" = "429"
 
 echo "-- request size limit --"
 LIM=$(curl -s -o /tmp/tp-limit.json -w "%{http_code}" -X POST "http://127.0.0.1:${TOKENPULSE_GATEWAY_PORT}/v1/chat/completions" \

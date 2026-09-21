@@ -185,3 +185,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Evaluated after team daily and team monthly. Team deny wins.
 - App spend is allowed events for that `appId` in the UTC day/month (all teams).
 - Denied: HTTP 429 `budget_exceeded` with `scope: app` and policy `budget-daily-app` or `budget-monthly-app`.
+
+
+## App rate limits (Session 19)
+
+- Optional `apps` map in the rates file (`TOKENPULSE_RATES_PATH`).
+- Keys match `X-Tokenpulse-App`. No default app RPM from `defaultRpm`.
+- Evaluated after team RPM. Team deny wins.
+- App hits are counted across teams for that `appId` in the in-process window.
+- Denied: HTTP 429 `rate_limited` with `scope: app` and policy `rate-limited-app`.

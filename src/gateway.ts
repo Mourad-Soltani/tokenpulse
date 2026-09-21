@@ -180,7 +180,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
-    const rate = await evaluateRateLimit(teamId);
+    const rate = await evaluateRateLimit(teamId, appId);
     if (!rate.allow) {
       const event = newEvent({
         teamId,
@@ -202,6 +202,8 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           message: rate.reason ?? "rate limited",
           type: "rate_limited",
           team: teamId,
+          app: appId,
+          scope: rate.scope,
           capRpm: rate.capRpm,
           retryAfterMs: rate.retryAfterMs,
         },
@@ -501,7 +503,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
-    const rate = await evaluateRateLimit(teamId);
+    const rate = await evaluateRateLimit(teamId, appId);
     if (!rate.allow) {
       const event = newEvent({
         teamId,
@@ -523,6 +525,8 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           message: rate.reason ?? "rate limited",
           type: "rate_limited",
           team: teamId,
+          app: appId,
+          scope: rate.scope,
           capRpm: rate.capRpm,
           retryAfterMs: rate.retryAfterMs,
         },
