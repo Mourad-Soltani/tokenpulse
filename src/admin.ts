@@ -1,3 +1,4 @@
+import { budgetStatus, type BudgetStatusRow } from "./budget.js";
 import { readEvents, summarize, verifyChain } from "./ledger.js";
 import type { UsageEvent } from "./types.js";
 
@@ -6,6 +7,8 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   recentBlocked: UsageEvent[];
   chainOk: boolean;
   chainChecked: number;
+  budgets: BudgetStatusRow[];
+  budgetWarns: number;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -16,12 +19,15 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     .slice(-blockedLimit)
     .reverse();
   const chain = verifyChain(events);
+  const budgets = await budgetStatus();
   return {
     ...summarize(events),
     day: opts?.day,
     recentBlocked,
     chainOk: chain.ok,
     chainChecked: chain.checked,
+    budgets,
+    budgetWarns: budgets.filter((b) => b.warn).length,
   };
 }
 
@@ -62,6 +68,10 @@ export function dashboardHtml(): string {
     <button id="savenote" type="button">Add note</button>
   </div>
   <div class="grid" id="kpis"></div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Budgets</h2>
+    <table id="budgets"><thead><tr><th>Scope</th><th>Id</th><th>Period</th><th>Spent</th><th>Cap</th><th>Left</th><th>Status</th></tr></thead><tbody></tbody></table>
+  </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">By team</h2>
     <table id="teams"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
@@ -114,8 +124,15 @@ async function load() {
     ['Tokens', s.tokens],
     ['USD', s.costUsd],
     ['Notes', s.notes ?? 0],
+    ['Budget warns', s.budgetWarns ?? 0],
     ['Chain', s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
+  const bud = document.querySelector('#budgets tbody');
+  bud.innerHTML = (s.budgets || []).map(b => {
+    const st = b.exhausted ? 'exhausted' : (b.warn ? 'warn' : 'ok');
+    const cls = b.exhausted || b.warn ? 'bad' : 'ok';
+    return '<tr><td>'+b.scope+'</td><td>'+b.id+'</td><td>'+b.period+'</td><td>'+b.spentUsd+'</td><td>'+b.capUsd+'</td><td>'+b.remainingUsd+'</td><td class="'+cls+'">'+st+'</td></tr>';
+  }).join('') || '<tr><td colspan="7">no caps configured</td></tr>';
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>
     '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';

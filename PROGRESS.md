@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 20 — 2026-09-22)
+## Current Status (Session 21 — 2026-09-23)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -40,6 +40,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 18 — per-app daily/monthly spend caps (`apps` in budget file)
 - [x] Session 19 — per-app RPM (`apps` in rates file)
 - [x] Session 20 — per-app prompt / max_tokens caps (`apps` in limits file)
+- [x] Session 21 — budget status on admin summary (spent / remaining / warn)
 
 ## Next Up (highest priority)
 
@@ -116,9 +117,17 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Policy ids: `limit-prompt-chars-app` / `limit-max-tokens-app`. Error payload includes `scope` and `app`.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+## Decisions (Session 21)
+
+- `budgetStatus()` lists configured team/app daily and monthly caps with spent, remaining, ratio.
+- Warn when `ratio >= TOKENPULSE_BUDGET_WARN_RATIO` (default 0.8) or when exhausted.
+- Admin summary includes `budgets` and `budgetWarns`. Dashboard renders a Budgets table.
+- Does not change block policy — hard caps still enforce at evaluateBudget time.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
 ## Handoff for next session
 
-Session 20 ships per-app request size caps on top of team limits. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
+Session 21 ships budget remaining/warn on admin summary and dashboard. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
 
 ```bash
 npm install

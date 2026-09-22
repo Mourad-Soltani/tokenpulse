@@ -198,3 +198,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Evaluated after team RPM. Team deny wins.
 - App hits are counted across teams for that `appId` in the in-process window.
 - Denied: HTTP 429 `rate_limited` with `scope: app` and policy `rate-limited-app`.
+
+
+## Budget status (Session 21)
+
+- `budgetStatus()` builds rows for every configured team/app daily and monthly cap.
+- Each row: spentUsd, capUsd, remainingUsd, ratio, warn, exhausted.
+- Warn threshold: `TOKENPULSE_BUDGET_WARN_RATIO` (default 0.8). Exhausted always warns.
+- Admin summary exposes `budgets` + `budgetWarns`. Dashboard table lists status.
+- Policy blocks remain hard at evaluateBudget; status is operator visibility only.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

@@ -266,3 +266,90 @@ export async function evaluateBudget(
     policyId: "budget-unlimited",
   };
 }
+
+/** Fraction of cap at which status flips to warn (default 0.8). */
+export function budgetWarnRatio(): number {
+  const raw = process.env.TOKENPULSE_BUDGET_WARN_RATIO;
+  if (raw === undefined || raw === "") return 0.8;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0 || n > 1) return 0.8;
+  return n;
+}
+
+export type BudgetStatusRow = {
+  scope: "team" | "app";
+  id: string;
+  period: "daily" | "monthly";
+  spentUsd: number;
+  capUsd: number;
+  remainingUsd: number;
+  ratio: number;
+  warn: boolean;
+  exhausted: boolean;
+};
+
+function statusRow(
+  scope: "team" | "app",
+  id: string,
+  period: "daily" | "monthly",
+  spentUsd: number,
+  capUsd: number,
+  warnRatio: number,
+): BudgetStatusRow {
+  const remainingUsd = Math.max(0, Math.round((capUsd - spentUsd) * 1_000_000) / 1_000_000);
+  const ratio = capUsd === 0 ? 1 : Math.round((spentUsd / capUsd) * 10_000) / 10_000;
+  const exhausted = spentUsd >= capUsd;
+  return {
+    scope,
+    id,
+    period,
+    spentUsd,
+    capUsd,
+    remainingUsd,
+    ratio,
+    warn: exhausted || ratio >= warnRatio,
+    exhausted,
+  };
+}
+
+/**
+ * Operator view of configured caps vs current spend.
+ * Only rows with an explicit or default team/app cap are included.
+ */
+export async function budgetStatus(now = new Date()): Promise<BudgetStatusRow[]> {
+  const cfg = await loadBudgets();
+  const warnRatio = budgetWarnRatio();
+  const rows: BudgetStatusRow[] = [];
+  const teamIds = new Set<string>(Object.keys(cfg.teams ?? {}));
+  if (typeof cfg.defaultDailyUsd === "number" || typeof cfg.defaultMonthlyUsd === "number") {
+    // Defaults apply to any team that appears in today's ledger, plus named teams.
+    const day = now.toISOString().slice(0, 10);
+    const events = await readEvents({ day });
+    for (const e of events) teamIds.add(e.teamId);
+  }
+  for (const teamId of [...teamIds].sort()) {
+    const dailyCap = dailyCapForTeam(cfg, teamId);
+    if (dailyCap !== null) {
+      const spent = await spentTodayUsd(teamId, now);
+      rows.push(statusRow("team", teamId, "daily", spent, dailyCap, warnRatio));
+    }
+    const monthlyCap = monthlyCapForTeam(cfg, teamId);
+    if (monthlyCap !== null) {
+      const spent = await spentThisMonthUsd(teamId, now);
+      rows.push(statusRow("team", teamId, "monthly", spent, monthlyCap, warnRatio));
+    }
+  }
+  for (const appId of Object.keys(cfg.apps ?? {}).sort()) {
+    const dailyCap = dailyCapForApp(cfg, appId);
+    if (dailyCap !== null) {
+      const spent = await spentTodayAppUsd(appId, now);
+      rows.push(statusRow("app", appId, "daily", spent, dailyCap, warnRatio));
+    }
+    const monthlyCap = monthlyCapForApp(cfg, appId);
+    if (monthlyCap !== null) {
+      const spent = await spentThisMonthAppUsd(appId, now);
+      rows.push(statusRow("app", appId, "monthly", spent, monthlyCap, warnRatio));
+    }
+  }
+  return rows;
+}

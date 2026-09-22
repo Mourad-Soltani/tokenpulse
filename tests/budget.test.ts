@@ -146,3 +146,49 @@ describe("budget monthly", () => {
     assert.equal(d.period, "monthly");
   });
 });
+
+describe("budget status", () => {
+  it("reports remaining and warn when ratio crosses threshold", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "tp-budget-st-"));
+    process.env.TOKENPULSE_LEDGER_DIR = dir;
+    process.env.TOKENPULSE_BUDGETS_PATH = join(dir, "budgets.json");
+    process.env.TOKENPULSE_BUDGET_WARN_RATIO = "0.5";
+    delete process.env.TOKENPULSE_DEFAULT_DAILY_USD;
+    delete process.env.TOKENPULSE_DEFAULT_MONTHLY_USD;
+    await writeFile(
+      process.env.TOKENPULSE_BUDGETS_PATH,
+      JSON.stringify({
+        teams: { sales: { dailyUsd: 10 } },
+        apps: { bot: { monthlyUsd: 100 } },
+      }),
+      "utf8",
+    );
+    await appendEvent(
+      newEvent({
+        teamId: "sales",
+        appId: "bot",
+        model: "gpt-4o-mini",
+        promptTokens: 1,
+        completionTokens: 1,
+        totalTokens: 2,
+        estimatedCostUsd: 6,
+        latencyMs: 1,
+        decision: "allow",
+        policyIds: ["seed"],
+      }),
+    );
+    const { budgetStatus } = await import("../src/budget.ts");
+    const rows = await budgetStatus();
+    const teamDaily = rows.find((r) => r.scope === "team" && r.id === "sales" && r.period === "daily");
+    assert.ok(teamDaily);
+    assert.equal(teamDaily!.spentUsd, 6);
+    assert.equal(teamDaily!.capUsd, 10);
+    assert.equal(teamDaily!.remainingUsd, 4);
+    assert.equal(teamDaily!.warn, true);
+    assert.equal(teamDaily!.exhausted, false);
+    const appMonthly = rows.find((r) => r.scope === "app" && r.id === "bot" && r.period === "monthly");
+    assert.ok(appMonthly);
+    assert.equal(appMonthly!.warn, false);
+    assert.equal(appMonthly!.spentUsd, 6);
+  });
+});

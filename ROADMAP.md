@@ -30,6 +30,7 @@
 - [x] Per-app daily/monthly spend caps
 - [x] Per-app request rate limits
 - [x] Per-app prompt / max_tokens caps
+- [x] Budget remaining / warn status on admin summary
 
 ## Next
 
