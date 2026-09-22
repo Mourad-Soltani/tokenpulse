@@ -16,7 +16,7 @@ Enterprises are losing control of AI cost and data:
 
 Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks before egress, append-only usage ledger, exportable FinOps and security packs.
 
-## What works today (Session 16)
+## What works today (Session 20)
 
 | Capability | Status |
 |------------|--------|
@@ -29,17 +29,20 @@ Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks
 | Daily team budget policy | Live |
 | Model allow/deny | Live |
 | Loopback admin API + dashboard | Live |
-| Rate limits | Live (per-team RPM) |
+| Rate limits | Live (per-team + per-app RPM) |
 | Sensitive-payload heuristics | Live |
 | SQLite ledger option | Live (`TOKENPULSE_LEDGER_DRIVER=sqlite`) |
 | FinOps + CISO export packs | Live (`--export-finops` / `--export-security`) |
 | Embeddings proxy | Live (`POST /v1/embeddings`, same policy + ledger) |
-| Per-request size limits | Live (`maxPromptChars` / `max_tokens` cap; HTTP 413) |
+| Per-request size limits | Live (team + app `maxPromptChars` / `max_tokens`; HTTP 413) |
 | Monthly team spend caps | Live |
 | Chat streaming (SSE) | Live |
 | Hash-chained ledger | Live (`--verify-ledger`) |
 | Operator notes | Live (`--note` / `POST /v1/admin/note`) |
 | Models list | Live (`GET /v1/models`, filtered by allow/deny) |
+| Per-app spend caps | Live |
+| Per-app RPM | Live |
+| Per-app size caps | Live |
 
 ## Quick start
 

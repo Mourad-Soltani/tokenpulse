@@ -4,5 +4,9 @@
   "teams": {
     "tight": { "maxPromptChars": 200, "maxTokens": 64 },
     "blocked": { "maxTokens": 0 }
+  },
+  "apps": {
+    "chat-ui": { "maxPromptChars": 8000, "maxTokens": 1024 },
+    "batch": { "maxTokens": 0 }
   }
 }

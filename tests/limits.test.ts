@@ -20,6 +20,7 @@ describe("limits", () => {
         defaultMaxPromptChars: 100,
         defaultMaxTokens: 50,
         teams: { tight: { maxPromptChars: 10, maxTokens: 8 }, zero: { maxTokens: 0 } },
+        apps: { tiny: { maxPromptChars: 5, maxTokens: 4 }, appoff: { maxTokens: 0 } },
       }),
       "utf8",
     );
@@ -58,6 +59,21 @@ describe("limits", () => {
     const d = await evaluateLimits({ teamId: "tight", promptChars: 10, requestedMaxTokens: 8 });
     assert.equal(d.allow, true);
     assert.equal(d.policyId, "limit-ok");
+    assert.equal(d.scope, "team");
+  });
+
+  it("blocks oversized prompts for app after team allows", async () => {
+    const d = await evaluateLimits({ teamId: "other", appId: "tiny", promptChars: 6 });
+    assert.equal(d.allow, false);
+    assert.equal(d.policyId, "limit-prompt-chars-app");
+    assert.equal(d.scope, "app");
+  });
+
+  it("blocks app maxTokens 0", async () => {
+    const d = await evaluateLimits({ teamId: "other", appId: "appoff", promptChars: 1 });
+    assert.equal(d.allow, false);
+    assert.equal(d.policyId, "limit-max-tokens-app");
+    assert.equal(d.scope, "app");
   });
 
   it("gateway returns 413 limit_exceeded", async () => {
@@ -81,6 +97,7 @@ describe("limits", () => {
           "content-type": "application/json",
           authorization: "Bearer lim-token",
           "x-tokenpulse-team": "tight",
+          "x-tokenpulse-app": "default",
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",

@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 19 — 2026-09-22)
+## Current Status (Session 20 — 2026-09-22)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -39,6 +39,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 17 — spend rollup `byApp` + secret-free `DEMO.md` walkthrough
 - [x] Session 18 — per-app daily/monthly spend caps (`apps` in budget file)
 - [x] Session 19 — per-app RPM (`apps` in rates file)
+- [x] Session 20 — per-app prompt / max_tokens caps (`apps` in limits file)
 
 ## Next Up (highest priority)
 
@@ -106,9 +107,18 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - App RPM is counted across teams for that `appId` (in-process window).
 - Chat-pasted tokens remain unusable for live provider calls. Live upstream stays operator-env only.
 
+## Decisions (Session 20)
+
+- Limits file may include `apps` keyed by `appId`.
+- Team size caps evaluate first. App caps apply only if the team still allows.
+- App caps do not inherit `defaultMaxPromptChars` / `defaultMaxTokens`. Missing `apps` entry = no app-level cap.
+- `maxTokens: 0` on an app hard-blocks that app.
+- Policy ids: `limit-prompt-chars-app` / `limit-max-tokens-app`. Error payload includes `scope` and `app`.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
 ## Handoff for next session
 
-Session 19 ships per-app RPM on top of team rate limits. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
+Session 20 ships per-app request size caps on top of team limits. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat. Any PAT pasted into chat is compromised — rotate it.
 
 ```bash
 npm install

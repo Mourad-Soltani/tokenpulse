@@ -29,6 +29,7 @@
 - [x] Secret-free demo walkthrough (`DEMO.md`)
 - [x] Per-app daily/monthly spend caps
 - [x] Per-app request rate limits
+- [x] Per-app prompt / max_tokens caps
 
 ## Next
 

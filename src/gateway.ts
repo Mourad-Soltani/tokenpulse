@@ -97,6 +97,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
 
     const limits = await evaluateLimits({
       teamId,
+      appId,
       promptChars: promptCharCount(parsed.data.messages),
       requestedMaxTokens: parsed.data.max_tokens,
     });
@@ -119,6 +120,12 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         error: {
           message: limits.reason ?? "request exceeds size limits",
           type: "limit_exceeded",
+          team: teamId,
+          app: appId,
+          scope: limits.scope,
+          team: teamId,
+          app: appId,
+          scope: limits.scope,
           promptChars: limits.promptChars,
           maxPromptChars: limits.maxPromptChars,
           requestedMaxTokens: limits.requestedMaxTokens,
@@ -423,6 +430,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
 
     const limits = await evaluateLimits({
       teamId,
+      appId,
       promptChars: promptCharCount(texts),
     });
     if (!limits.allow) {
