@@ -151,3 +151,88 @@ export async function evaluateRateLimit(
     scope: teamCap !== null ? "team" : appCap !== null ? "app" : "none",
   };
 }
+
+function peek(key: string, now: number, windowMs: number): number {
+  const series = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
+  hits.set(key, series);
+  return series.length;
+}
+
+/** Fraction of RPM cap at which status flips to warn (default 0.8). */
+export function rateWarnRatio(): number {
+  const raw = process.env.TOKENPULSE_RATE_WARN_RATIO;
+  if (raw === undefined || raw === "") return 0.8;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0 || n > 1) return 0.8;
+  return n;
+}
+
+export type RateStatusRow = {
+  scope: "team" | "app";
+  id: string;
+  used: number;
+  capRpm: number;
+  remaining: number;
+  ratio: number;
+  windowMs: number;
+  warn: boolean;
+  exhausted: boolean;
+};
+
+/**
+ * Operator view of configured RPM caps vs current in-process window usage.
+ * Peek only — does not record a hit. Hard blocks still happen in evaluateRateLimit.
+ */
+export async function rateStatus(now = Date.now()): Promise<RateStatusRow[]> {
+  const cfg = await loadRates();
+  const windowMs = cfg.windowMs ?? 60_000;
+  const warnRatio = rateWarnRatio();
+  const rows: RateStatusRow[] = [];
+
+  const teamIds = new Set<string>(Object.keys(cfg.teams ?? {}));
+  if (typeof cfg.defaultRpm === "number") {
+    for (const key of hits.keys()) {
+      if (key.startsWith("team:")) teamIds.add(key.slice(5));
+    }
+  }
+  for (const teamId of [...teamIds].sort()) {
+    const cap = capForTeam(cfg, teamId);
+    if (cap === null) continue;
+    const used = peek(`team:${teamId}`, now, windowMs);
+    const remaining = Math.max(0, cap - used);
+    const ratio = cap === 0 ? 1 : Math.round((used / cap) * 10_000) / 10_000;
+    const exhausted = used >= cap || cap === 0;
+    rows.push({
+      scope: "team",
+      id: teamId,
+      used,
+      capRpm: cap,
+      remaining,
+      ratio,
+      windowMs,
+      warn: exhausted || ratio >= warnRatio,
+      exhausted,
+    });
+  }
+  for (const appId of Object.keys(cfg.apps ?? {}).sort()) {
+    const cap = capForApp(cfg, appId);
+    if (cap === null) continue;
+    const used = peek(`app:${appId}`, now, windowMs);
+    const remaining = Math.max(0, cap - used);
+    const ratio = cap === 0 ? 1 : Math.round((used / cap) * 10_000) / 10_000;
+    const exhausted = used >= cap || cap === 0;
+    rows.push({
+      scope: "app",
+      id: appId,
+      used,
+      capRpm: cap,
+      remaining,
+      ratio,
+      windowMs,
+      warn: exhausted || ratio >= warnRatio,
+      exhausted,
+    });
+  }
+  return rows;
+}
+

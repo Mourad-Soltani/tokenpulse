@@ -208,3 +208,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `budgets` + `budgetWarns`. Dashboard table lists status.
 - Policy blocks remain hard at evaluateBudget; status is operator visibility only.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Rate status (Session 22)
+
+- `rateStatus()` builds rows for every configured team/app RPM cap.
+- Each row: used, capRpm, remaining, ratio, windowMs, warn, exhausted.
+- Peek-only: does not record a hit. `TOKENPULSE_RATE_WARN_RATIO` (default 0.8).
+- Admin summary exposes `rates` + `rateWarns`. Dashboard renders a Rate limits table.
+- Hard blocks still happen only in `evaluateRateLimit`.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

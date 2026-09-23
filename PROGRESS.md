@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 21 — 2026-09-23)
+## Current Status (Session 22 — 2026-09-24)
 
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
@@ -41,6 +41,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 19 — per-app RPM (`apps` in rates file)
 - [x] Session 20 — per-app prompt / max_tokens caps (`apps` in limits file)
 - [x] Session 21 — budget status on admin summary (spent / remaining / warn)
+- [x] Session 22 — rate-limit status on admin summary (used / remaining / warn)
 
 ## Next Up (highest priority)
 
@@ -125,9 +126,17 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Does not change block policy — hard caps still enforce at evaluateBudget time.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+## Decisions (Session 22)
+
+- `rateStatus()` peeks in-process window hits; it does not consume quota.
+- Warn when `ratio >= TOKENPULSE_RATE_WARN_RATIO` (default 0.8) or when exhausted / `rpm: 0`.
+- Admin summary includes `rates` and `rateWarns`. Dashboard renders a Rate limits table.
+- Does not change block policy — hard caps still enforce at evaluateRateLimit time.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
 ## Handoff for next session
 
-Session 21 ships budget remaining/warn on admin summary and dashboard. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
+Session 22 ships rate remaining/warn on admin summary and dashboard (mirrors budget status). Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
 
 ```bash
 npm install

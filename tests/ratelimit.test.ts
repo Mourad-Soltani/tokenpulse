@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { evaluateRateLimit, resetRateLimiter } from "../src/ratelimit.ts";
+import { evaluateRateLimit, rateStatus, resetRateLimiter } from "../src/ratelimit.ts";
 
 describe("rate limit", () => {
   beforeEach(() => {
@@ -61,5 +61,49 @@ describe("rate limit", () => {
     assert.equal(b.policyId, "rate-limited-app");
     assert.equal(b.scope, "app");
     assert.equal(b.appId, "noisy");
+  });
+});
+
+describe("rate status", () => {
+  beforeEach(() => {
+    resetRateLimiter();
+    delete process.env.TOKENPULSE_DEFAULT_RPM;
+    delete process.env.TOKENPULSE_RATES_PATH;
+    delete process.env.TOKENPULSE_RATE_WINDOW_MS;
+    delete process.env.TOKENPULSE_RATE_WARN_RATIO;
+  });
+
+  it("reports remaining and warn without consuming extra hits", async () => {
+    process.env.TOKENPULSE_DEFAULT_RPM = "5";
+    process.env.TOKENPULSE_RATE_WINDOW_MS = "60000";
+    process.env.TOKENPULSE_RATE_WARN_RATIO = "0.4";
+    await evaluateRateLimit("status-team", "default", 10_000);
+    await evaluateRateLimit("status-team", "default", 10_100);
+    const before = await rateStatus(10_200);
+    const row = before.find((r) => r.scope === "team" && r.id === "status-team");
+    assert.ok(row);
+    assert.equal(row!.used, 2);
+    assert.equal(row!.capRpm, 5);
+    assert.equal(row!.remaining, 3);
+    assert.equal(row!.warn, true);
+    assert.equal(row!.exhausted, false);
+    const after = await rateStatus(10_300);
+    const again = after.find((r) => r.scope === "team" && r.id === "status-team");
+    assert.equal(again!.used, 2);
+  });
+
+  it("marks rpm 0 as exhausted warn", async () => {
+    const dir = await mkdir(join(tmpdir(), `tp-rate-st-${Date.now()}`), { recursive: true });
+    const path = join(dir, "rates.json");
+    await writeFile(path, JSON.stringify({ teams: { blocked: { rpm: 0 } }, apps: { quiet: { rpm: 10 } } }));
+    process.env.TOKENPULSE_RATES_PATH = path;
+    const rows = await rateStatus();
+    const blocked = rows.find((r) => r.id === "blocked");
+    assert.ok(blocked);
+    assert.equal(blocked!.exhausted, true);
+    assert.equal(blocked!.warn, true);
+    const quiet = rows.find((r) => r.id === "quiet");
+    assert.ok(quiet);
+    assert.equal(quiet!.warn, false);
   });
 });
