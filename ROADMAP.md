@@ -34,10 +34,17 @@
 - [x] Rate remaining / warn status on admin summary
 - [x] Request-size cap status on admin summary
 
-## Next
+## Sale readiness
+
+- [x] Positioning + checklist (`SALE.md`)
+- [x] Strategic buyer map (`BUYERS.md`)
+- [x] Outreach sequences + objections (`OUTREACH.md`)
+
+## Next (operator)
 
 - [ ] Recorded live-upstream proof (operator key outside git/chat)
-- [ ] Record `DEMO.md` locally (packaging copy is in-repo)
+- [ ] Record `DEMO.md` locally
+- [ ] Personalized outreach (after recordings; non-bulk)
 
 ## Later
 
