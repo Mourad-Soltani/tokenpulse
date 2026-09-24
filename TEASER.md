@@ -44,9 +44,20 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # dashboard → http://127.0.0.1:8788/
 ```
 
+### Price
+
+| Path | Terms |
+|------|--------|
+| **Evaluate / pilot** | Free — MIT license, secret-free demo, self-host |
+| **Paid pilot support** | From **$15k** (fixed, 30 days: deploy help, policy templates, walkthrough) |
+| **Annual support / priority** | From **$60k/yr** (updates, private channel, security response) |
+| **Asset / assignment** | Indicative from **~$3M** with recorded demo + diligence packet; negotiated with pilots/fit |
+
+No seat tax. No forced SaaS. Source stays inspectable.
+
 ### Ask
 
-Technical walkthrough or design-partner pilot. Commercial terms after fit — not a vanity valuation pitch.
+Technical walkthrough, paid pilot, or strategic conversation. Serious replies get the demo recording and sample FinOps/CISO packs.
 
 **Repo:** https://github.com/Mourad-Soltani/tokenpulse  
 **Contact:** Mourad Soltani (repository maintainer)
