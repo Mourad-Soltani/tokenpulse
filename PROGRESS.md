@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 23 — 2026-09-24)
+## Current Status (Session 24 — 2026-09-24)
 
 > **ACTIVE flagship for daily-builder only.** Aether Forge is CLOSED. Automation prompt points here exclusively.
 
@@ -45,12 +45,13 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 21 — budget status on admin summary (spent / remaining / warn)
 - [x] Session 22 — rate-limit status on admin summary (used / remaining / warn)
 - [x] Session 23 — request-size limit status on admin summary (caps + hard-block warn)
+- [x] Session 24 — sale readiness pack (`SALE.md`, `BUYERS.md`, `OUTREACH.md`)
 
 ## Next Up (highest priority)
 
-1. Optional operator live proof against a real provider using a **rotated** key **outside git/chat**. Demo remains mock-default.
-2. Record the `DEMO.md` walkthrough locally (no keys on camera).
-3. Do not start bulk buyer outreach until one recorded live-upstream proof exists.
+1. **Operator:** live-upstream proof with rotated key outside git/chat; record `DEMO.md` (no keys on camera).
+2. After recording exists: personalize ≤10 emails from `OUTREACH.md` using `BUYERS.md`.
+3. Optional later product: discovery, multi-upstream, SSO, cloud single-tenant (`ROADMAP.md`).
 
 ## Decisions So Far
 
@@ -156,4 +157,35 @@ npm test
 npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # open http://127.0.0.1:8788/ and paste the token
+```
+
+## Decisions (Session 24 — sale packaging)
+
+- Product MVP remains Session 23 scope. No new gateway features required for sale readiness.
+- Added `SALE.md` (positioning, checklist, valuation posture), `BUYERS.md` (Tier A–C map), `OUTREACH.md` (non-bulk sequences + objections).
+- Outbound email still gated on operator-recorded live proof + DEMO.md video.
+- Portkey → Palo Alto purchase consideration ~$117M (SEC) is a category signal, not a Tokenpulse mark.
+- Pitch adjacent value (self-host FinOps/policy/audit), never “replace Portkey.”
+
+## Current Status (Session 24 — 2026-09-24)
+
+Sale materials complete. Product unchanged from Session 23.
+
+- [x] Session 24 — sale readiness pack (`SALE.md`, `BUYERS.md`, `OUTREACH.md`)
+
+## Next Up (highest priority)
+
+1. **Operator:** live-upstream proof with rotated key outside git/chat; record `DEMO.md` (no keys on camera).
+2. After recording exists: personalize ≤10 emails from `OUTREACH.md` using `BUYERS.md`.
+3. Optional later product: discovery, multi-upstream, SSO mapping, cloud single-tenant (see `ROADMAP.md`).
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 24 completes sale packaging. Automation cannot record the live demo — that is the only hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 ```
