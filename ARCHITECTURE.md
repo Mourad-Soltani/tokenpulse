@@ -26,7 +26,7 @@
 3. Resolve `team` / `app` from header or API key mapping.
 4. Run policy: request size limits, payload heuristics, model allowed, rate, budget remaining.
 5. On deny → return structured error + ledger `blocked` event.
-6. On allow → mock when `TOKENPULSE_MOCK_UPSTREAM=1`; else live forward via `resolveUpstream()`. Meter provider `usage`, append ledger, return body. Missing live config → 501. Upstream errors → ledger `block` + `upstream_error`.
+6. On allow → mock when `TOKENPULSE_MOCK_UPSTREAM=1`; else live forward via `resolveUpstreamChain()`. Meter provider `usage`, append ledger, return body. Missing live config → 501. Upstream errors → try fallback then ledger `block` + `upstream_error`.
 
 Daily and monthly budgets are evaluated **before** upstream. Cap source: `TOKENPULSE_BUDGETS_PATH` then `TOKENPULSE_DEFAULT_DAILY_USD` / `TOKENPULSE_DEFAULT_MONTHLY_USD`. No cap configured → allow. `dailyUsd: 0` or `monthlyUsd: 0` hard-blocks. Daily is checked first, then monthly. Blocked calls write `decision: block` with zero tokens and HTTP 429 `budget_exceeded` (`period: daily|monthly`).
 
@@ -218,6 +218,15 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `rates` + `rateWarns`. Dashboard renders a Rate limits table.
 - Hard blocks still happen only in `evaluateRateLimit`.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Multi-upstream fallback (Session 25)
+
+- Primary resolve is unchanged (`TOKENPULSE_UPSTREAM_*` then xAI then OpenAI).
+- Optional second hop: `TOKENPULSE_UPSTREAM_FALLBACK_BASE_URL` + `TOKENPULSE_UPSTREAM_FALLBACK_API_KEY`.
+- Identical baseUrl+key pairs are dropped. Empty chain still 501.
+- Chat, embeddings, and streaming try the next hop only when the current hop throws before the client body starts.
+- Success ledger ids: `upstream:<source>` and `upstream-fallback` when the used hop is not the first.
+- Failures after the last hop remain `upstream_error` (no partial prompt storage).
 
 ## Limit status (Session 23)
 

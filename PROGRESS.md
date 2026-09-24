@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 24 — 2026-09-24)
+## Current Status (Session 25 — 2026-09-24)
 
 > **ACTIVE flagship for daily-builder only.** Aether Forge is CLOSED. Automation prompt points here exclusively.
 
@@ -46,12 +46,13 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 22 — rate-limit status on admin summary (used / remaining / warn)
 - [x] Session 23 — request-size limit status on admin summary (caps + hard-block warn)
 - [x] Session 24 — sale readiness pack (`SALE.md`, `BUYERS.md`, `OUTREACH.md`)
+- [x] Session 25 — multi-upstream fallback (`TOKENPULSE_UPSTREAM_FALLBACK_*`)
 
 ## Next Up (highest priority)
 
 1. **Operator:** live-upstream proof with rotated key outside git/chat; record `DEMO.md` (no keys on camera).
 2. After recording exists: personalize ≤10 emails from `OUTREACH.md` using `BUYERS.md`.
-3. Optional later product: discovery, multi-upstream, SSO, cloud single-tenant (`ROADMAP.md`).
+3. Optional later product: discovery, weighted multi-upstream / model remap, SSO, cloud single-tenant (`ROADMAP.md`).
 
 ## Decisions So Far
 
@@ -189,3 +190,28 @@ Never paste provider keys or GitHub PATs into chat.
 npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 ```
+
+## Decisions (Session 25 — multi-upstream fallback)
+
+- Optional fallback hop via `TOKENPULSE_UPSTREAM_FALLBACK_BASE_URL` + `TOKENPULSE_UPSTREAM_FALLBACK_API_KEY`.
+- Primary resolve order is unchanged. Duplicate baseUrl+key pairs are dropped.
+- Chat, embeddings, and SSE try the next hop only if the current hop throws before the client body starts.
+- Ledger: `upstream:<source>` plus `upstream-fallback` when the used hop is not first.
+- `/health` reports `upstreams` count. Mock still wins when `TOKENPULSE_MOCK_UPSTREAM=1`.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 25 — 2026-09-24)
+
+Fallback hop shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+## Next Up (highest priority)
+
+1. **Operator:** live-upstream proof with rotated key outside git/chat; record `DEMO.md` (no keys on camera).
+2. After recording exists: personalize ≤10 emails from `OUTREACH.md` using `BUYERS.md`.
+3. Optional later product: discovery, weighted routing / model remap, SSO, cloud single-tenant (`ROADMAP.md`).
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 25 adds provider fallback. Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.

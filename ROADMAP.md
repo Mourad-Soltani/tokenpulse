@@ -33,6 +33,7 @@
 - [x] Budget remaining / warn status on admin summary
 - [x] Rate remaining / warn status on admin summary
 - [x] Request-size cap status on admin summary
+- [x] Multi-upstream fallback (`TOKENPULSE_UPSTREAM_FALLBACK_*`)
 
 ## Sale readiness
 
@@ -49,7 +50,7 @@
 ## Later
 
 - Shadow-AI discovery signals
-- Multi-upstream routing / fallback
+- Multi-upstream weighted routing / model remap
 - SSO-backed team mapping
 - Cloud single-tenant deploy
 

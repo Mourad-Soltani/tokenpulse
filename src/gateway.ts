@@ -9,7 +9,15 @@ import { evaluateModelPolicy, listVisibleModelsAsync } from "./models.js";
 import { evaluateSensitive } from "./sensitive.js";
 import { evaluateRateLimit } from "./ratelimit.js";
 import { evaluateLimits, promptCharCount } from "./limits.js";
-import { isMockUpstream, liveChatCompletion, liveChatCompletionStream, liveEmbeddings, resolveUpstream } from "./upstream.js";
+import {
+  isMockUpstream,
+  liveChatCompletion,
+  liveChatCompletionStream,
+  liveEmbeddings,
+  resolveUpstream,
+  resolveUpstreamChain,
+  withUpstreamFallback,
+} from "./upstream.js";
 import { adminSummary, dashboardHtml } from "./admin.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
@@ -58,6 +66,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       service: "tokenpulse",
       mock: isMockUpstream(),
       liveConfigured: Boolean(resolveUpstream()),
+      upstreams: resolveUpstreamChain().length,
       authRequired: Boolean(process.env.TOKENPULSE_GATEWAY_TOKEN),
     });
     return;
@@ -306,8 +315,8 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
-    const upstream = resolveUpstream();
-    if (!upstream) {
+    const chain = resolveUpstreamChain();
+    if (chain.length === 0) {
       json(res, 501, {
         error: {
           message:
@@ -320,15 +329,22 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
 
     try {
       if (wantStream) {
-        res.writeHead(200, {
-          "content-type": "text/event-stream; charset=utf-8",
-          "cache-control": "no-cache",
-          connection: "keep-alive",
-        });
-        const streamResult = await liveChatCompletionStream(parsed.data, upstream, (chunk) => {
-          res.write(chunk);
-        });
+        const streamed = await withUpstreamFallback(chain, (cfg) =>
+          liveChatCompletionStream(parsed.data, cfg, (chunk) => {
+            if (!res.headersSent) {
+              res.writeHead(200, {
+                "content-type": "text/event-stream; charset=utf-8",
+                "cache-control": "no-cache",
+                connection: "keep-alive",
+              });
+            }
+            res.write(chunk);
+          }),
+        );
+        const streamResult = streamed.result;
+        const used = streamed.used;
         const latencyMs = Date.now() - started;
+        const fallbackUsed = used !== chain[0];
         const event = newEvent({
           teamId,
           appId,
@@ -347,8 +363,9 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
             modelPolicy.policyId,
             budget.policyId,
             "live-allow",
-            `upstream:${upstream.source}`,
+            `upstream:${used.source}`,
             "stream",
+            ...(fallbackUsed ? ["upstream-fallback"] : []),
           ],
           requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: true }),
         });
@@ -356,7 +373,9 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         res.end();
         return;
       }
-      const live = await liveChatCompletion(parsed.data, upstream);
+      const forwarded = await withUpstreamFallback(chain, (cfg) => liveChatCompletion(parsed.data, cfg));
+      const live = forwarded.result;
+      const used = forwarded.used;
       const latencyMs = Date.now() - started;
       const event = newEvent({
         teamId,
@@ -372,7 +391,13 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         ),
         latencyMs,
         decision: "allow",
-        policyIds: [modelPolicy.policyId, budget.policyId, "live-allow", `upstream:${upstream.source}`],
+        policyIds: [
+          modelPolicy.policyId,
+          budget.policyId,
+          "live-allow",
+          `upstream:${used.source}`,
+          ...(used !== chain[0] ? ["upstream-fallback"] : []),
+        ],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
       await appendEvent(event);
@@ -594,8 +619,8 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
-    const upstream = resolveUpstream();
-    if (!upstream) {
+    const chain = resolveUpstreamChain();
+    if (chain.length === 0) {
       json(res, 501, {
         error: {
           message:
@@ -607,7 +632,9 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     }
 
     try {
-      const live = await liveEmbeddings(parsed.data, upstream);
+      const forwarded = await withUpstreamFallback(chain, (cfg) => liveEmbeddings(parsed.data, cfg));
+      const live = forwarded.result;
+      const used = forwarded.used;
       const latencyMs = Date.now() - started;
       const event = newEvent({
         teamId,
@@ -623,7 +650,14 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         ),
         latencyMs,
         decision: "allow",
-        policyIds: [modelPolicy.policyId, budget.policyId, "live-allow", `upstream:${upstream.source}`, "endpoint:embeddings"],
+        policyIds: [
+          modelPolicy.policyId,
+          budget.policyId,
+          "live-allow",
+          `upstream:${used.source}`,
+          "endpoint:embeddings",
+          ...(used !== chain[0] ? ["upstream-fallback"] : []),
+        ],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
       await appendEvent(event);

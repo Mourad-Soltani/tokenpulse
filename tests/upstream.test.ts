@@ -4,7 +4,13 @@ import { createServer } from "node:http";
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { isMockUpstream, liveChatCompletion, resolveUpstream } from "../src/upstream.ts";
+import {
+  isMockUpstream,
+  liveChatCompletion,
+  resolveUpstream,
+  resolveUpstreamChain,
+  withUpstreamFallback,
+} from "../src/upstream.ts";
 import { handleRequest } from "../src/gateway.ts";
 import { readEvents } from "../src/ledger.ts";
 
@@ -28,9 +34,41 @@ describe("upstream resolve", () => {
     assert.equal(resolveUpstream({} as NodeJS.ProcessEnv), null);
   });
 
+  it("chains explicit fallback without duplicating primary", () => {
+    const chain = resolveUpstreamChain({
+      TOKENPULSE_UPSTREAM_BASE_URL: "https://primary.test/v1",
+      TOKENPULSE_UPSTREAM_API_KEY: "k1",
+      TOKENPULSE_UPSTREAM_FALLBACK_BASE_URL: "https://backup.test/v1",
+      TOKENPULSE_UPSTREAM_FALLBACK_API_KEY: "k2",
+    } as NodeJS.ProcessEnv);
+    assert.equal(chain.length, 2);
+    assert.equal(chain[0].source, "tokenpulse");
+    assert.equal(chain[1].source, "fallback");
+    assert.equal(chain[1].baseUrl, "https://backup.test/v1");
+  });
+
   it("parses mock flags", () => {
     assert.equal(isMockUpstream({ TOKENPULSE_MOCK_UPSTREAM: "yes" } as NodeJS.ProcessEnv), true);
     assert.equal(isMockUpstream({ TOKENPULSE_MOCK_UPSTREAM: "0" } as NodeJS.ProcessEnv), false);
+  });
+});
+
+describe("withUpstreamFallback", () => {
+  it("uses the second upstream when the first throws", async () => {
+    const chain = [
+      { baseUrl: "https://dead.test/v1", apiKey: "a", source: "tokenpulse" as const },
+      { baseUrl: "https://ok.test/v1", apiKey: "b", source: "fallback" as const },
+    ];
+    let calls = 0;
+    const out = await withUpstreamFallback(chain, async (cfg) => {
+      calls += 1;
+      if (cfg.source === "tokenpulse") throw Object.assign(new Error("primary down"), { status: 502 });
+      return { ok: cfg.baseUrl };
+    });
+    assert.equal(calls, 2);
+    assert.equal(out.used.source, "fallback");
+    assert.equal(out.result.ok, "https://ok.test/v1");
+    assert.equal(out.attempts[0].error, "primary down");
   });
 });
 

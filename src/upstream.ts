@@ -3,7 +3,7 @@ import type { ChatCompletionRequest, EmbeddingRequest } from "./types.js";
 export type UpstreamConfig = {
   baseUrl: string;
   apiKey: string;
-  source: "tokenpulse" | "openai" | "xai";
+  source: "tokenpulse" | "openai" | "xai" | "fallback";
 };
 
 export type LiveCompletion = {
@@ -34,6 +34,46 @@ export function resolveUpstream(env: NodeJS.ProcessEnv = process.env): UpstreamC
     };
   }
   return null;
+}
+
+/** Primary plus optional fallback. Dedupes identical baseUrl+key. */
+export function resolveUpstreamChain(env: NodeJS.ProcessEnv = process.env): UpstreamConfig[] {
+  const chain: UpstreamConfig[] = [];
+  const primary = resolveUpstream(env);
+  if (primary) chain.push(primary);
+  const fbBase = env.TOKENPULSE_UPSTREAM_FALLBACK_BASE_URL?.trim();
+  const fbKey = env.TOKENPULSE_UPSTREAM_FALLBACK_API_KEY?.trim();
+  if (fbBase && fbKey) {
+    const next: UpstreamConfig = { baseUrl: stripSlash(fbBase), apiKey: fbKey, source: "fallback" };
+    const same = chain.some((c) => c.baseUrl === next.baseUrl && c.apiKey === next.apiKey);
+    if (!same) chain.push(next);
+  }
+  return chain;
+}
+
+export type FallbackAttempt = { source: string; error?: string };
+
+export async function withUpstreamFallback<T>(
+  chain: UpstreamConfig[],
+  run: (cfg: UpstreamConfig) => Promise<T>,
+): Promise<{ result: T; used: UpstreamConfig; attempts: FallbackAttempt[] }> {
+  if (chain.length === 0) {
+    throw Object.assign(new Error("live upstream not configured"), { status: 501, type: "not_implemented" });
+  }
+  const attempts: FallbackAttempt[] = [];
+  let lastErr: unknown;
+  for (const cfg of chain) {
+    try {
+      const result = await run(cfg);
+      attempts.push({ source: cfg.source });
+      return { result, used: cfg, attempts };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "upstream_error";
+      attempts.push({ source: cfg.source, error: message });
+      lastErr = err;
+    }
+  }
+  throw lastErr;
 }
 
 function stripSlash(url: string): string {
