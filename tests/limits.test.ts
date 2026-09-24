@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "node:http";
 import { handleRequest } from "../src/gateway.ts";
-import { capsForTeam, evaluateLimits, loadLimits, promptCharCount } from "../src/limits.ts";
+import { capsForTeam, evaluateLimits, limitStatus, loadLimits, promptCharCount } from "../src/limits.ts";
 import { readEvents } from "../src/ledger.ts";
 
 describe("limits", () => {
@@ -74,6 +74,17 @@ describe("limits", () => {
     assert.equal(d.allow, false);
     assert.equal(d.policyId, "limit-max-tokens-app");
     assert.equal(d.scope, "app");
+  });
+
+  it("limitStatus lists caps and warns on maxTokens 0", async () => {
+    const rows = await limitStatus();
+    assert.ok(rows.some((r) => r.scope === "default" && r.kind === "prompt_chars" && r.cap === 100));
+    assert.ok(rows.some((r) => r.scope === "team" && r.id === "tight" && r.kind === "max_tokens" && r.cap === 8 && !r.warn));
+    const zero = rows.find((r) => r.scope === "team" && r.id === "zero" && r.kind === "max_tokens");
+    assert.equal(zero?.exhausted, true);
+    assert.equal(zero?.warn, true);
+    const appOff = rows.find((r) => r.scope === "app" && r.id === "appoff" && r.kind === "max_tokens");
+    assert.equal(appOff?.exhausted, true);
   });
 
   it("gateway returns 413 limit_exceeded", async () => {

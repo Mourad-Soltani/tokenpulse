@@ -218,3 +218,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `rates` + `rateWarns`. Dashboard renders a Rate limits table.
 - Hard blocks still happen only in `evaluateRateLimit`.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Limit status (Session 23)
+
+- `limitStatus()` lists default, team, and app prompt-char / max_tokens caps.
+- Rows: scope, id, kind, cap, warn, exhausted.
+- Exhausted/warn when `max_tokens` is `0` (hard block). Other listed caps are ok.
+- Admin summary exposes `limits` + `limitWarns`. Dashboard renders a Request size limits table.
+- Hard blocks still happen only in `evaluateLimits`.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

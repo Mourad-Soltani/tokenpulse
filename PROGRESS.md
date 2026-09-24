@@ -4,7 +4,7 @@
 
 Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enforce budget/data policy at a self-hosted gateway, export audit packs for CFO and CISO. Target: strong product + early traction → $1B+ exit path within ~12 months (AI FinOps / TRiSM adjacency).
 
-## Current Status (Session 22 — 2026-09-24)
+## Current Status (Session 23 — 2026-09-24)
 
 > **ACTIVE flagship for daily-builder only.** Aether Forge is CLOSED. Automation prompt points here exclusively.
 
@@ -44,6 +44,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 20 — per-app prompt / max_tokens caps (`apps` in limits file)
 - [x] Session 21 — budget status on admin summary (spent / remaining / warn)
 - [x] Session 22 — rate-limit status on admin summary (used / remaining / warn)
+- [x] Session 23 — request-size limit status on admin summary (caps + hard-block warn)
 
 ## Next Up (highest priority)
 
@@ -136,10 +137,18 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - Does not change block policy — hard caps still enforce at evaluateRateLimit time.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+## Decisions (Session 23)
+
+- `limitStatus()` lists configured default / team / app prompt-char and max_tokens caps.
+- Per-request policy has no running usage window. Warn + exhausted when `max_tokens` cap is `0`.
+- Admin summary includes `limits` and `limitWarns`. Dashboard renders a Request size limits table.
+- Does not change block policy — hard caps still enforce at evaluateLimits time.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
 ## Handoff for next session
 
 **Active project:** Tokenpulse only. Daily automation: Tokenpulse Daily Builder (08:00 Europe/Berlin).
-Session 22 ships rate remaining/warn on admin summary and dashboard (mirrors budget status). Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
+Session 23 ships request-size cap visibility on admin summary and dashboard. Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
 
 ```bash
 npm install

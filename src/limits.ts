@@ -210,3 +210,61 @@ export function promptCharCount(texts: Array<{ content?: string } | string>): nu
   }
   return n;
 }
+
+export type LimitStatusRow = {
+  scope: "team" | "app" | "default";
+  id: string;
+  kind: "prompt_chars" | "max_tokens";
+  cap: number;
+  warn: boolean;
+  exhausted: boolean;
+};
+
+/**
+ * Operator view of configured request-size caps.
+ * Per-request policy — no running usage to peek. Warn when max_tokens cap is 0
+ * (hard block).
+ */
+export async function limitStatus(): Promise<LimitStatusRow[]> {
+  const cfg = await loadLimits();
+  const rows: LimitStatusRow[] = [];
+
+  const push = (
+    scope: LimitStatusRow["scope"],
+    id: string,
+    kind: LimitStatusRow["kind"],
+    cap: number | null,
+  ) => {
+    if (cap === null) return;
+    const exhausted = kind === "max_tokens" && cap === 0;
+    rows.push({
+      scope,
+      id,
+      kind,
+      cap,
+      warn: exhausted,
+      exhausted,
+    });
+  };
+
+  push("default", "*", "prompt_chars", cfg.defaultMaxPromptChars ?? null);
+  push("default", "*", "max_tokens", cfg.defaultMaxTokens ?? null);
+
+  for (const teamId of Object.keys(cfg.teams ?? {}).sort()) {
+    const explicit = cfg.teams?.[teamId];
+    if (typeof explicit?.maxPromptChars === "number") {
+      push("team", teamId, "prompt_chars", explicit.maxPromptChars);
+    }
+    if (typeof explicit?.maxTokens === "number") {
+      push("team", teamId, "max_tokens", explicit.maxTokens);
+    }
+  }
+
+  for (const appId of Object.keys(cfg.apps ?? {}).sort()) {
+    const caps = capsForApp(cfg, appId);
+    push("app", appId, "prompt_chars", caps.maxPromptChars);
+    push("app", appId, "max_tokens", caps.maxTokens);
+  }
+
+  return rows;
+}

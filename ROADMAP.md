@@ -31,6 +31,8 @@
 - [x] Per-app request rate limits
 - [x] Per-app prompt / max_tokens caps
 - [x] Budget remaining / warn status on admin summary
+- [x] Rate remaining / warn status on admin summary
+- [x] Request-size cap status on admin summary
 
 ## Next
 

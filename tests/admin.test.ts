@@ -77,12 +77,16 @@ describe("admin api", () => {
         byApp: Record<string, { calls: number }>;
         budgets: unknown[];
         budgetWarns: number;
+        limits: unknown[];
+        limitWarns: number;
       };
       assert.ok(body.allowed >= 1);
       assert.ok(body.byTeam.ops?.calls >= 1);
       assert.ok(body.byApp.cli?.calls >= 1);
       assert.ok(Array.isArray(body.budgets));
       assert.equal(typeof body.budgetWarns, "number");
+      assert.ok(Array.isArray(body.limits));
+      assert.equal(typeof body.limitWarns, "number");
 
       const fin = await fetch(`${url}/v1/admin/export/finops`, {
         headers: { authorization: "Bearer test-token" },
