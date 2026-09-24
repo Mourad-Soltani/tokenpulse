@@ -6,6 +6,8 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 
 ## Current Status (Session 22 — 2026-09-24)
 
+> **ACTIVE flagship for daily-builder only.** Aether Forge is CLOSED. Automation prompt points here exclusively.
+
 - [x] Repository created (`Mourad-Soltani/tokenpulse`)
 - [x] Bootstrap: README, ARCHITECTURE, ROADMAP, PROGRESS, package.json, tsconfig, gitignore
 - [x] Successor to closed Aether Forge daily-builder loop (client handover)
@@ -136,6 +138,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 
 ## Handoff for next session
 
+**Active project:** Tokenpulse only. Daily automation: Tokenpulse Daily Builder (08:00 Europe/Berlin).
 Session 22 ships rate remaining/warn on admin summary and dashboard (mirrors budget status). Live upstream proof still needs a rotated provider key supplied outside chat. Never paste provider keys or GitHub PATs into chat.
 
 ```bash
