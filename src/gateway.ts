@@ -5,7 +5,7 @@ import { appendEvent, appendOperatorNote, newEvent, readEvents, requestHash } fr
 import { estimateCostUsd } from "./pricing.js";
 import { mockChatCompletion, mockChatCompletionStream, mockEmbeddings } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
-import { evaluateModelPolicy, listVisibleModelsAsync } from "./models.js";
+import { evaluateModelPolicy, listVisibleModelsAsync, resolveRemapFor } from "./models.js";
 import { evaluateSensitive } from "./sensitive.js";
 import { evaluateRateLimit } from "./ratelimit.js";
 import { evaluateLimits, promptCharCount } from "./limits.js";
@@ -196,6 +196,10 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
+    const remap = await resolveRemapFor(parsed.data.model);
+    const upstreamReq = remap.remapped ? { ...parsed.data, model: remap.upstreamModel } : parsed.data;
+    const remapIds = remap.remapped ? ["model-remap", remap.policyId!] : [];
+
     const rate = await evaluateRateLimit(teamId, appId);
     if (!rate.allow) {
       const event = newEvent({
@@ -260,7 +264,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
 
     if (mock) {
       if (wantStream) {
-        const streamRes = mockChatCompletionStream(parsed.data);
+        const streamRes = mockChatCompletionStream(upstreamReq);
         res.writeHead(200, {
           "content-type": "text/event-stream; charset=utf-8",
           "cache-control": "no-cache",
@@ -284,14 +288,14 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           ),
           latencyMs,
           decision: "allow",
-          policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", "stream"],
+          policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", "stream", ...remapIds],
           requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: true }),
         });
         await appendEvent(event);
         res.end();
         return;
       }
-      const mockRes = mockChatCompletion(parsed.data);
+      const mockRes = mockChatCompletion(upstreamReq);
       const latencyMs = Date.now() - started;
       const event = newEvent({
         teamId,
@@ -307,7 +311,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         ),
         latencyMs,
         decision: "allow",
-        policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow"],
+        policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", ...remapIds],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
       await appendEvent(event);
@@ -330,7 +334,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     try {
       if (wantStream) {
         const streamed = await withUpstreamFallback(chain, (cfg) =>
-          liveChatCompletionStream(parsed.data, cfg, (chunk) => {
+          liveChatCompletionStream(upstreamReq, cfg, (chunk) => {
             if (!res.headersSent) {
               res.writeHead(200, {
                 "content-type": "text/event-stream; charset=utf-8",
@@ -366,6 +370,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
             `upstream:${used.source}`,
             "stream",
             ...(fallbackUsed ? ["upstream-fallback"] : []),
+            ...remapIds,
           ],
           requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: true }),
         });
@@ -373,7 +378,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         res.end();
         return;
       }
-      const forwarded = await withUpstreamFallback(chain, (cfg) => liveChatCompletion(parsed.data, cfg));
+      const forwarded = await withUpstreamFallback(chain, (cfg) => liveChatCompletion(upstreamReq, cfg));
       const live = forwarded.result;
       const used = forwarded.used;
       const latencyMs = Date.now() - started;
@@ -397,6 +402,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           "live-allow",
           `upstream:${used.source}`,
           ...(used !== chain[0] ? ["upstream-fallback"] : []),
+          ...remapIds,
         ],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
@@ -536,6 +542,11 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
 
+    const remap = await resolveRemapFor(parsed.data.model);
+    const upstreamReq = remap.remapped ? { ...parsed.data, model: remap.upstreamModel } : parsed.data;
+    const remapIds = remap.remapped ? ["model-remap", remap.policyId!] : [];
+
+
     const rate = await evaluateRateLimit(teamId, appId);
     if (!rate.allow) {
       const event = newEvent({
@@ -599,7 +610,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     }
 
     if (mock) {
-      const mockRes = mockEmbeddings(parsed.data);
+      const mockRes = mockEmbeddings(upstreamReq);
       const latencyMs = Date.now() - started;
       const event = newEvent({
         teamId,
@@ -611,7 +622,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         estimatedCostUsd: estimateCostUsd(parsed.data.model, mockRes.usage.promptTokens, 0),
         latencyMs,
         decision: "allow",
-        policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", "endpoint:embeddings"],
+        policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", "endpoint:embeddings", ...remapIds],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
       await appendEvent(event);
@@ -632,7 +643,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     }
 
     try {
-      const forwarded = await withUpstreamFallback(chain, (cfg) => liveEmbeddings(parsed.data, cfg));
+      const forwarded = await withUpstreamFallback(chain, (cfg) => liveEmbeddings(upstreamReq, cfg));
       const live = forwarded.result;
       const used = forwarded.used;
       const latencyMs = Date.now() - started;
@@ -657,6 +668,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           `upstream:${used.source}`,
           "endpoint:embeddings",
           ...(used !== chain[0] ? ["upstream-fallback"] : []),
+          ...remapIds,
         ],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });

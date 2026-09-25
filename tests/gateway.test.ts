@@ -137,4 +137,36 @@ describe("gateway", () => {
       server.close();
     }
   });
+
+  it("remaps client model for mock upstream and tags ledger", async () => {
+    process.env.TOKENPULSE_MODEL_REMAP = "gpt-4o:gpt-4o-mini";
+    delete process.env.TOKENPULSE_MODEL_ALLOW;
+    delete process.env.TOKENPULSE_MODEL_DENY;
+    const { server, url } = await listen();
+    try {
+      const res = await fetch(`${url}/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: "Bearer test-token",
+          "x-tokenpulse-team": "plat",
+          "x-tokenpulse-app": "router",
+        },
+        body: JSON.stringify({ model: "gpt-4o", messages: [{ role: "user", content: "remap me" }] }),
+      });
+      assert.equal(res.status, 200);
+      const body = (await res.json()) as { model: string; choices: { message: { content: string } }[] };
+      assert.equal(body.model, "gpt-4o-mini");
+      assert.match(body.choices[0].message.content, /gpt-4o-mini/);
+      const events = await readEvents();
+      const hit = events.find((e) => e.teamId === "plat" && e.appId === "router" && e.decision === "allow");
+      assert.ok(hit);
+      assert.equal(hit!.model, "gpt-4o");
+      assert.ok(hit!.policyIds.includes("model-remap"));
+      assert.ok(hit!.policyIds.includes("remap:gpt-4o:gpt-4o-mini"));
+    } finally {
+      delete process.env.TOKENPULSE_MODEL_REMAP;
+      server.close();
+    }
+  });
 });

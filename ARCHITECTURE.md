@@ -219,6 +219,16 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Hard blocks still happen only in `evaluateRateLimit`.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+## Model remap (Session 26)
+
+- Optional `remap` map in the models file (`TOKENPULSE_MODELS_PATH`) and/or `TOKENPULSE_MODEL_REMAP=from:to,from2:to2`.
+- Env remap replaces the file map when non-empty.
+- Allow/deny still evaluate the **client** model id. Remap runs only after allow.
+- Chat, embeddings, mock, live, and SSE send the remapped id upstream.
+- Ledger `model` stays the client id. Policy ids: `model-remap` + `remap:<from>:<to>`.
+- `GET /v1/models` lists client-facing ids only.
+- Identity maps (`from` equals `to`) are ignored.
+
 ## Multi-upstream fallback (Session 25)
 
 - Primary resolve is unchanged (`TOKENPULSE_UPSTREAM_*` then xAI then OpenAI).

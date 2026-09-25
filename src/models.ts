@@ -6,6 +6,8 @@ import { catalogModelIds } from "./pricing.js";
 export const ModelPolicySchema = z.object({
   allow: z.array(z.string().min(1)).optional(),
   deny: z.array(z.string().min(1)).optional(),
+  /** Client model id → upstream model id. Policy still evaluates the client id. */
+  remap: z.record(z.string().min(1), z.string().min(1)).optional(),
 });
 
 export type ModelPolicy = z.infer<typeof ModelPolicySchema>;
@@ -25,6 +27,22 @@ function splitCsv(raw: string | undefined): string[] {
     .filter(Boolean);
 }
 
+/** `from:to,from2:to2` — later pairs win on duplicate from. */
+export function parseRemapCsv(raw: string | undefined): Record<string, string> {
+  if (!raw?.trim()) return {};
+  const out: Record<string, string> = {};
+  for (const part of raw.split(",")) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    const idx = trimmed.indexOf(":");
+    if (idx <= 0 || idx === trimmed.length - 1) continue;
+    const from = trimmed.slice(0, idx).trim();
+    const to = trimmed.slice(idx + 1).trim();
+    if (from && to) out[from] = to;
+  }
+  return out;
+}
+
 export function modelsPath(): string {
   return process.env.TOKENPULSE_MODELS_PATH ?? join(process.cwd(), "data", "models.json");
 }
@@ -40,9 +58,32 @@ export async function loadModelPolicy(): Promise<ModelPolicy> {
   }
   const envAllow = splitCsv(process.env.TOKENPULSE_MODEL_ALLOW);
   const envDeny = splitCsv(process.env.TOKENPULSE_MODEL_DENY);
+  const envRemap = parseRemapCsv(process.env.TOKENPULSE_MODEL_REMAP);
   return {
     allow: envAllow.length ? envAllow : fileCfg.allow,
     deny: envDeny.length ? envDeny : fileCfg.deny,
+    remap: Object.keys(envRemap).length ? envRemap : fileCfg.remap,
+  };
+}
+
+export type ModelRemap = {
+  clientModel: string;
+  upstreamModel: string;
+  remapped: boolean;
+  policyId?: string;
+};
+
+/** After allow/deny on the client model, optionally rewrite the id sent upstream. */
+export function resolveRemap(clientModel: string, policy: ModelPolicy): ModelRemap {
+  const target = policy.remap?.[clientModel];
+  if (!target || target === clientModel) {
+    return { clientModel, upstreamModel: clientModel, remapped: false };
+  }
+  return {
+    clientModel,
+    upstreamModel: target,
+    remapped: true,
+    policyId: `remap:${clientModel}:${target}`,
   };
 }
 
@@ -77,6 +118,11 @@ export function evaluateModel(model: string, policy: ModelPolicy): ModelDecision
 export async function evaluateModelPolicy(model: string): Promise<ModelDecision> {
   const policy = await loadModelPolicy();
   return evaluateModel(model, policy);
+}
+
+export async function resolveRemapFor(clientModel: string): Promise<ModelRemap> {
+  const policy = await loadModelPolicy();
+  return resolveRemap(clientModel, policy);
 }
 
 export type ListedModel = {

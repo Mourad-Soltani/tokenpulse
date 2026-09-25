@@ -34,6 +34,7 @@
 - [x] Rate remaining / warn status on admin summary
 - [x] Request-size cap status on admin summary
 - [x] Multi-upstream fallback (`TOKENPULSE_UPSTREAM_FALLBACK_*`)
+- [x] Model remap (`TOKENPULSE_MODEL_REMAP` / `remap` in models file)
 
 ## Sale readiness
 
@@ -50,7 +51,7 @@
 ## Later
 
 - Shadow-AI discovery signals
-- Multi-upstream weighted routing / model remap
+- Multi-upstream weighted routing
 - SSO-backed team mapping
 - Cloud single-tenant deploy
 

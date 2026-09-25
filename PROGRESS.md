@@ -47,6 +47,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 23 — request-size limit status on admin summary (caps + hard-block warn)
 - [x] Session 24 — sale readiness pack (`SALE.md`, `BUYERS.md`, `OUTREACH.md`)
 - [x] Session 25 — multi-upstream fallback (`TOKENPULSE_UPSTREAM_FALLBACK_*`)
+- [x] Session 26 — model remap (`TOKENPULSE_MODEL_REMAP` / `remap`)
 
 ## Next Up (highest priority)
 
@@ -214,4 +215,29 @@ Fallback hop shipped. Sale materials unchanged. Operator live proof still requir
 
 **Active project:** Tokenpulse only.
 Session 25 adds provider fallback. Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+## Decisions (Session 26 — model remap)
+
+- Models file may include `remap` keyed by client model id.
+- Env `TOKENPULSE_MODEL_REMAP=from:to,from2:to2` replaces the file map when non-empty.
+- Allow/deny evaluate the client model. Remap applies only after allow.
+- Mock, live, embeddings, and SSE send the remapped id. Ledger `model` stays client-facing.
+- Policy ids: `model-remap` + `remap:<from>:<to>`. Identity maps are ignored.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 26 — 2026-09-25)
+
+Model remap shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+## Next Up (highest priority)
+
+1. **Operator:** live-upstream proof with rotated key outside git/chat; record `DEMO.md` (no keys on camera).
+2. After recording exists: personalize ≤10 emails from `OUTREACH.md` using `BUYERS.md`.
+3. Optional later product: discovery, weighted routing, SSO, cloud single-tenant (`ROADMAP.md`).
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 26 adds client→upstream model remap. Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.
