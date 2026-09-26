@@ -35,6 +35,7 @@
 - [x] Request-size cap status on admin summary
 - [x] Multi-upstream fallback (`TOKENPULSE_UPSTREAM_FALLBACK_*`)
 - [x] Model remap (`TOKENPULSE_MODEL_REMAP` / `remap` in models file)
+- [x] Weighted multi-upstream first hop (`TOKENPULSE_UPSTREAM_WEIGHTS`)
 
 ## Sale readiness
 
@@ -51,7 +52,7 @@
 ## Later
 
 - Shadow-AI discovery signals
-- Multi-upstream weighted routing
+- [x] Multi-upstream weighted routing
 - SSO-backed team mapping
 - Cloud single-tenant deploy
 

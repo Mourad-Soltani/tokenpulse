@@ -246,3 +246,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `limits` + `limitWarns`. Dashboard renders a Request size limits table.
 - Hard blocks still happen only in `evaluateLimits`.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Weighted routing (Session 27)
+
+- Optional `TOKENPULSE_UPSTREAM_WEIGHTS=source:weight,...` reorders the resolved chain.
+- First hop is sampled by weight; remaining hops stay original order for fallback.
+- Sources with weight `0` are never chosen first.
+- `TOKENPULSE_ROUTE_SEED` makes the pick deterministic (tests / replay).
+- Missing weights = current primary-then-fallback order.
+- `/health` reports `weighted` when the env is set.

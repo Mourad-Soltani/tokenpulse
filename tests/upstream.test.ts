@@ -10,6 +10,8 @@ import {
   resolveUpstream,
   resolveUpstreamChain,
   withUpstreamFallback,
+  parseUpstreamWeights,
+  orderUpstreamChain,
 } from "../src/upstream.ts";
 import { handleRequest } from "../src/gateway.ts";
 import { readEvents } from "../src/ledger.ts";
@@ -159,5 +161,45 @@ describe("gateway live path", () => {
       upstream.close();
       process.env.TOKENPULSE_MOCK_UPSTREAM = "1";
     }
+  });
+});
+
+describe("weighted upstream order", () => {
+  const primary = { baseUrl: "https://a.test/v1", apiKey: "a", source: "tokenpulse" as const };
+  const fallback = { baseUrl: "https://b.test/v1", apiKey: "b", source: "fallback" as const };
+
+  it("parses weights csv", () => {
+    assert.deepEqual(parseUpstreamWeights("tokenpulse:3,fallback:1"), { tokenpulse: 3, fallback: 1 });
+    assert.equal(parseUpstreamWeights(""), null);
+  });
+
+  it("keeps original order when no weights", () => {
+    const ordered = orderUpstreamChain([primary, fallback], null, () => 0);
+    assert.equal(ordered[0].source, "tokenpulse");
+  });
+
+  it("picks fallback first when rand lands in its slice", () => {
+    // weights 1 and 9 — rand 0.2 * 10 = 2 → second eligible
+    const ordered = orderUpstreamChain([primary, fallback], { tokenpulse: 1, fallback: 9 }, () => 0.2);
+    assert.equal(ordered[0].source, "fallback");
+    assert.equal(ordered[1].source, "tokenpulse");
+  });
+
+  it("never picks zero-weight source first", () => {
+    const ordered = orderUpstreamChain([primary, fallback], { tokenpulse: 0, fallback: 1 }, () => 0);
+    assert.equal(ordered[0].source, "fallback");
+  });
+
+  it("resolveUpstreamChain applies TOKENPULSE_UPSTREAM_WEIGHTS with seed", () => {
+    const env = {
+      TOKENPULSE_UPSTREAM_BASE_URL: "https://primary.test/v1",
+      TOKENPULSE_UPSTREAM_API_KEY: "k1",
+      TOKENPULSE_UPSTREAM_FALLBACK_BASE_URL: "https://backup.test/v1",
+      TOKENPULSE_UPSTREAM_FALLBACK_API_KEY: "k2",
+      TOKENPULSE_UPSTREAM_WEIGHTS: "tokenpulse:0,fallback:1",
+      TOKENPULSE_ROUTE_SEED: "1",
+    } as NodeJS.ProcessEnv;
+    const chain = resolveUpstreamChain(env);
+    assert.equal(chain[0].source, "fallback");
   });
 });

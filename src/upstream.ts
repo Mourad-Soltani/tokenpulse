@@ -48,7 +48,71 @@ export function resolveUpstreamChain(env: NodeJS.ProcessEnv = process.env): Upst
     const same = chain.some((c) => c.baseUrl === next.baseUrl && c.apiKey === next.apiKey);
     if (!same) chain.push(next);
   }
-  return chain;
+  return orderUpstreamChain(chain, parseUpstreamWeights(env.TOKENPULSE_UPSTREAM_WEIGHTS), rngFromEnv(env));
+}
+
+
+/** `tokenpulse:3,fallback:1` — missing source defaults to weight 1 when any weights are set. */
+export function parseUpstreamWeights(raw: string | undefined): Record<string, number> | null {
+  if (!raw?.trim()) return null;
+  const out: Record<string, number> = {};
+  for (const part of raw.split(",")) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    const idx = trimmed.indexOf(":");
+    if (idx <= 0) continue;
+    const source = trimmed.slice(0, idx).trim();
+    const w = Number(trimmed.slice(idx + 1).trim());
+    if (!source || !Number.isFinite(w) || w < 0) continue;
+    out[source] = w;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a += 0x6d2b79f5;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function rngFromEnv(env: NodeJS.ProcessEnv): () => number {
+  const raw = env.TOKENPULSE_ROUTE_SEED?.trim();
+  if (raw && Number.isFinite(Number(raw))) return mulberry32(Number(raw));
+  return Math.random;
+}
+
+/**
+ * When weights are configured, pick the first hop by weight; remaining hops stay original order.
+ * Zero-weight sources are never chosen first (they remain fallback-only).
+ */
+export function orderUpstreamChain(
+  chain: UpstreamConfig[],
+  weights: Record<string, number> | null,
+  rand: () => number = Math.random,
+): UpstreamConfig[] {
+  if (!weights || chain.length <= 1) return chain;
+  const eligible = chain
+    .map((c, i) => ({ c, i, w: weights[c.source] ?? 1 }))
+    .filter((x) => x.w > 0);
+  if (eligible.length === 0) return chain;
+  const total = eligible.reduce((s, x) => s + x.w, 0);
+  let r = Math.min(Math.max(rand(), 0), 0.999999) * total;
+  let pick = eligible[eligible.length - 1];
+  for (const x of eligible) {
+    r -= x.w;
+    if (r < 0) {
+      pick = x;
+      break;
+    }
+  }
+  const first = pick.c;
+  const rest = chain.filter((c) => c !== first);
+  return [first, ...rest];
 }
 
 export type FallbackAttempt = { source: string; error?: string };

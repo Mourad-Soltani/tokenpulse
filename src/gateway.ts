@@ -67,6 +67,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       mock: isMockUpstream(),
       liveConfigured: Boolean(resolveUpstream()),
       upstreams: resolveUpstreamChain().length,
+      weighted: Boolean(process.env.TOKENPULSE_UPSTREAM_WEIGHTS?.trim()),
       authRequired: Boolean(process.env.TOKENPULSE_GATEWAY_TOKEN),
     });
     return;

@@ -48,6 +48,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 24 — sale readiness pack (`SALE.md`, `BUYERS.md`, `OUTREACH.md`)
 - [x] Session 25 — multi-upstream fallback (`TOKENPULSE_UPSTREAM_FALLBACK_*`)
 - [x] Session 26 — model remap (`TOKENPULSE_MODEL_REMAP` / `remap`)
+- [x] Session 27 — weighted multi-upstream first hop (`TOKENPULSE_UPSTREAM_WEIGHTS`)
 
 ## Next Up (highest priority)
 
@@ -240,4 +241,29 @@ Model remap shipped. Sale materials unchanged. Operator live proof still require
 
 **Active project:** Tokenpulse only.
 Session 26 adds client→upstream model remap. Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 27 — weighted routing)
+
+- `TOKENPULSE_UPSTREAM_WEIGHTS=source:weight` picks the first hop; other hops remain fallback order.
+- Weight `0` excludes a source from being first. Unlisted sources default to weight 1 when any weights exist.
+- `TOKENPULSE_ROUTE_SEED` seeds a mulberry32 RNG for deterministic tests.
+- Does not change mock-first or live-key rules. No keys in git or chat.
+- Live-upstream demo recording remains an operator gate.
+
+## Current Status (Session 27 — 2026-09-26)
+
+Weighted first-hop routing shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+## Next Up (highest priority)
+
+1. **Operator:** live-upstream proof with rotated key outside git/chat; record `DEMO.md` (no keys on camera).
+2. After recording exists: personalize ≤10 emails from `OUTREACH.md` using `BUYERS.md`.
+3. Optional later product: discovery, SSO, cloud single-tenant (`ROADMAP.md`).
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 27 adds weighted first-hop among the upstream chain. Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.
