@@ -79,6 +79,7 @@ describe("admin api", () => {
         budgetWarns: number;
         limits: unknown[];
         limitWarns: number;
+        upstreams: { mock: boolean; hops: unknown[] };
       };
       assert.ok(body.allowed >= 1);
       assert.ok(body.byTeam.ops?.calls >= 1);
@@ -87,6 +88,8 @@ describe("admin api", () => {
       assert.equal(typeof body.budgetWarns, "number");
       assert.ok(Array.isArray(body.limits));
       assert.equal(typeof body.limitWarns, "number");
+      assert.equal(typeof body.upstreams.mock, "boolean");
+      assert.ok(Array.isArray(body.upstreams.hops));
 
       const fin = await fetch(`${url}/v1/admin/export/finops`, {
         headers: { authorization: "Bearer test-token" },

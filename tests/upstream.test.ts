@@ -12,6 +12,7 @@ import {
   withUpstreamFallback,
   parseUpstreamWeights,
   orderUpstreamChain,
+  upstreamStatus,
 } from "../src/upstream.ts";
 import { handleRequest } from "../src/gateway.ts";
 import { readEvents } from "../src/ledger.ts";
@@ -201,5 +202,29 @@ describe("weighted upstream order", () => {
     } as NodeJS.ProcessEnv;
     const chain = resolveUpstreamChain(env);
     assert.equal(chain[0].source, "fallback");
+  });
+});
+
+describe("upstream status", () => {
+  it("exposes hosts and weights without keys", () => {
+    const status = upstreamStatus({
+      TOKENPULSE_MOCK_UPSTREAM: "1",
+      TOKENPULSE_UPSTREAM_BASE_URL: "https://primary.test/v1",
+      TOKENPULSE_UPSTREAM_API_KEY: "secret-never-in-status",
+      TOKENPULSE_UPSTREAM_FALLBACK_BASE_URL: "https://backup.test/v1",
+      TOKENPULSE_UPSTREAM_FALLBACK_API_KEY: "also-secret",
+      TOKENPULSE_UPSTREAM_WEIGHTS: "tokenpulse:3,fallback:0",
+    } as NodeJS.ProcessEnv);
+    assert.equal(status.mock, true);
+    assert.equal(status.liveConfigured, true);
+    assert.equal(status.weighted, true);
+    assert.equal(status.hops.length, 2);
+    assert.equal(status.hops[0].host, "primary.test");
+    assert.equal(status.hops[0].weight, 3);
+    assert.equal(status.hops[0].firstEligible, true);
+    assert.equal(status.hops[1].firstEligible, false);
+    const blob = JSON.stringify(status);
+    assert.equal(blob.includes("secret"), false);
+    assert.equal(blob.includes("also-secret"), false);
   });
 });

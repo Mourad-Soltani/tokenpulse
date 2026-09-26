@@ -256,3 +256,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `TOKENPULSE_ROUTE_SEED` makes the pick deterministic (tests / replay).
 - Missing weights = current primary-then-fallback order.
 - `/health` reports `weighted` when the env is set.
+
+
+## Upstream status (Session 28)
+
+- `upstreamStatus()` lists configured hops as source + host + weight + firstEligible.
+- Order is the configured (pre-sample) chain so the dashboard does not jitter.
+- API keys never appear on `/v1/admin/summary` or the dashboard.
+- Admin summary exposes `upstreams`. Dashboard renders an Upstreams table.
+- Does not change routing — Session 27 still samples first hop at request time.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

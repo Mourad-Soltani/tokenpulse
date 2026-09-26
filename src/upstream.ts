@@ -36,8 +36,8 @@ export function resolveUpstream(env: NodeJS.ProcessEnv = process.env): UpstreamC
   return null;
 }
 
-/** Primary plus optional fallback. Dedupes identical baseUrl+key. */
-export function resolveUpstreamChain(env: NodeJS.ProcessEnv = process.env): UpstreamConfig[] {
+/** Configured hops in file/env order (no weight sampling). Dedupes identical baseUrl+key. */
+export function listConfiguredUpstreams(env: NodeJS.ProcessEnv = process.env): UpstreamConfig[] {
   const chain: UpstreamConfig[] = [];
   const primary = resolveUpstream(env);
   if (primary) chain.push(primary);
@@ -48,6 +48,12 @@ export function resolveUpstreamChain(env: NodeJS.ProcessEnv = process.env): Upst
     const same = chain.some((c) => c.baseUrl === next.baseUrl && c.apiKey === next.apiKey);
     if (!same) chain.push(next);
   }
+  return chain;
+}
+
+/** Primary plus optional fallback. Dedupes identical baseUrl+key. */
+export function resolveUpstreamChain(env: NodeJS.ProcessEnv = process.env): UpstreamConfig[] {
+  const chain = listConfiguredUpstreams(env);
   return orderUpstreamChain(chain, parseUpstreamWeights(env.TOKENPULSE_UPSTREAM_WEIGHTS), rngFromEnv(env));
 }
 
@@ -113,6 +119,51 @@ export function orderUpstreamChain(
   const first = pick.c;
   const rest = chain.filter((c) => c !== first);
   return [first, ...rest];
+}
+
+
+export type UpstreamStatusHop = {
+  source: string;
+  host: string;
+  weight: number | null;
+  firstEligible: boolean;
+  position: number;
+};
+
+export type UpstreamStatus = {
+  mock: boolean;
+  liveConfigured: boolean;
+  weighted: boolean;
+  hops: UpstreamStatusHop[];
+};
+
+export function hostOfBaseUrl(baseUrl: string): string {
+  try {
+    return new URL(baseUrl).host || "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
+/** Operator view of the route chain. Never includes API keys. */
+export function upstreamStatus(env: NodeJS.ProcessEnv = process.env): UpstreamStatus {
+  const weights = parseUpstreamWeights(env.TOKENPULSE_UPSTREAM_WEIGHTS);
+  const configured = listConfiguredUpstreams(env);
+  return {
+    mock: isMockUpstream(env),
+    liveConfigured: configured.length > 0,
+    weighted: Boolean(weights),
+    hops: configured.map((c, i) => {
+      const w = weights ? (weights[c.source] ?? 1) : null;
+      return {
+        source: c.source,
+        host: hostOfBaseUrl(c.baseUrl),
+        weight: w,
+        firstEligible: w === null || w > 0,
+        position: i + 1,
+      };
+    }),
+  };
 }
 
 export type FallbackAttempt = { source: string; error?: string };

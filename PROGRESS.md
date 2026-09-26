@@ -49,6 +49,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 25 — multi-upstream fallback (`TOKENPULSE_UPSTREAM_FALLBACK_*`)
 - [x] Session 26 — model remap (`TOKENPULSE_MODEL_REMAP` / `remap`)
 - [x] Session 27 — weighted multi-upstream first hop (`TOKENPULSE_UPSTREAM_WEIGHTS`)
+- [x] Session 28 — upstream route status on admin/dashboard
 
 ## Next Up (highest priority)
 
@@ -266,4 +267,31 @@ Weighted first-hop routing shipped. Sale materials unchanged. Operator live proo
 
 **Active project:** Tokenpulse only.
 Session 27 adds weighted first-hop among the upstream chain. Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 28 — upstream status)
+
+- `upstreamStatus()` reports mock, liveConfigured, weighted, and hops (source, host, weight, firstEligible).
+- Uses configured order, not the per-request weighted sample, so the dashboard is stable.
+- Keys are never serialized. Host is parsed from baseUrl only.
+- Admin summary includes `upstreams`. Dashboard adds an Upstreams table.
+- Routing behavior is unchanged from Session 27.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 28 — 2026-09-26)
+
+Upstream visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+## Next Up (highest priority)
+
+1. **Operator:** live-upstream proof with rotated key outside git/chat; record `DEMO.md` (no keys on camera).
+2. After recording exists: personalize ≤10 emails from `OUTREACH.md` using `BUYERS.md`.
+3. Optional later product: discovery, SSO, cloud single-tenant (`ROADMAP.md`).
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 28 adds key-free upstream hop status on admin summary and dashboard.
+Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.

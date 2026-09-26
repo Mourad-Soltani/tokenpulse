@@ -36,6 +36,7 @@
 - [x] Multi-upstream fallback (`TOKENPULSE_UPSTREAM_FALLBACK_*`)
 - [x] Model remap (`TOKENPULSE_MODEL_REMAP` / `remap` in models file)
 - [x] Weighted multi-upstream first hop (`TOKENPULSE_UPSTREAM_WEIGHTS`)
+- [x] Upstream route status on admin summary
 
 ## Sale readiness
 
