@@ -60,6 +60,7 @@ No seat tax. No forced SaaS. Source stays inspectable.
 Technical walkthrough, paid pilot, or strategic conversation. Serious replies get the demo recording and sample FinOps/CISO packs.
 
 **Repo:** https://github.com/Mourad-Soltani/tokenpulse  
+**Proof:** `PROOF.md` + `proof/` · **Pilot:** `PILOT.md`  
 **Contact:** Mourad Soltani (repository maintainer)
 
 ---
