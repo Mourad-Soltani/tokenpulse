@@ -51,6 +51,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 27 — weighted multi-upstream first hop (`TOKENPULSE_UPSTREAM_WEIGHTS`)
 - [x] Session 28 — upstream route status on admin/dashboard
 - [x] Session 29 — model policy status on admin/dashboard
+- [x] Session 30 — diligence proof pack + pilot/reference path
 
 ## Next Up (highest priority)
 
@@ -321,4 +322,30 @@ Model policy visibility shipped. Sale materials unchanged. Operator live proof s
 **Active project:** Tokenpulse only.
 Session 29 adds key-free model allow/deny/remap status on admin summary and dashboard.
 Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 30 — close proof + reference path)
+
+- Machine-verifiable diligence artifacts live under `proof/` (FinOps, security, chain, summary) from secret-free demo.
+- `PROOF.md` is the buyer-facing reproduction + operator recording checklist.
+- `PILOT.md` defines the $15k/30d pilot offer and how a real reference is captured; References table stays empty until a signed pilot quote exists.
+- Does not invent customers or claim a screen recording that does not exist.
+- Operator local recording remains the only human gate before outbound email.
+- No keys in git or chat.
+
+## Current Status (Session 30 — 2026-09-27)
+
+Diligence proof pack + pilot path shipped. Operator screen recording and first pilot still open.
+
+## Next Up (highest priority)
+
+1. **Operator:** screen-record `PROOF.md` section B / `DEMO.md` (no keys on camera).
+2. Start personalized emails (`OUTREACH.md`) or first pilot conversation (`PILOT.md`).
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 30 closes the in-repo side of live proof (sample packs + checklist) and the process side of commercial references (pilot offer). Camera recording and real counterparties remain human.
 Never paste provider keys or GitHub PATs into chat.

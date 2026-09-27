@@ -1,7 +1,7 @@
 # Tokenpulse — Sale readiness pack
 
 **Status:** Product MVP complete (Session 23). Sale materials prepared (Session 24).  
-**Operator gate before outbound email:** record live-upstream proof + `DEMO.md` walkthrough (keys only in local env; never in git/chat/video).
+**Gates:** Machine proof closed (`PROOF.md` + `proof/`). Operator screen recording still required before outbound. First commercial reference via `PILOT.md` (not fabricated).
 
 ## One-liner
 
@@ -38,13 +38,25 @@ Internal rebuild estimate for the same surface: **multiple engineering quarters*
 - [x] Secret-free demo path
 - [x] Packaging docs (`LANDING.md`, `DEMO.md`, this file)
 
+### Machine proof (Session 30)
+
+- [x] Secret-free demo + tests green
+- [x] Committed sample packs under `proof/` (FinOps, security, chain, summary)
+- [x] Diligence map: `PROOF.md`
+
 ### Operator (your machine — not automation)
 
-- [ ] Live upstream once with rotated key in **local shell only**
-- [ ] Screen-record `DEMO.md` (no keys on camera)
+- [ ] Screen-record `DEMO.md` / `PROOF.md` §B (no keys on camera) — **only remaining proof gap**
+- [ ] Optional: live upstream once with rotated key in **local shell only**
 - [ ] Optional: 30s clip of budget/sensitive **block** + FinOps export open in editor
 
-### Outreach (do after recordings exist)
+### Commercial reference path (Session 30)
+
+- [x] Pilot offer + reference capture process: `PILOT.md` ($15k / 30 days)
+- [ ] First pilot signed / started
+- [ ] Written quote → fill References table in `PILOT.md`
+
+### Outreach (after operator recording; pilot can run in parallel)
 
 - [ ] Personalize 5–10 emails from `OUTREACH.md` (no bulk blasts)
 - [ ] Attach or link demo recording only after NDA / serious reply if preferred
@@ -69,3 +81,5 @@ At complete + proof, no revenue: discuss as **early strategic asset** (rough pri
 | `OUTREACH.md` | Email sequences (high-signal, non-bulk) |
 | `ARCHITECTURE.md` | Technical depth for diligence |
 | `PROGRESS.md` | Build history / handoff |
+| `PROOF.md` / `proof/` | Diligence reproduction + sample packs |
+| `PILOT.md` | Paid pilot + reference capture |

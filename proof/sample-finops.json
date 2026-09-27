@@ -1,0 +1,202 @@
+{
+  "version": "tokenpulse-finops-v1",
+  "generatedAt": "2026-09-27T12:03:47.278Z",
+  "summary": {
+    "calls": 12,
+    "allowed": 4,
+    "blocked": 7,
+    "notes": 1,
+    "tokens": 80,
+    "costUsd": 0.000038,
+    "byTeam": {
+      "demo-team": {
+        "tokens": 58,
+        "costUsd": 0.000026,
+        "calls": 7
+      },
+      "burst": {
+        "tokens": 22,
+        "costUsd": 0.000012,
+        "calls": 2
+      },
+      "tiny": {
+        "tokens": 0,
+        "costUsd": 0,
+        "calls": 1
+      },
+      "broke": {
+        "tokens": 0,
+        "costUsd": 0,
+        "calls": 1
+      }
+    },
+    "byApp": {
+      "demo-app": {
+        "tokens": 80,
+        "costUsd": 0.000038,
+        "calls": 9
+      },
+      "burst-app": {
+        "tokens": 0,
+        "costUsd": 0,
+        "calls": 1
+      },
+      "capped-app": {
+        "tokens": 0,
+        "costUsd": 0,
+        "calls": 1
+      }
+    },
+    "byModel": {
+      "gpt-4o-mini": {
+        "tokens": 73,
+        "costUsd": 0.000038,
+        "calls": 9
+      },
+      "text-embedding-3-small": {
+        "tokens": 7,
+        "costUsd": 0,
+        "calls": 1
+      },
+      "banned-model": {
+        "tokens": 0,
+        "costUsd": 0,
+        "calls": 1
+      }
+    }
+  },
+  "events": [
+    {
+      "id": "evt_f36f924e-eb77-4220-8bda-b9a78c89a67f",
+      "timestamp": "2026-09-27T12:03:28.178Z",
+      "teamId": "demo-team",
+      "appId": "demo-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 5,
+      "completionTokens": 20,
+      "totalTokens": 25,
+      "estimatedCostUsd": 0.000013,
+      "decision": "allow"
+    },
+    {
+      "id": "evt_741d06bb-0731-4521-8df9-5012d1b3b2c7",
+      "timestamp": "2026-09-27T12:03:28.223Z",
+      "teamId": "demo-team",
+      "appId": "demo-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 5,
+      "completionTokens": 21,
+      "totalTokens": 26,
+      "estimatedCostUsd": 0.000013,
+      "decision": "allow"
+    },
+    {
+      "id": "evt_ba5e9b65-1b77-4775-a622-26b35a238cf6",
+      "timestamp": "2026-09-27T12:03:28.285Z",
+      "teamId": "demo-team",
+      "appId": "demo-app",
+      "model": "text-embedding-3-small",
+      "promptTokens": 7,
+      "completionTokens": 0,
+      "totalTokens": 7,
+      "estimatedCostUsd": 0,
+      "decision": "allow"
+    },
+    {
+      "id": "evt_e8bf97ca-17f5-47eb-be6f-dab478979e85",
+      "timestamp": "2026-09-27T12:03:28.314Z",
+      "teamId": "demo-team",
+      "appId": "demo-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "totalTokens": 0,
+      "estimatedCostUsd": 0,
+      "decision": "block"
+    },
+    {
+      "id": "evt_02f801a8-3bc6-4737-b9bf-e00cfb1ec6f6",
+      "timestamp": "2026-09-27T12:03:28.344Z",
+      "teamId": "demo-team",
+      "appId": "demo-app",
+      "model": "banned-model",
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "totalTokens": 0,
+      "estimatedCostUsd": 0,
+      "decision": "block"
+    },
+    {
+      "id": "evt_80f10d38-1b8b-4989-a8aa-9ebc80ebdbec",
+      "timestamp": "2026-09-27T12:03:28.381Z",
+      "teamId": "burst",
+      "appId": "demo-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 3,
+      "completionTokens": 19,
+      "totalTokens": 22,
+      "estimatedCostUsd": 0.000012,
+      "decision": "allow"
+    },
+    {
+      "id": "evt_683827f1-f71a-46cc-9e97-1f045c7c9b99",
+      "timestamp": "2026-09-27T12:03:28.398Z",
+      "teamId": "burst",
+      "appId": "demo-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "totalTokens": 0,
+      "estimatedCostUsd": 0,
+      "decision": "block"
+    },
+    {
+      "id": "evt_b9b1d328-2506-43ad-9b2e-9999bc7fc553",
+      "timestamp": "2026-09-27T12:03:28.430Z",
+      "teamId": "demo-team",
+      "appId": "burst-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "totalTokens": 0,
+      "estimatedCostUsd": 0,
+      "decision": "block"
+    },
+    {
+      "id": "evt_5ceb2325-65b1-4432-bb5c-36ca885f0196",
+      "timestamp": "2026-09-27T12:03:28.459Z",
+      "teamId": "tiny",
+      "appId": "demo-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "totalTokens": 0,
+      "estimatedCostUsd": 0,
+      "decision": "block"
+    },
+    {
+      "id": "evt_547076be-5d75-47b3-965e-0f611dbb7b69",
+      "timestamp": "2026-09-27T12:03:28.490Z",
+      "teamId": "broke",
+      "appId": "demo-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "totalTokens": 0,
+      "estimatedCostUsd": 0,
+      "decision": "block"
+    },
+    {
+      "id": "evt_a8feddb5-8bf8-45b6-b826-f874f639ba33",
+      "timestamp": "2026-09-27T12:03:28.523Z",
+      "teamId": "demo-team",
+      "appId": "capped-app",
+      "model": "gpt-4o-mini",
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "totalTokens": 0,
+      "estimatedCostUsd": 0,
+      "decision": "block"
+    }
+  ]
+}

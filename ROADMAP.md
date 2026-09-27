@@ -38,6 +38,8 @@
 - [x] Weighted multi-upstream first hop (`TOKENPULSE_UPSTREAM_WEIGHTS`)
 - [x] Upstream route status on admin summary
 - [x] Model policy status on admin summary
+- [x] Diligence proof pack (`PROOF.md` + `proof/` samples)
+- [x] Pilot / reference path (`PILOT.md`)
 
 ## Sale readiness
 

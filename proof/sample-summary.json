@@ -1,0 +1,64 @@
+{
+  "calls": 12,
+  "allowed": 4,
+  "blocked": 7,
+  "notes": 1,
+  "tokens": 80,
+  "costUsd": 0.000038,
+  "byTeam": {
+    "demo-team": {
+      "tokens": 58,
+      "costUsd": 0.000026,
+      "calls": 7
+    },
+    "burst": {
+      "tokens": 22,
+      "costUsd": 0.000012,
+      "calls": 2
+    },
+    "tiny": {
+      "tokens": 0,
+      "costUsd": 0,
+      "calls": 1
+    },
+    "broke": {
+      "tokens": 0,
+      "costUsd": 0,
+      "calls": 1
+    }
+  },
+  "byApp": {
+    "demo-app": {
+      "tokens": 80,
+      "costUsd": 0.000038,
+      "calls": 9
+    },
+    "burst-app": {
+      "tokens": 0,
+      "costUsd": 0,
+      "calls": 1
+    },
+    "capped-app": {
+      "tokens": 0,
+      "costUsd": 0,
+      "calls": 1
+    }
+  },
+  "byModel": {
+    "gpt-4o-mini": {
+      "tokens": 73,
+      "costUsd": 0.000038,
+      "calls": 9
+    },
+    "text-embedding-3-small": {
+      "tokens": 7,
+      "costUsd": 0,
+      "calls": 1
+    },
+    "banned-model": {
+      "tokens": 0,
+      "costUsd": 0,
+      "calls": 1
+    }
+  }
+}

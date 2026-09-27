@@ -1,5 +1,7 @@
 # Tokenpulse demo walkthrough (secret-free)
 
+For the full diligence checklist and committed sample packs, see **PROOF.md** and **proof/**.
+
 Record this locally. Do not put provider keys in the recording or in git.
 
 ## 1. Install and test
