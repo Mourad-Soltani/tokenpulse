@@ -3,6 +3,7 @@ import { rateStatus, type RateStatusRow } from "./ratelimit.js";
 import { limitStatus, type LimitStatusRow } from "./limits.js";
 import { upstreamStatus, type UpstreamStatus } from "./upstream.js";
 import { modelStatusAsync, type ModelStatus } from "./models.js";
+import { sensitiveStatus, type SensitiveStatus } from "./sensitive.js";
 import { readEvents, summarize, verifyChain } from "./ledger.js";
 import type { UsageEvent } from "./types.js";
 
@@ -19,6 +20,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   limitWarns: number;
   upstreams: UpstreamStatus;
   models: ModelStatus;
+  sensitive: SensitiveStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -34,6 +36,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
   const limits = await limitStatus();
   const upstreams = upstreamStatus();
   const models = await modelStatusAsync();
+  const sensitive = sensitiveStatus();
   return {
     ...summarize(events),
     day: opts?.day,
@@ -48,6 +51,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     limitWarns: limits.filter((l) => l.warn).length,
     upstreams,
     models,
+    sensitive,
   };
 }
 
@@ -111,6 +115,11 @@ export function dashboardHtml(): string {
     <table id="models"><thead><tr><th>Kind</th><th>Client</th><th>Upstream</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Sensitive payload</h2>
+    <p class="sub" id="sensmeta"></p>
+    <table id="sensitive"><thead><tr><th>Mode</th><th>Categories</th><th>Custom patterns</th></tr></thead><tbody></tbody></table>
+  </div>
     <h2 style="margin:0 0 8px;font-size:1rem">By team</h2>
     <table id="teams"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
   </div>
@@ -167,6 +176,7 @@ async function load() {
     ['Limit warns', s.limitWarns ?? 0],
     ['Upstreams', (s.upstreams && s.upstreams.hops) ? s.upstreams.hops.length : 0],
     ['Model mode', (s.models && s.models.mode) ? s.models.mode : 'open'],
+    ['Sensitive', (s.sensitive && s.sensitive.mode) ? s.sensitive.mode : 'on'],
     ['Chain', s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const bud = document.querySelector('#budgets tbody');
@@ -203,6 +213,10 @@ async function load() {
     const cls = l.exhausted || l.warn ? 'bad' : 'ok';
     return '<tr><td>'+l.scope+'</td><td>'+l.id+'</td><td>'+l.kind+'</td><td>'+l.cap+'</td><td class="'+cls+'">'+st+'</td></tr>';
   }).join('') || '<tr><td colspan="5">no size caps configured</td></tr>';
+  const se = s.sensitive || { mode:'on', categories:[], extraPatterns:0 };
+  document.getElementById('sensmeta').textContent = (se.enabled === false ? 'scan off' : 'scan on') + ' · custom ' + (se.extraPatterns ?? 0);
+  const st = document.querySelector('#sensitive tbody');
+  st.innerHTML = '<tr><td class="'+(se.enabled===false?'bad':'ok')+'">'+se.mode+'</td><td>'+(se.categories||[]).join(', ')+'</td><td>'+(se.extraPatterns??0)+'</td></tr>';
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>
     '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';

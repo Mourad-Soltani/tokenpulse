@@ -274,3 +274,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `models`. Dashboard renders a Models table.
 - Does not change allow/deny/remap evaluation.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Sensitive status (Session 31)
+
+- `sensitiveStatus()` reports mode (`on` | `off`), builtin categories, and extra pattern count.
+- Extra pattern *text* is never serialized — only a count of valid `TOKENPULSE_SENSITIVE_EXTRA` entries.
+- Admin summary exposes `sensitive`. Dashboard renders a Sensitive payload table.
+- Does not change scan or block behavior.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

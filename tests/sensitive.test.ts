@@ -4,7 +4,7 @@ import { createServer } from "node:http";
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { evaluateSensitive, scanText } from "../src/sensitive.ts";
+import { evaluateSensitive, scanText, sensitiveStatus } from "../src/sensitive.ts";
 import { handleRequest } from "../src/gateway.ts";
 import { readEvents } from "../src/ledger.ts";
 
@@ -31,6 +31,25 @@ describe("sensitive heuristics", () => {
     assert.equal(d.allow, true);
     assert.equal(d.policyId, "sensitive-off");
     delete process.env.TOKENPULSE_SENSITIVE;
+  });
+
+  it("sensitiveStatus reports on by default without leaking patterns", () => {
+    delete process.env.TOKENPULSE_SENSITIVE;
+    delete process.env.TOKENPULSE_SENSITIVE_EXTRA;
+    const s = sensitiveStatus();
+    assert.equal(s.enabled, true);
+    assert.equal(s.mode, "on");
+    assert.ok(s.categories.includes("secret"));
+    assert.ok(s.categories.includes("pii"));
+    assert.equal(s.extraPatterns, 0);
+    assert.equal(JSON.stringify(s).includes("github_pat_"), false);
+  });
+
+  it("sensitiveStatus counts valid extra patterns only", () => {
+    process.env.TOKENPULSE_SENSITIVE_EXTRA = "alpha;;(broken;;beta";
+    const s = sensitiveStatus();
+    assert.equal(s.extraPatterns, 2);
+    delete process.env.TOKENPULSE_SENSITIVE_EXTRA;
   });
 });
 

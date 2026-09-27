@@ -40,6 +40,7 @@
 - [x] Model policy status on admin summary
 - [x] Diligence proof pack (`PROOF.md` + `proof/` samples)
 - [x] Pilot / reference path (`PILOT.md`)
+- [x] Sensitive scan status on admin summary
 
 ## Sale readiness
 

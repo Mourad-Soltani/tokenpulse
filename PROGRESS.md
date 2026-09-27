@@ -52,6 +52,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 28 — upstream route status on admin/dashboard
 - [x] Session 29 — model policy status on admin/dashboard
 - [x] Session 30 — diligence proof pack + pilot/reference path
+- [x] Session 31 — sensitive scan status on admin/dashboard
 
 ## Next Up (highest priority)
 
@@ -348,4 +349,30 @@ Diligence proof pack + pilot path shipped. Operator screen recording and first p
 
 **Active project:** Tokenpulse only.
 Session 30 closes the in-repo side of live proof (sample packs + checklist) and the process side of commercial references (pilot offer). Camera recording and real counterparties remain human.
+Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 31 — sensitive status)
+
+- `sensitiveStatus()` reports enabled/mode, builtin categories (`secret`, `pii`), and extraPatterns count.
+- Custom regex text from `TOKENPULSE_SENSITIVE_EXTRA` is never returned on admin or dashboard.
+- Admin summary includes `sensitive`. Dashboard adds a Sensitive payload table.
+- Scan/block behavior is unchanged from Session 6.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 31 — 2026-09-27)
+
+Sensitive scan visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+## Next Up (highest priority)
+
+1. **Operator:** screen-record `PROOF.md` section B / `DEMO.md` (no keys on camera).
+2. Start personalized emails (`OUTREACH.md`) or first pilot conversation (`PILOT.md`).
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 31 adds key-free sensitive-scan status on admin summary and dashboard.
+Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.

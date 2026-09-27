@@ -48,6 +48,7 @@ describe("admin api", () => {
       assert.equal(res.status, 200);
       const text = await res.text();
       assert.match(text, /Tokenpulse/);
+      assert.match(text, /Sensitive payload/);
       assert.match(res.headers.get("content-type") ?? "", /text\/html/);
     } finally {
       server.close();
@@ -81,6 +82,7 @@ describe("admin api", () => {
         limitWarns: number;
         upstreams: { mock: boolean; hops: unknown[] };
         models: { mode: string; allow: string[]; deny: string[]; remaps: unknown[] };
+        sensitive: { mode: string; categories: string[]; extraPatterns: number };
       };
       assert.ok(body.allowed >= 1);
       assert.ok(body.byTeam.ops?.calls >= 1);
@@ -95,6 +97,9 @@ describe("admin api", () => {
       assert.ok(Array.isArray(body.models.allow));
       assert.ok(Array.isArray(body.models.deny));
       assert.ok(Array.isArray(body.models.remaps));
+      assert.equal(typeof body.sensitive.mode, "string");
+      assert.ok(Array.isArray(body.sensitive.categories));
+      assert.equal(typeof body.sensitive.extraPatterns, "number");
 
       const fin = await fetch(`${url}/v1/admin/export/finops`, {
         headers: { authorization: "Bearer test-token" },

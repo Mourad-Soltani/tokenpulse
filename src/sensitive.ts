@@ -88,3 +88,41 @@ export function evaluateSensitive(messages: { content?: string }[]): SensitiveDe
     categories,
   };
 }
+
+
+export type SensitiveStatus = {
+  enabled: boolean;
+  mode: "on" | "off";
+  categories: string[];
+  extraPatterns: number;
+};
+
+const BUILTIN_CATEGORIES = ["secret", "pii"] as const;
+
+function extraPatternCount(): number {
+  const raw = process.env.TOKENPULSE_SENSITIVE_EXTRA ?? "";
+  if (!raw.trim()) return 0;
+  return raw
+    .split(";;")
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .flatMap((p) => {
+      try {
+        new RegExp(p, "i");
+        return [p];
+      } catch {
+        return [];
+      }
+    }).length;
+}
+
+/** Operator visibility only — does not change scan or block behavior. Never includes pattern text. */
+export function sensitiveStatus(): SensitiveStatus {
+  const on = enabled();
+  return {
+    enabled: on,
+    mode: on ? "on" : "off",
+    categories: [...BUILTIN_CATEGORIES],
+    extraPatterns: extraPatternCount(),
+  };
+}
