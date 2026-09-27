@@ -37,6 +37,7 @@
 - [x] Model remap (`TOKENPULSE_MODEL_REMAP` / `remap` in models file)
 - [x] Weighted multi-upstream first hop (`TOKENPULSE_UPSTREAM_WEIGHTS`)
 - [x] Upstream route status on admin summary
+- [x] Model policy status on admin summary
 
 ## Sale readiness
 

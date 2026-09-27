@@ -266,3 +266,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `upstreams`. Dashboard renders an Upstreams table.
 - Does not change routing — Session 27 still samples first hop at request time.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Model policy status (Session 29)
+
+- `modelStatus()` lists mode, allow, deny, remaps, and visible catalog count.
+- Admin summary exposes `models`. Dashboard renders a Models table.
+- Does not change allow/deny/remap evaluation.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

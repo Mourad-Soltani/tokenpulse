@@ -125,6 +125,40 @@ export async function resolveRemapFor(clientModel: string): Promise<ModelRemap> 
   return resolveRemap(clientModel, policy);
 }
 
+
+export type ModelStatus = {
+  mode: "open" | "allowlist" | "deny-only" | "allow+deny";
+  allow: string[];
+  deny: string[];
+  remaps: { from: string; to: string }[];
+  visibleCount: number;
+};
+
+/** Operator visibility only — does not change allow/deny/remap evaluation. */
+export function modelStatus(policy: ModelPolicy): ModelStatus {
+  const allow = [...(policy.allow ?? [])];
+  const deny = [...(policy.deny ?? [])];
+  const remaps = Object.entries(policy.remap ?? {})
+    .filter(([from, to]) => from && to && from !== to)
+    .map(([from, to]) => ({ from, to }))
+    .sort((a, b) => a.from.localeCompare(b.from));
+  let mode: ModelStatus["mode"] = "open";
+  if (allow.length && deny.length) mode = "allow+deny";
+  else if (allow.length) mode = "allowlist";
+  else if (deny.length) mode = "deny-only";
+  return {
+    mode,
+    allow,
+    deny,
+    remaps,
+    visibleCount: listVisibleModels(policy).length,
+  };
+}
+
+export async function modelStatusAsync(): Promise<ModelStatus> {
+  return modelStatus(await loadModelPolicy());
+}
+
 export type ListedModel = {
   id: string;
   object: "model";

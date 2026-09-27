@@ -50,6 +50,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 26 — model remap (`TOKENPULSE_MODEL_REMAP` / `remap`)
 - [x] Session 27 — weighted multi-upstream first hop (`TOKENPULSE_UPSTREAM_WEIGHTS`)
 - [x] Session 28 — upstream route status on admin/dashboard
+- [x] Session 29 — model policy status on admin/dashboard
 
 ## Next Up (highest priority)
 
@@ -293,5 +294,31 @@ Upstream visibility shipped. Sale materials unchanged. Operator live proof still
 
 **Active project:** Tokenpulse only.
 Session 28 adds key-free upstream hop status on admin summary and dashboard.
+Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 29 — model policy status)
+
+- `modelStatus()` reports mode (`open` | `allowlist` | `deny-only` | `allow+deny`), allow/deny ids, remaps, and visible catalog count.
+- Identity remaps are omitted. Keys never appear.
+- Admin summary includes `models`. Dashboard adds a Models table.
+- Does not change allow/deny/remap evaluation.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 29 — 2026-09-27)
+
+Model policy visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+## Next Up (highest priority)
+
+1. **Operator:** live-upstream proof with rotated key outside git/chat; record `DEMO.md` (no keys on camera).
+2. After recording exists: personalize ≤10 emails from `OUTREACH.md` using `BUYERS.md`.
+3. Optional later product: discovery, SSO, cloud single-tenant (`ROADMAP.md`).
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 29 adds key-free model allow/deny/remap status on admin summary and dashboard.
 Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.

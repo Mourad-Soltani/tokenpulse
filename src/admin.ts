@@ -2,6 +2,7 @@ import { budgetStatus, type BudgetStatusRow } from "./budget.js";
 import { rateStatus, type RateStatusRow } from "./ratelimit.js";
 import { limitStatus, type LimitStatusRow } from "./limits.js";
 import { upstreamStatus, type UpstreamStatus } from "./upstream.js";
+import { modelStatusAsync, type ModelStatus } from "./models.js";
 import { readEvents, summarize, verifyChain } from "./ledger.js";
 import type { UsageEvent } from "./types.js";
 
@@ -17,6 +18,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   limits: LimitStatusRow[];
   limitWarns: number;
   upstreams: UpstreamStatus;
+  models: ModelStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -31,6 +33,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
   const rates = await rateStatus();
   const limits = await limitStatus();
   const upstreams = upstreamStatus();
+  const models = await modelStatusAsync();
   return {
     ...summarize(events),
     day: opts?.day,
@@ -44,6 +47,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     limits,
     limitWarns: limits.filter((l) => l.warn).length,
     upstreams,
+    models,
   };
 }
 
@@ -102,6 +106,11 @@ export function dashboardHtml(): string {
     <table id="upstreams"><thead><tr><th>#</th><th>Source</th><th>Host</th><th>Weight</th><th>First hop</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Models</h2>
+    <p class="sub" id="modelmeta"></p>
+    <table id="models"><thead><tr><th>Kind</th><th>Client</th><th>Upstream</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">By team</h2>
     <table id="teams"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
   </div>
@@ -157,6 +166,7 @@ async function load() {
     ['Rate warns', s.rateWarns ?? 0],
     ['Limit warns', s.limitWarns ?? 0],
     ['Upstreams', (s.upstreams && s.upstreams.hops) ? s.upstreams.hops.length : 0],
+    ['Model mode', (s.models && s.models.mode) ? s.models.mode : 'open'],
     ['Chain', s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const bud = document.querySelector('#budgets tbody');
@@ -179,6 +189,14 @@ async function load() {
     const cls = h.firstEligible ? 'ok' : 'bad';
     return '<tr><td>'+h.position+'</td><td>'+h.source+'</td><td>'+h.host+'</td><td>'+(h.weight==null?'—':h.weight)+'</td><td class="'+cls+'">'+elig+'</td></tr>';
   }).join('') || '<tr><td colspan="5">no live hops configured</td></tr>';
+  const md = s.models || { mode:'open', allow:[], deny:[], remaps:[], visibleCount:0 };
+  document.getElementById('modelmeta').textContent = md.mode + ' · visible ' + (md.visibleCount ?? 0) + ' · allow ' + (md.allow||[]).length + ' · deny ' + (md.deny||[]).length + ' · remap ' + (md.remaps||[]).length;
+  const mt = document.querySelector('#models tbody');
+  const rows = [];
+  (md.allow||[]).forEach(id => rows.push('<tr><td class="ok">allow</td><td>'+id+'</td><td>—</td></tr>'));
+  (md.deny||[]).forEach(id => rows.push('<tr><td class="bad">deny</td><td>'+id+'</td><td>—</td></tr>'));
+  (md.remaps||[]).forEach(r => rows.push('<tr><td>remap</td><td>'+r.from+'</td><td>'+r.to+'</td></tr>'));
+  mt.innerHTML = rows.join('') || '<tr><td colspan="3">open catalog (no allow/deny/remap)</td></tr>';
   const lim = document.querySelector('#limits tbody');
   lim.innerHTML = (s.limits || []).map(l => {
     const st = l.exhausted ? 'hard-block' : (l.warn ? 'warn' : 'ok');
