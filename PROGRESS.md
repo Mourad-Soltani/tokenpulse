@@ -402,3 +402,28 @@ Ledger / hash-chain visibility shipped. Sale materials unchanged. Operator live 
 Session 32 adds key-free ledger driver + hash-chain status on admin summary and dashboard (and fixes nested dashboard markup from Session 31).
 Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 33 — pricing status)
+
+- `pricingStatus()` reports unit (`usd_per_million_tokens`), catalogCount, fallback rates, and per-model input/output rows.
+- Admin summary includes `pricing`. Dashboard adds a Pricing catalog table and a Priced models KPI.
+- Does not change cost estimates. Unknown models still use the $1/$3 per 1M fallback.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 33 — 2026-09-28)
+
+Pricing catalog visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+## Next Up (highest priority)
+
+1. **Operator:** screen-record `PROOF.md` section B / `DEMO.md` (no keys on camera).
+2. Start personalized emails (`OUTREACH.md`) or first pilot conversation (`PILOT.md`).
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 33 adds key-free pricing-catalog status on admin summary and dashboard.
+Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.

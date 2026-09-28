@@ -276,6 +276,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
 
+## Pricing catalog status (Session 33)
+
+- `pricingStatus()` lists static USD-per-1M catalog rows plus the unknown-model fallback.
+- Admin summary exposes `pricing`. Dashboard renders a Pricing catalog table.
+- Does not change `estimateCostUsd` / `priceFor`.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
 ## Sensitive status (Session 31)
 
 - `sensitiveStatus()` reports mode (`on` | `off`), builtin categories, and extra pattern count.

@@ -5,6 +5,7 @@ import { upstreamStatus, type UpstreamStatus } from "./upstream.js";
 import { modelStatusAsync, type ModelStatus } from "./models.js";
 import { sensitiveStatus, type SensitiveStatus } from "./sensitive.js";
 import { ledgerStatus, readEvents, summarize, verifyChain, type LedgerStatus } from "./ledger.js";
+import { pricingStatus, type PricingStatus } from "./pricing.js";
 import type { UsageEvent } from "./types.js";
 
 export type AdminSummary = ReturnType<typeof summarize> & {
@@ -22,6 +23,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   models: ModelStatus;
   sensitive: SensitiveStatus;
   ledger: LedgerStatus;
+  pricing: PricingStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -54,6 +56,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     models,
     sensitive,
     ledger: ledgerStatus(events),
+    pricing: pricingStatus(),
   };
 }
 
@@ -122,6 +125,11 @@ export function dashboardHtml(): string {
     <table id="sensitive"><thead><tr><th>Mode</th><th>Categories</th><th>Custom patterns</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Pricing catalog</h2>
+    <p class="sub" id="pricemeta"></p>
+    <table id="pricing"><thead><tr><th>Model</th><th>Input / 1M</th><th>Output / 1M</th><th>Source</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Ledger</h2>
     <p class="sub" id="ledgermeta"></p>
     <table id="ledger"><thead><tr><th>Driver</th><th>Events</th><th>Chain</th><th>Checked</th><th>Legacy skipped</th><th>Tip</th></tr></thead><tbody></tbody></table>
@@ -185,6 +193,7 @@ async function load() {
     ['Model mode', (s.models && s.models.mode) ? s.models.mode : 'open'],
     ['Sensitive', (s.sensitive && s.sensitive.mode) ? s.sensitive.mode : 'on'],
     ['Ledger', (s.ledger && s.ledger.driver) ? s.ledger.driver : 'jsonl'],
+    ['Priced models', (s.pricing && s.pricing.catalogCount) ? s.pricing.catalogCount : 0],
     ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const bud = document.querySelector('#budgets tbody');
@@ -225,6 +234,12 @@ async function load() {
   document.getElementById('sensmeta').textContent = (se.enabled === false ? 'scan off' : 'scan on') + ' · custom ' + (se.extraPatterns ?? 0);
   const st = document.querySelector('#sensitive tbody');
   st.innerHTML = '<tr><td class="'+(se.enabled===false?'bad':'ok')+'">'+se.mode+'</td><td>'+(se.categories||[]).join(', ')+'</td><td>'+(se.extraPatterns??0)+'</td></tr>';
+  const pr = s.pricing || { unit:'usd_per_million_tokens', catalogCount:0, fallback:{input:1,output:3}, rows:[] };
+  document.getElementById('pricemeta').textContent = (pr.catalogCount||0) + ' catalog models · fallback $' + (pr.fallback&&pr.fallback.input) + '/$' + (pr.fallback&&pr.fallback.output) + ' per 1M';
+  const pt = document.querySelector('#pricing tbody');
+  pt.innerHTML = (pr.rows||[]).map(r =>
+    '<tr><td>'+r.model+'</td><td>$'+r.inputPerMillion+'</td><td>$'+r.outputPerMillion+'</td><td class="ok">'+(r.known?'table':'fallback')+'</td></tr>'
+  ).join('') || '<tr><td colspan="4">empty catalog</td></tr>';
   const ld = s.ledger || { driver:'jsonl', events:0, chainOk:true, chainChecked:0, skippedLegacy:0 };
   document.getElementById('ledgermeta').textContent = (ld.chainOk === false ? 'chain broken' : 'chain ok') + (ld.brokenAt ? ' at '+ld.brokenAt : '');
   const lt = document.querySelector('#ledger tbody');

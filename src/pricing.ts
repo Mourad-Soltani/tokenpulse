@@ -31,3 +31,35 @@ export function estimateCostUsd(
   const usd = (promptTokens / 1_000_000) * p.input + (completionTokens / 1_000_000) * p.output;
   return Math.round(usd * 1_000_000) / 1_000_000;
 }
+
+export type PricingRow = {
+  model: string;
+  inputPerMillion: number;
+  outputPerMillion: number;
+  known: boolean;
+};
+
+export type PricingStatus = {
+  unit: "usd_per_million_tokens";
+  catalogCount: number;
+  fallback: { input: number; output: number };
+  rows: PricingRow[];
+};
+
+/** Operator-visible catalog. Static table only; no secrets. */
+export function pricingStatus(): PricingStatus {
+  const rows: PricingRow[] = Object.entries(PRICING_TABLE)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([model, p]) => ({
+      model,
+      inputPerMillion: p.input,
+      outputPerMillion: p.output,
+      known: true,
+    }));
+  return {
+    unit: "usd_per_million_tokens",
+    catalogCount: rows.length,
+    fallback: { ...FALLBACK },
+    rows,
+  };
+}
