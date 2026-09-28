@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { appendEvent, newEvent, readEvents, summarize } from "../src/ledger.ts";
+import { appendEvent, ledgerStatus, newEvent, readEvents, summarize } from "../src/ledger.ts";
 
 describe("ledger", () => {
   before(async () => {
@@ -32,5 +32,16 @@ describe("ledger", () => {
     assert.equal(s.tokens, 30);
     assert.equal(s.byTeam.eng.calls, 1);
     assert.equal(s.byApp.bot.calls, 1);
+  });
+
+  it("reports driver and chain status without paths", async () => {
+    const all = await readEvents();
+    const st = ledgerStatus(all);
+    assert.equal(st.driver, "jsonl");
+    assert.ok(st.events >= 1);
+    assert.equal(st.chainOk, true);
+    assert.ok(st.chainChecked >= 1);
+    assert.equal(typeof st.skippedLegacy, "number");
+    if (st.tipHashPrefix) assert.equal(st.tipHashPrefix.length, 8);
   });
 });

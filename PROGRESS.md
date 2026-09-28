@@ -53,6 +53,7 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 29 — model policy status on admin/dashboard
 - [x] Session 30 — diligence proof pack + pilot/reference path
 - [x] Session 31 — sensitive scan status on admin/dashboard
+- [x] Session 32 — ledger / chain status on admin/dashboard
 
 ## Next Up (highest priority)
 
@@ -374,5 +375,30 @@ Sensitive scan visibility shipped. Sale materials unchanged. Operator live proof
 
 **Active project:** Tokenpulse only.
 Session 31 adds key-free sensitive-scan status on admin summary and dashboard.
+Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+## Decisions (Session 32 — ledger status)
+
+- `ledgerStatus()` reports driver (`jsonl` | `sqlite`), event count, chainOk / checked / skippedLegacy, optional `brokenAt` id, and 8-char `tipHashPrefix`.
+- Full hashes and filesystem paths are never returned on admin or dashboard.
+- Admin summary includes `ledger`. Dashboard adds a Ledger table and keeps the Chain KPI.
+- Append / verify behavior is unchanged from Sessions 8 and 14.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 32 — 2026-09-28)
+
+Ledger / hash-chain visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+## Next Up (highest priority)
+
+1. **Operator:** screen-record `PROOF.md` section B / `DEMO.md` (no keys on camera).
+2. Start personalized emails (`OUTREACH.md`) or first pilot conversation (`PILOT.md`).
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 32 adds key-free ledger driver + hash-chain status on admin summary and dashboard (and fixes nested dashboard markup from Session 31).
 Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.

@@ -4,7 +4,7 @@ import { limitStatus, type LimitStatusRow } from "./limits.js";
 import { upstreamStatus, type UpstreamStatus } from "./upstream.js";
 import { modelStatusAsync, type ModelStatus } from "./models.js";
 import { sensitiveStatus, type SensitiveStatus } from "./sensitive.js";
-import { readEvents, summarize, verifyChain } from "./ledger.js";
+import { ledgerStatus, readEvents, summarize, verifyChain, type LedgerStatus } from "./ledger.js";
 import type { UsageEvent } from "./types.js";
 
 export type AdminSummary = ReturnType<typeof summarize> & {
@@ -21,6 +21,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   upstreams: UpstreamStatus;
   models: ModelStatus;
   sensitive: SensitiveStatus;
+  ledger: LedgerStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -52,6 +53,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     upstreams,
     models,
     sensitive,
+    ledger: ledgerStatus(events),
   };
 }
 
@@ -115,11 +117,16 @@ export function dashboardHtml(): string {
     <table id="models"><thead><tr><th>Kind</th><th>Client</th><th>Upstream</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
-  <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Sensitive payload</h2>
     <p class="sub" id="sensmeta"></p>
     <table id="sensitive"><thead><tr><th>Mode</th><th>Categories</th><th>Custom patterns</th></tr></thead><tbody></tbody></table>
   </div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Ledger</h2>
+    <p class="sub" id="ledgermeta"></p>
+    <table id="ledger"><thead><tr><th>Driver</th><th>Events</th><th>Chain</th><th>Checked</th><th>Legacy skipped</th><th>Tip</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">By team</h2>
     <table id="teams"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
   </div>
@@ -177,7 +184,8 @@ async function load() {
     ['Upstreams', (s.upstreams && s.upstreams.hops) ? s.upstreams.hops.length : 0],
     ['Model mode', (s.models && s.models.mode) ? s.models.mode : 'open'],
     ['Sensitive', (s.sensitive && s.sensitive.mode) ? s.sensitive.mode : 'on'],
-    ['Chain', s.chainOk === false ? 'broken' : 'ok']
+    ['Ledger', (s.ledger && s.ledger.driver) ? s.ledger.driver : 'jsonl'],
+    ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const bud = document.querySelector('#budgets tbody');
   bud.innerHTML = (s.budgets || []).map(b => {
@@ -217,6 +225,11 @@ async function load() {
   document.getElementById('sensmeta').textContent = (se.enabled === false ? 'scan off' : 'scan on') + ' · custom ' + (se.extraPatterns ?? 0);
   const st = document.querySelector('#sensitive tbody');
   st.innerHTML = '<tr><td class="'+(se.enabled===false?'bad':'ok')+'">'+se.mode+'</td><td>'+(se.categories||[]).join(', ')+'</td><td>'+(se.extraPatterns??0)+'</td></tr>';
+  const ld = s.ledger || { driver:'jsonl', events:0, chainOk:true, chainChecked:0, skippedLegacy:0 };
+  document.getElementById('ledgermeta').textContent = (ld.chainOk === false ? 'chain broken' : 'chain ok') + (ld.brokenAt ? ' at '+ld.brokenAt : '');
+  const lt = document.querySelector('#ledger tbody');
+  const lcls = ld.chainOk === false ? 'bad' : 'ok';
+  lt.innerHTML = '<tr><td>'+ld.driver+'</td><td>'+ld.events+'</td><td class="'+lcls+'">'+(ld.chainOk===false?'broken':'ok')+'</td><td>'+(ld.chainChecked??0)+'</td><td>'+(ld.skippedLegacy??0)+'</td><td>'+(ld.tipHashPrefix||'—')+'</td></tr>';
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>
     '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';

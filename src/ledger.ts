@@ -138,3 +138,27 @@ export async function appendOperatorNote(opts: {
   await appendEvent(event);
   return event;
 }
+
+export type LedgerStatus = {
+  driver: "jsonl" | "sqlite";
+  events: number;
+  chainOk: boolean;
+  chainChecked: number;
+  skippedLegacy: number;
+  brokenAt?: string;
+  tipHashPrefix?: string;
+};
+
+/** Operator visibility only — does not change append or verify behavior. Paths and full hashes stay off the admin surface. */
+export function ledgerStatus(events: UsageEvent[]): LedgerStatus {
+  const chain = verifyChain(events);
+  return {
+    driver: ledgerDriver(),
+    events: events.length,
+    chainOk: chain.ok,
+    chainChecked: chain.checked,
+    skippedLegacy: chain.skippedLegacy,
+    brokenAt: chain.brokenAt,
+    tipHashPrefix: chain.tipHash ? chain.tipHash.slice(0, 8) : undefined,
+  };
+}
