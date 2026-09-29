@@ -4,6 +4,26 @@ import type { UsageEvent } from "./types.js";
 export const FINOPS_PACK_VERSION = "tokenpulse-finops-v1";
 export const SECURITY_PACK_VERSION = "tokenpulse-security-v1";
 
+export type ExportStatus = {
+  finopsVersion: typeof FINOPS_PACK_VERSION;
+  securityVersion: typeof SECURITY_PACK_VERSION;
+  formats: ["json", "csv"];
+  includesRawPrompts: false;
+  notesOmittedFromFinopsRows: true;
+};
+
+/** Operator-visible pack metadata. No event payloads. */
+export function exportStatus(): ExportStatus {
+  return {
+    finopsVersion: FINOPS_PACK_VERSION,
+    securityVersion: SECURITY_PACK_VERSION,
+    formats: ["json", "csv"],
+    includesRawPrompts: false,
+    notesOmittedFromFinopsRows: true,
+  };
+}
+
+
 export type FinopsPack = {
   version: typeof FINOPS_PACK_VERSION;
   generatedAt: string;

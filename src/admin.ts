@@ -7,6 +7,7 @@ import { sensitiveStatus, type SensitiveStatus } from "./sensitive.js";
 import { ledgerStatus, readEvents, summarize, verifyChain, type LedgerStatus } from "./ledger.js";
 import { pricingStatus, type PricingStatus } from "./pricing.js";
 import { gatewayStatus, type GatewayRuntimeStatus } from "./runtime.js";
+import { exportStatus, type ExportStatus } from "./export.js";
 import type { UsageEvent } from "./types.js";
 
 export type AdminSummary = ReturnType<typeof summarize> & {
@@ -26,6 +27,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   ledger: LedgerStatus;
   pricing: PricingStatus;
   gateway: GatewayRuntimeStatus;
+  exports: ExportStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -60,6 +62,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     ledger: ledgerStatus(events),
     pricing: pricingStatus(),
     gateway: gatewayStatus(),
+    exports: exportStatus(),
   };
 }
 
@@ -104,6 +107,11 @@ export function dashboardHtml(): string {
     <h2 style="margin:0 0 8px;font-size:1rem">Gateway</h2>
     <p class="sub" id="gwmeta"></p>
     <table id="gateway"><thead><tr><th>Host</th><th>Port</th><th>Loopback</th><th>Mock</th><th>Auth</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Export packs</h2>
+    <p class="sub" id="exmeta"></p>
+    <table id="exports"><thead><tr><th>Pack</th><th>Version</th><th>Formats</th><th>Raw prompts</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Budgets</h2>
@@ -203,12 +211,18 @@ async function load() {
     ['Ledger', (s.ledger && s.ledger.driver) ? s.ledger.driver : 'jsonl'],
     ['Priced models', (s.pricing && s.pricing.catalogCount) ? s.pricing.catalogCount : 0],
     ['Bind', (s.gateway ? (s.gateway.host+':'+s.gateway.port) : '127.0.0.1:8788')],
+    ['Exports', (s.exports && s.exports.formats) ? s.exports.formats.join('+') : 'json+csv'],
     ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
   document.getElementById('gwmeta').textContent = (gw.loopback ? 'loopback' : 'non-loopback') + ' · ' + (gw.mockUpstream ? 'mock' : 'live-capable') + ' · ' + (gw.authRequired ? 'auth on' : 'auth off');
   const gwt = document.querySelector('#gateway tbody');
   gwt.innerHTML = '<tr><td>'+gw.host+'</td><td>'+gw.port+'</td><td class="'+(gw.loopback?'ok':'bad')+'">'+(gw.loopback?'yes':'no')+'</td><td>'+(gw.mockUpstream?'on':'off')+'</td><td>'+(gw.authRequired?'required':'open')+'</td></tr>';
+  const ex = s.exports || { finopsVersion:'tokenpulse-finops-v1', securityVersion:'tokenpulse-security-v1', formats:['json','csv'], includesRawPrompts:false };
+  document.getElementById('exmeta').textContent = (ex.includesRawPrompts ? 'includes prompts' : 'no raw prompts') + ' · notes omitted from FinOps rows';
+  const ext = document.querySelector('#exports tbody');
+  ext.innerHTML = '<tr><td>FinOps</td><td>'+ex.finopsVersion+'</td><td>'+(ex.formats||[]).join(', ')+'</td><td class="ok">'+(ex.includesRawPrompts?'yes':'never')+'</td></tr>'
+    + '<tr><td>CISO</td><td>'+ex.securityVersion+'</td><td>'+(ex.formats||[]).join(', ')+'</td><td class="ok">'+(ex.includesRawPrompts?'yes':'never')+'</td></tr>';
   const bud = document.querySelector('#budgets tbody');
   bud.innerHTML = (s.budgets || []).map(b => {
     const st = b.exhausted ? 'exhausted' : (b.warn ? 'warn' : 'ok');

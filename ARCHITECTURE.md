@@ -299,3 +299,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - The gateway token itself is never serialized.
 - Does not change listen/auth behavior.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Export pack status (Session 35)
+
+- `exportStatus()` reports FinOps and CISO pack versions, formats (`json` | `csv`), and that raw prompts are never included.
+- Admin summary exposes `exports`. Dashboard renders an Export packs table.
+- Does not change pack contents or download routes.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+

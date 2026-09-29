@@ -52,6 +52,7 @@ describe("admin api", () => {
       assert.match(text, /Ledger/);
       assert.match(text, /Pricing catalog/);
       assert.match(text, />Gateway</);
+      assert.match(text, /Export packs/);
       assert.match(res.headers.get("content-type") ?? "", /text\/html/);
     } finally {
       server.close();
@@ -89,6 +90,7 @@ describe("admin api", () => {
         ledger: { driver: string; events: number; chainOk: boolean; chainChecked: number; skippedLegacy: number };
         pricing: { unit: string; catalogCount: number; fallback: { input: number; output: number }; rows: unknown[] };
         gateway: { host: string; port: number; mockUpstream: boolean; authRequired: boolean; loopback: boolean };
+        exports: { finopsVersion: string; securityVersion: string; formats: string[]; includesRawPrompts: boolean };
       };
       assert.ok(body.allowed >= 1);
       assert.ok(body.byTeam.ops?.calls >= 1);
@@ -120,6 +122,10 @@ describe("admin api", () => {
       assert.equal(typeof body.gateway.mockUpstream, "boolean");
       assert.equal(body.gateway.authRequired, true);
       assert.ok(!JSON.stringify(body.gateway).includes("test-token"));
+      assert.equal(body.exports.finopsVersion, "tokenpulse-finops-v1");
+      assert.equal(body.exports.securityVersion, "tokenpulse-security-v1");
+      assert.ok(body.exports.formats.includes("json"));
+      assert.equal(body.exports.includesRawPrompts, false);
 
       const fin = await fetch(`${url}/v1/admin/export/finops`, {
         headers: { authorization: "Bearer test-token" },

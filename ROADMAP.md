@@ -44,6 +44,7 @@
 - [x] Ledger / chain status on admin summary
 - [x] Pricing catalog status on admin summary
 - [x] Gateway runtime status on admin summary
+- [x] Export pack status on admin summary
 
 ## Sale readiness
 
