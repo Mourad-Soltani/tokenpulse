@@ -6,6 +6,7 @@ import { modelStatusAsync, type ModelStatus } from "./models.js";
 import { sensitiveStatus, type SensitiveStatus } from "./sensitive.js";
 import { ledgerStatus, readEvents, summarize, verifyChain, type LedgerStatus } from "./ledger.js";
 import { pricingStatus, type PricingStatus } from "./pricing.js";
+import { gatewayStatus, type GatewayRuntimeStatus } from "./runtime.js";
 import type { UsageEvent } from "./types.js";
 
 export type AdminSummary = ReturnType<typeof summarize> & {
@@ -24,6 +25,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   sensitive: SensitiveStatus;
   ledger: LedgerStatus;
   pricing: PricingStatus;
+  gateway: GatewayRuntimeStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -57,6 +59,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     sensitive,
     ledger: ledgerStatus(events),
     pricing: pricingStatus(),
+    gateway: gatewayStatus(),
   };
 }
 
@@ -97,6 +100,11 @@ export function dashboardHtml(): string {
     <button id="savenote" type="button">Add note</button>
   </div>
   <div class="grid" id="kpis"></div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Gateway</h2>
+    <p class="sub" id="gwmeta"></p>
+    <table id="gateway"><thead><tr><th>Host</th><th>Port</th><th>Loopback</th><th>Mock</th><th>Auth</th></tr></thead><tbody></tbody></table>
+  </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Budgets</h2>
     <table id="budgets"><thead><tr><th>Scope</th><th>Id</th><th>Period</th><th>Spent</th><th>Cap</th><th>Left</th><th>Status</th></tr></thead><tbody></tbody></table>
@@ -194,8 +202,13 @@ async function load() {
     ['Sensitive', (s.sensitive && s.sensitive.mode) ? s.sensitive.mode : 'on'],
     ['Ledger', (s.ledger && s.ledger.driver) ? s.ledger.driver : 'jsonl'],
     ['Priced models', (s.pricing && s.pricing.catalogCount) ? s.pricing.catalogCount : 0],
+    ['Bind', (s.gateway ? (s.gateway.host+':'+s.gateway.port) : '127.0.0.1:8788')],
     ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
+  const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
+  document.getElementById('gwmeta').textContent = (gw.loopback ? 'loopback' : 'non-loopback') + ' · ' + (gw.mockUpstream ? 'mock' : 'live-capable') + ' · ' + (gw.authRequired ? 'auth on' : 'auth off');
+  const gwt = document.querySelector('#gateway tbody');
+  gwt.innerHTML = '<tr><td>'+gw.host+'</td><td>'+gw.port+'</td><td class="'+(gw.loopback?'ok':'bad')+'">'+(gw.loopback?'yes':'no')+'</td><td>'+(gw.mockUpstream?'on':'off')+'</td><td>'+(gw.authRequired?'required':'open')+'</td></tr>';
   const bud = document.querySelector('#budgets tbody');
   bud.innerHTML = (s.budgets || []).map(b => {
     const st = b.exhausted ? 'exhausted' : (b.warn ? 'warn' : 'ok');

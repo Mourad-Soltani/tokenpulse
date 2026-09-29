@@ -54,6 +54,8 @@ Private AI FinOps + shadow-AI control plane. Meter tokens, attribute spend, enfo
 - [x] Session 30 — diligence proof pack + pilot/reference path
 - [x] Session 31 — sensitive scan status on admin/dashboard
 - [x] Session 32 — ledger / chain status on admin/dashboard
+- [x] Session 33 — pricing catalog status on admin/dashboard
+- [x] Session 34 — gateway runtime status on admin/dashboard
 
 ## Next Up (highest priority)
 
@@ -425,5 +427,33 @@ Pricing catalog visibility shipped. Sale materials unchanged. Operator live proo
 
 **Active project:** Tokenpulse only.
 Session 33 adds key-free pricing-catalog status on admin summary and dashboard.
+Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+## Decisions (Session 34 — gateway runtime status)
+
+- `gatewayStatus()` reports host, port, loopback, mockUpstream, and authRequired from env.
+- Default bind remains `127.0.0.1:8788`. Invalid port falls back to 8788.
+- Admin summary includes `gateway`. Dashboard adds a Gateway table and a Bind KPI.
+- The gateway token value is never returned.
+- Does not change listen or auth behavior.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 34 — 2026-09-29)
+
+Gateway runtime visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+- [x] Session 34 — gateway runtime status on admin/dashboard
+
+## Next Up (highest priority)
+
+1. **Operator:** screen-record `PROOF.md` section B / `DEMO.md` (no keys on camera).
+2. Start personalized emails (`OUTREACH.md`) or first pilot conversation (`PILOT.md`).
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 34 adds key-free gateway bind + auth flags on admin summary and dashboard.
 Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.

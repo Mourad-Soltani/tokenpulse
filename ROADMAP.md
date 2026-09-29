@@ -43,6 +43,7 @@
 - [x] Sensitive scan status on admin summary
 - [x] Ledger / chain status on admin summary
 - [x] Pricing catalog status on admin summary
+- [x] Gateway runtime status on admin summary
 
 ## Sale readiness
 

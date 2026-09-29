@@ -290,3 +290,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `sensitive`. Dashboard renders a Sensitive payload table.
 - Does not change scan or block behavior.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Gateway runtime status (Session 34)
+
+- `gatewayStatus()` reports bind host/port, loopback, mockUpstream, authRequired.
+- Admin summary exposes `gateway`. Dashboard renders a Gateway table.
+- The gateway token itself is never serialized.
+- Does not change listen/auth behavior.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
