@@ -8,6 +8,7 @@ import { ledgerStatus, readEvents, summarize, verifyChain, type LedgerStatus } f
 import { pricingStatus, type PricingStatus } from "./pricing.js";
 import { gatewayStatus, type GatewayRuntimeStatus } from "./runtime.js";
 import { exportStatus, type ExportStatus } from "./export.js";
+import { policyPipelineStatus, type PolicyPipelineStatus } from "./policy.js";
 import type { UsageEvent } from "./types.js";
 
 export type AdminSummary = ReturnType<typeof summarize> & {
@@ -28,6 +29,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   pricing: PricingStatus;
   gateway: GatewayRuntimeStatus;
   exports: ExportStatus;
+  policy: PolicyPipelineStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -63,6 +65,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     pricing: pricingStatus(),
     gateway: gatewayStatus(),
     exports: exportStatus(),
+    policy: policyPipelineStatus(),
   };
 }
 
@@ -112,6 +115,11 @@ export function dashboardHtml(): string {
     <h2 style="margin:0 0 8px;font-size:1rem">Export packs</h2>
     <p class="sub" id="exmeta"></p>
     <table id="exports"><thead><tr><th>Pack</th><th>Version</th><th>Formats</th><th>Raw prompts</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Policy pipeline</h2>
+    <p class="sub" id="policymeta"></p>
+    <table id="policy"><thead><tr><th>#</th><th>Stage</th><th>On deny</th><th>Applies</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Budgets</h2>
@@ -212,6 +220,7 @@ async function load() {
     ['Priced models', (s.pricing && s.pricing.catalogCount) ? s.pricing.catalogCount : 0],
     ['Bind', (s.gateway ? (s.gateway.host+':'+s.gateway.port) : '127.0.0.1:8788')],
     ['Exports', (s.exports && s.exports.formats) ? s.exports.formats.join('+') : 'json+csv'],
+    ['Policy stages', (s.policy && s.policy.stageCount) ? s.policy.stageCount : 7],
     ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
@@ -223,6 +232,12 @@ async function load() {
   const ext = document.querySelector('#exports tbody');
   ext.innerHTML = '<tr><td>FinOps</td><td>'+ex.finopsVersion+'</td><td>'+(ex.formats||[]).join(', ')+'</td><td class="ok">'+(ex.includesRawPrompts?'yes':'never')+'</td></tr>'
     + '<tr><td>CISO</td><td>'+ex.securityVersion+'</td><td>'+(ex.formats||[]).join(', ')+'</td><td class="ok">'+(ex.includesRawPrompts?'yes':'never')+'</td></tr>';
+  const pol = s.policy || { version:'tokenpulse-policy-v1', storesRawPrompts:false, stageCount:7, stages:[] };
+  document.getElementById('policymeta').textContent = pol.version + ' · ' + (pol.stageCount||0) + ' stages · raw prompts ' + (pol.storesRawPrompts ? 'yes' : 'never');
+  const plt = document.querySelector('#policy tbody');
+  plt.innerHTML = (pol.stages||[]).map(st =>
+    '<tr><td>'+st.order+'</td><td>'+st.name+'</td><td>'+st.onDeny+'</td><td>'+(st.appliesTo||[]).join(', ')+'</td></tr>'
+  ).join('') || '<tr><td colspan="4">no stages</td></tr>';
   const bud = document.querySelector('#budgets tbody');
   bud.innerHTML = (s.budgets || []).map(b => {
     const st = b.exhausted ? 'exhausted' : (b.warn ? 'warn' : 'ok');

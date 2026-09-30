@@ -308,3 +308,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change pack contents or download routes.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+
+
+## Policy pipeline status (Session 36)
+
+- `policyPipelineStatus()` lists post-auth stages: limits → sensitive → model → remap → rate → budget → upstream.
+- Admin summary exposes `policy`. Dashboard renders a Policy pipeline table.
+- Does not change evaluation or deny HTTP codes.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

@@ -471,6 +471,7 @@ Never paste provider keys or GitHub PATs into chat.
 Export pack visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
 
 - [x] Session 35 — export pack status on admin/dashboard
+- [x] Session 36 — policy pipeline status on admin/dashboard
 
 ## Next Up (highest priority)
 
@@ -482,5 +483,32 @@ Export pack visibility shipped. Sale materials unchanged. Operator live proof st
 
 **Active project:** Tokenpulse only.
 Session 35 adds key-free export-pack versions and formats on admin summary and dashboard.
+Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 36 — policy pipeline status)
+
+- `policyPipelineStatus()` lists the seven post-auth evaluation stages in order.
+- Admin summary includes `policy`. Dashboard adds a Policy pipeline table and a Policy stages KPI.
+- Does not change evaluate order or deny codes.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 36 — 2026-09-30)
+
+Policy pipeline visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+- [x] Session 36 — policy pipeline status on admin/dashboard
+
+## Next Up (highest priority)
+
+1. **Operator:** screen-record `PROOF.md` section B / `DEMO.md` (no keys on camera).
+2. Start personalized emails (`OUTREACH.md`) or first pilot conversation (`PILOT.md`).
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 36 adds the ordered policy stages on admin summary and dashboard.
 Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.

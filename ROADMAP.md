@@ -45,6 +45,7 @@
 - [x] Pricing catalog status on admin summary
 - [x] Gateway runtime status on admin summary
 - [x] Export pack status on admin summary
+- [x] Policy pipeline status on admin summary
 
 ## Sale readiness
 

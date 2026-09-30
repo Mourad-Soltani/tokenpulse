@@ -53,6 +53,7 @@ describe("admin api", () => {
       assert.match(text, /Pricing catalog/);
       assert.match(text, />Gateway</);
       assert.match(text, /Export packs/);
+      assert.match(text, /Policy pipeline/);
       assert.match(res.headers.get("content-type") ?? "", /text\/html/);
     } finally {
       server.close();
@@ -91,6 +92,7 @@ describe("admin api", () => {
         pricing: { unit: string; catalogCount: number; fallback: { input: number; output: number }; rows: unknown[] };
         gateway: { host: string; port: number; mockUpstream: boolean; authRequired: boolean; loopback: boolean };
         exports: { finopsVersion: string; securityVersion: string; formats: string[]; includesRawPrompts: boolean };
+        policy: { version: string; storesRawPrompts: boolean; stageCount: number; stages: unknown[] };
       };
       assert.ok(body.allowed >= 1);
       assert.ok(body.byTeam.ops?.calls >= 1);
@@ -126,6 +128,10 @@ describe("admin api", () => {
       assert.equal(body.exports.securityVersion, "tokenpulse-security-v1");
       assert.ok(body.exports.formats.includes("json"));
       assert.equal(body.exports.includesRawPrompts, false);
+      assert.equal(body.policy.version, "tokenpulse-policy-v1");
+      assert.equal(body.policy.storesRawPrompts, false);
+      assert.equal(body.policy.stageCount, 7);
+      assert.ok(Array.isArray(body.policy.stages));
 
       const fin = await fetch(`${url}/v1/admin/export/finops`, {
         headers: { authorization: "Bearer test-token" },
