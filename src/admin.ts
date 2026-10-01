@@ -9,6 +9,7 @@ import { pricingStatus, type PricingStatus } from "./pricing.js";
 import { gatewayStatus, type GatewayRuntimeStatus } from "./runtime.js";
 import { exportStatus, type ExportStatus } from "./export.js";
 import { policyPipelineStatus, type PolicyPipelineStatus } from "./policy.js";
+import { attributionStatus, type AttributionStatus } from "./attribution.js";
 import type { UsageEvent } from "./types.js";
 
 export type AdminSummary = ReturnType<typeof summarize> & {
@@ -30,6 +31,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   gateway: GatewayRuntimeStatus;
   exports: ExportStatus;
   policy: PolicyPipelineStatus;
+  attribution: AttributionStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -66,6 +68,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     gateway: gatewayStatus(),
     exports: exportStatus(),
     policy: policyPipelineStatus(),
+    attribution: attributionStatus(),
   };
 }
 
@@ -120,6 +123,11 @@ export function dashboardHtml(): string {
     <h2 style="margin:0 0 8px;font-size:1rem">Policy pipeline</h2>
     <p class="sub" id="policymeta"></p>
     <table id="policy"><thead><tr><th>#</th><th>Stage</th><th>On deny</th><th>Applies</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Attribution</h2>
+    <p class="sub" id="attrmeta"></p>
+    <table id="attribution"><thead><tr><th>Header</th><th>Ledger field</th><th>Default</th><th>Required</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Budgets</h2>
@@ -221,6 +229,7 @@ async function load() {
     ['Bind', (s.gateway ? (s.gateway.host+':'+s.gateway.port) : '127.0.0.1:8788')],
     ['Exports', (s.exports && s.exports.formats) ? s.exports.formats.join('+') : 'json+csv'],
     ['Policy stages', (s.policy && s.policy.stageCount) ? s.policy.stageCount : 7],
+    ['Attr fields', (s.attribution && s.attribution.fieldCount) ? s.attribution.fieldCount : 2],
     ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok']
   ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
@@ -238,6 +247,12 @@ async function load() {
   plt.innerHTML = (pol.stages||[]).map(st =>
     '<tr><td>'+st.order+'</td><td>'+st.name+'</td><td>'+st.onDeny+'</td><td>'+(st.appliesTo||[]).join(', ')+'</td></tr>'
   ).join('') || '<tr><td colspan="4">no stages</td></tr>';
+  const attr = s.attribution || { version:'tokenpulse-attribution-v1', storesRawPrompts:false, fieldCount:2, fields:[], notes:'' };
+  document.getElementById('attrmeta').textContent = attr.version + ' · ' + (attr.fieldCount||0) + ' fields · ' + (attr.notes||'');
+  const at = document.querySelector('#attribution tbody');
+  at.innerHTML = (attr.fields||[]).map(f =>
+    '<tr><td>'+f.header+'</td><td>'+f.ledgerField+'</td><td>'+f.defaultValue+'</td><td>'+(f.required?'yes':'no')+'</td></tr>'
+  ).join('') || '<tr><td colspan="4">no fields</td></tr>';
   const bud = document.querySelector('#budgets tbody');
   bud.innerHTML = (s.budgets || []).map(b => {
     const st = b.exhausted ? 'exhausted' : (b.warn ? 'warn' : 'ok');

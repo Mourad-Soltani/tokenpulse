@@ -316,3 +316,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `policy`. Dashboard renders a Policy pipeline table.
 - Does not change evaluation or deny HTTP codes.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Attribution status (Session 37)
+
+- `attributionStatus()` lists `X-Tokenpulse-Team` / `X-Tokenpulse-App` → `teamId` / `appId`.
+- Missing headers default to `default`. Neither header is required.
+- Admin summary exposes `attribution`. Dashboard renders an Attribution table.
+- Does not change header parsing or cap evaluation.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

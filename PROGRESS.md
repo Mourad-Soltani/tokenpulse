@@ -512,3 +512,31 @@ Policy pipeline visibility shipped. Sale materials unchanged. Operator live proo
 Session 36 adds the ordered policy stages on admin summary and dashboard.
 Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 37 — attribution status)
+
+- `attributionStatus()` lists team/app request headers mapped to ledger fields.
+- Missing headers default to `default`. Headers are optional.
+- Admin summary includes `attribution`. Dashboard adds an Attribution table and an Attr fields KPI.
+- Does not change header parsing or team/app cap evaluation.
+- Live-upstream demo recording remains an operator gate. No keys in git or chat.
+
+## Current Status (Session 37 — 2026-10-01)
+
+Attribution header visibility shipped. Sale materials unchanged. Operator live proof still required before outreach.
+
+- [x] Session 37 — attribution header status on admin/dashboard
+
+## Next Up (highest priority)
+
+1. **Operator:** screen-record `PROOF.md` section B / `DEMO.md` (no keys on camera).
+2. Start personalized emails (`OUTREACH.md`) or first pilot conversation (`PILOT.md`).
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 37 adds key-free team/app header attribution on admin summary and dashboard.
+Automation still cannot record the live demo — that remains the hard gate before outreach.
+Never paste provider keys or GitHub PATs into chat.
