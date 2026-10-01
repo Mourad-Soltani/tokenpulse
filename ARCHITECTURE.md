@@ -334,3 +334,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Example policy files are copied in. Ledger writes to a volume.
 - Public prospect demos stay mock-only. Live keys stay in the customer VPC (`PILOT.md`).
 - Chat-pasted tokens remain unusable. No keys in git.
+
+
+## Railway / platform bind (Session 39)
+
+- `listenPort()` uses `TOKENPULSE_GATEWAY_PORT`, else platform `PORT`, else 8788.
+- `listenHost()` uses explicit host; if only `PORT` is set, binds `0.0.0.0`.
+- `railway.toml` builds from `Dockerfile` and health-checks `GET /health`.
+- Prospect Railway instance stays mock-only. Token is a Railway variable, never git.

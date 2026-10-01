@@ -36,7 +36,7 @@ Then refresh the dashboard. Show FinOps / CISO download buttons.
 
 ## Public URL for prospects
 
-Point any VM / Fly / Railway / Caddy at port 8788.
+Point any VM / Fly / Caddy at port 8788, or use the Railway section below.
 
 Rules:
 
@@ -52,3 +52,36 @@ Rules:
 - Not proof that a buyer has signed
 
 Paid reference path remains: signed `PILOT.md` → their network → quote.
+
+
+## Railway (prospect mock demo)
+
+This environment has **no Railway account token**. Deploy from *your* Railway dashboard so the token never enters chat or git.
+
+1. [railway.com/new](https://railway.com/new) → **Deploy from GitHub repo** → `Mourad-Soltani/tokenpulse` → `main`.
+2. Railway will pick up `Dockerfile` + `railway.toml` (health check `/health`).
+3. Service **Variables** (dashboard only):
+
+| Variable | Value |
+|----------|--------|
+| `TOKENPULSE_MOCK_UPSTREAM` | `1` |
+| `TOKENPULSE_GATEWAY_TOKEN` | generate locally (`openssl rand -hex 24`) |
+| `TOKENPULSE_GATEWAY_HOST` | `0.0.0.0` (optional; set automatically when Railway injects `PORT`) |
+
+Do **not** set `OPENAI_API_KEY`, `XAI_API_KEY`, or `TOKENPULSE_MOCK_UPSTREAM=0`.
+
+4. Settings → **Networking** → Generate domain.
+5. Open `https://<service>.up.railway.app/`, paste the gateway token, run the curl from above against that origin.
+
+CLI alternative (on your laptop, after `railway login`):
+
+```bash
+cd tokenpulse
+railway init   # pick/create project
+railway variable set TOKENPULSE_MOCK_UPSTREAM=1
+railway variable set TOKENPULSE_GATEWAY_TOKEN="$(openssl rand -hex 24)"
+railway up
+railway domain
+```
+
+If you create a Railway **project token** in the dashboard, keep it in your local shell only. Do not paste it here.

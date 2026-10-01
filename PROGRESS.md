@@ -567,3 +567,29 @@ Pilot demo deploy pack shipped. Sale materials unchanged. Operator still must st
 **Active project:** Tokenpulse only.
 Session 38 adds a mock-first container demo. Automation cannot provision your public VM or TLS cert.
 Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 39 — Railway demo bind)
+
+- Gateway honors platform `PORT` so Railway/Fly public routing works.
+- `railway.toml` uses Dockerfile builder + `/health`.
+- This session does **not** create a Railway project: no account token in this environment, and tokens must not be pasted into chat.
+- Operator completes deploy in the Railway dashboard (GitHub repo + variables).
+- Mock-only on the public demo. No provider keys.
+
+## Current Status (Session 39 — 2026-10-01)
+
+Railway config + PORT bind shipped. Public URL exists only after the operator connects the GitHub repo in Railway.
+
+- [x] Session 39 — railway.toml + platform PORT bind
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Automation cannot log into Railway. Do not paste Railway or provider tokens into chat.

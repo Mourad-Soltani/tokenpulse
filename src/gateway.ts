@@ -20,8 +20,7 @@ import {
 } from "./upstream.js";
 import { adminSummary, dashboardHtml } from "./admin.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
-
-const DEFAULT_PORT = 8788;
+import { listenHost, listenPort } from "./runtime.js";
 
 function header(req: IncomingMessage, name: string): string | undefined {
   const v = req.headers[name.toLowerCase()];
@@ -792,8 +791,8 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
   json(res, 404, { error: { message: "not found", type: "invalid_request_error" } });
 }
 
-export function startGateway(port = Number(process.env.TOKENPULSE_GATEWAY_PORT ?? DEFAULT_PORT)) {
-  const host = process.env.TOKENPULSE_GATEWAY_HOST ?? "127.0.0.1";
+export function startGateway(port = listenPort()) {
+  const host = listenHost();
   const server = createServer((req, res) => {
     handleRequest(req, res).catch((err) => {
       console.error(err);
