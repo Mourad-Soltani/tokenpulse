@@ -40,3 +40,20 @@ _None yet. Do not invent logos. First pilot completes → first line here._
 - [ ] Pilot paid / started  
 - [ ] Success criteria met  
 - [ ] Written quote received → update table above  
+
+
+## Public mock demo (Session 38)
+
+For *prospect walkthroughs* only — not a signed paid pilot.
+
+```bash
+export TOKENPULSE_GATEWAY_TOKEN='generate-locally'
+docker compose -f compose.pilot.yaml up --build -d
+```
+
+See `DEPLOY.md`. Mock upstream stays on. Do not put provider keys on the public instance.
+Share the URL + token on the call, not in git.
+
+- [ ] Demo container running on a host you control
+- [ ] TLS in front (if public)
+- [ ] Token rotated after each external demo if it was shown on screen

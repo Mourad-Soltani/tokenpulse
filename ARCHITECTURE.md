@@ -325,3 +325,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `attribution`. Dashboard renders an Attribution table.
 - Does not change header parsing or cap evaluation.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Pilot demo deploy (Session 38)
+
+- `Dockerfile` + `compose.pilot.yaml` bind `0.0.0.0:8788` with mock upstream.
+- Gateway token is required at runtime. Image does not bake a secret.
+- Example policy files are copied in. Ledger writes to a volume.
+- Public prospect demos stay mock-only. Live keys stay in the customer VPC (`PILOT.md`).
+- Chat-pasted tokens remain unusable. No keys in git.

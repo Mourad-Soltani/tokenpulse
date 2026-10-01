@@ -540,3 +540,30 @@ Attribution header visibility shipped. Sale materials unchanged. Operator live p
 Session 37 adds key-free team/app header attribution on admin summary and dashboard.
 Automation still cannot record the live demo — that remains the hard gate before outreach.
 Never paste provider keys or GitHub PATs into chat.
+
+
+## Decisions (Session 38 — pilot demo deploy)
+
+- Added containerized mock demo: `Dockerfile`, `compose.pilot.yaml`, `DEPLOY.md`.
+- Bind `0.0.0.0` only inside the container; token required; mock upstream on.
+- This is a prospect walkthrough host, not a signed paid pilot and not live provider traffic.
+- Live-upstream recording and first paid `PILOT.md` counterparty remain operator gates.
+- No keys in git or chat.
+
+## Current Status (Session 38 — 2026-10-01)
+
+Pilot demo deploy pack shipped. Sale materials unchanged. Operator still must stand the container up on a host they control and record the walkthrough.
+
+- [x] Session 38 — Docker pilot demo (mock-first)
+
+## Next Up (highest priority)
+
+1. **Operator:** `docker compose -f compose.pilot.yaml up --build -d` on a VM you control; put TLS in front; record `DEMO.md` against that URL (no keys on camera).
+2. Start personalized emails (`OUTREACH.md`) or first paid conversation (`PILOT.md`).
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 38 adds a mock-first container demo. Automation cannot provision your public VM or TLS cert.
+Never paste provider keys or GitHub PATs into chat.

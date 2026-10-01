@@ -16,7 +16,7 @@ Enterprises are losing control of AI cost and data:
 
 Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks before egress, append-only usage ledger, exportable FinOps and security packs.
 
-## What works today (Session 37)
+## What works today (Session 38)
 
 | Capability | Status |
 |------------|--------|
@@ -55,6 +55,7 @@ Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks
 | Export pack status | Live (admin summary + dashboard) |
 | Policy pipeline status | Live (admin summary + dashboard) |
 | Attribution header status | Live (admin summary + dashboard) |
+| Pilot demo deploy | Live (`Dockerfile`, `compose.pilot.yaml`, `DEPLOY.md`) |
 | Diligence proof pack | Live (`PROOF.md`, `proof/` sample packs) |
 | Pilot path | Live (`PILOT.md` — $15k/30d offer + reference capture) |
 

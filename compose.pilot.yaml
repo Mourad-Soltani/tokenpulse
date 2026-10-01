@@ -1,0 +1,24 @@
+# Public-facing *mock* demo for client walkthroughs.
+# Does not call providers. Set TOKENPULSE_GATEWAY_TOKEN in the environment
+# or a local untracked .env — never commit a real token or provider key.
+services:
+  gateway:
+    build: .
+    ports:
+      - "8788:8788"
+    environment:
+      TOKENPULSE_GATEWAY_HOST: "0.0.0.0"
+      TOKENPULSE_GATEWAY_PORT: "8788"
+      TOKENPULSE_MOCK_UPSTREAM: "1"
+      TOKENPULSE_GATEWAY_TOKEN: "${TOKENPULSE_GATEWAY_TOKEN:-replace-me-before-demo}"
+      TOKENPULSE_LEDGER_DIR: /app/data/ledger
+      TOKENPULSE_BUDGETS_PATH: /app/budgets.example.json
+      TOKENPULSE_RATES_PATH: /app/rates.example.json
+      TOKENPULSE_LIMITS_PATH: /app/limits.example.json
+      TOKENPULSE_MODELS_PATH: /app/models.example.json
+    volumes:
+      - pilot-ledger:/app/data/ledger
+    restart: unless-stopped
+
+volumes:
+  pilot-ledger:
