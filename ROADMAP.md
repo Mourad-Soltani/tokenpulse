@@ -46,6 +46,7 @@
 - [x] Gateway runtime status on admin summary
 - [x] Export pack status on admin summary
 - [x] Policy pipeline status on admin summary
+- [x] Request correlation id (`X-Tokenpulse-Request-Id` on responses + ledger; not in hash body)
 
 ## Sale readiness
 

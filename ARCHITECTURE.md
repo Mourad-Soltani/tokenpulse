@@ -342,3 +342,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `listenHost()` uses explicit host; if only `PORT` is set, binds `0.0.0.0`.
 - `railway.toml` builds from `Dockerfile` and health-checks `GET /health`.
 - Prospect Railway instance stays mock-only. Token is a Railway variable, never git.
+
+
+## Request correlation (Session 40)
+
+- Every response echoes `X-Tokenpulse-Request-Id`.
+- Client id is accepted when it matches `^[A-Za-z0-9][A-Za-z0-9._:-]{7,63}$`. Otherwise the gateway generates `tp_` + 32 hex chars.
+- Ledger field `requestId` is written on usage events (JSONL and SQLite).
+- The id is **not** part of the SHA-256 chain body, so existing hashes still verify.
+- Security pack JSON/CSV include `requestId` on blocked rows. Raw prompts stay off.
+- Admin summary exposes `correlation`. Dashboard renders a Correlation table. Live ids are not listed there.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

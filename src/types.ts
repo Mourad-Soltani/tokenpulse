@@ -15,6 +15,7 @@ export const UsageEventSchema = z.object({
   policyIds: z.array(z.string()),
   note: z.string().max(500).optional(),
   requestHash: z.string().optional(),
+  requestId: z.string().max(64).optional(),
   prevHash: z.string().optional(),
   hash: z.string().optional(),
 });

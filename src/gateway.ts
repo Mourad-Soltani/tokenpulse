@@ -21,6 +21,7 @@ import {
 import { adminSummary, dashboardHtml } from "./admin.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 import { listenHost, listenPort } from "./runtime.js";
+import { bindRequestId, resolveRequestId } from "./correlation.js";
 
 function header(req: IncomingMessage, name: string): string | undefined {
   const v = req.headers[name.toLowerCase()];
@@ -58,6 +59,9 @@ function authOk(req: IncomingMessage): boolean {
 }
 
 export async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  const requestId = resolveRequestId(header(req, "x-tokenpulse-request-id"));
+  bindRequestId(requestId);
+  res.setHeader("x-tokenpulse-request-id", requestId);
   const url = new URL(req.url ?? "/", "http://127.0.0.1");
   if (req.method === "GET" && url.pathname === "/health") {
     json(res, 200, {

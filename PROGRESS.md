@@ -593,3 +593,30 @@ Railway config + PORT bind shipped. Public URL exists only after the operator co
 
 **Active project:** Tokenpulse only.
 Automation cannot log into Railway. Do not paste Railway or provider tokens into chat.
+
+
+## Decisions (Session 40 — request correlation)
+
+- Responses echo `X-Tokenpulse-Request-Id`. Safe client ids (8–64 chars, `[A-Za-z0-9._:-]`) are kept; otherwise the gateway generates `tp_` + 32 hex.
+- Ledger stores `requestId` (JSONL + SQLite column `request_id`).
+- `requestId` is excluded from the SHA-256 chain body so Session 14 hashes remain valid.
+- Security pack JSON and CSV include `requestId` on blocked rows. No raw prompts.
+- Admin summary exposes `correlation`. Dashboard adds a Correlation table (contract only, not live ids).
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 40 — 2026-10-02)
+
+Request correlation shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 40 — request correlation id on responses, ledger, and CISO pack
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Correlation id is visible in response headers during the recording.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 40 adds audit correlation ids. Automation cannot log into Railway. Do not paste Railway or provider tokens into chat.

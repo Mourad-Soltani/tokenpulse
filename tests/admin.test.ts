@@ -95,6 +95,7 @@ describe("admin api", () => {
         exports: { finopsVersion: string; securityVersion: string; formats: string[]; includesRawPrompts: boolean };
         policy: { version: string; storesRawPrompts: boolean; stageCount: number; stages: unknown[] };
         attribution: { version: string; storesRawPrompts: boolean; fieldCount: number; fields: unknown[] };
+        correlation: { version: string; header: string; inHashChain: boolean; storesRawPrompts: boolean };
       };
       assert.ok(body.allowed >= 1);
       assert.ok(body.byTeam.ops?.calls >= 1);
@@ -138,6 +139,10 @@ describe("admin api", () => {
       assert.equal(body.attribution.storesRawPrompts, false);
       assert.equal(body.attribution.fieldCount, 2);
       assert.ok(Array.isArray(body.attribution.fields));
+      assert.equal(body.correlation.version, "tokenpulse-correlation-v1");
+      assert.equal(body.correlation.header, "X-Tokenpulse-Request-Id");
+      assert.equal(body.correlation.inHashChain, false);
+      assert.equal(body.correlation.storesRawPrompts, false);
 
       const fin = await fetch(`${url}/v1/admin/export/finops`, {
         headers: { authorization: "Bearer test-token" },

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { UsageEvent, UsageEventSchema } from "./types.js";
 import { appendSqlite, ledgerDriver, readSqlite } from "./sqliteLedger.js";
 import { lastHash, sealEvent, verifyChain } from "./chain.js";
+import { currentRequestId } from "./correlation.js";
 
 export function ledgerRoot(): string {
   return process.env.TOKENPULSE_LEDGER_DIR ?? join(process.cwd(), "data", "ledger");
@@ -22,6 +23,7 @@ export function newEvent(partial: Omit<UsageEvent, "id" | "timestamp"> & { times
     id: `evt_${randomUUID()}`,
     timestamp: partial.timestamp ?? new Date().toISOString(),
     ...partial,
+    requestId: partial.requestId ?? currentRequestId(),
   });
 }
 

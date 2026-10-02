@@ -62,6 +62,7 @@ export type SecurityPack = {
     decision: "block";
     policyIds: string[];
     requestHash?: string;
+    requestId?: string;
   }>;
 };
 
@@ -116,6 +117,7 @@ export function buildSecurityPack(events: UsageEvent[], opts?: { day?: string; n
       decision: "block" as const,
       policyIds: e.policyIds,
       requestHash: e.requestHash,
+      requestId: e.requestId,
     })),
   };
 }
@@ -162,11 +164,11 @@ export function finopsCsv(pack: FinopsPack): string {
 }
 
 export function securityCsv(pack: SecurityPack): string {
-  const header = ["id", "timestamp", "teamId", "appId", "model", "policyIds", "requestHash"];
+  const header = ["id", "timestamp", "teamId", "appId", "model", "policyIds", "requestHash", "requestId"];
   const lines = [header.join(",")];
   for (const e of pack.events) {
     lines.push(
-      [e.id, e.timestamp, e.teamId, e.appId, e.model, e.policyIds.join("|"), e.requestHash ?? ""]
+      [e.id, e.timestamp, e.teamId, e.appId, e.model, e.policyIds.join("|"), e.requestHash ?? "", e.requestId ?? ""]
         .map(csvEscape)
         .join(","),
     );

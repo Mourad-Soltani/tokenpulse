@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import type { UsageEvent } from "./types.js";
 
-/** Canonical SHA-256 over event fields + prevHash. Hash/prevHash themselves are excluded from the body except prevHash as the link. */
+/** Canonical SHA-256 over event fields + prevHash. Hash/prevHash are excluded from the body except prevHash as the link. requestId is excluded so legacy chains stay valid. */
 export function eventDigest(event: UsageEvent, prevHash: string): string {
   const body = {
     id: event.id,
