@@ -1,7 +1,7 @@
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { timingSafeEqual } from "node:crypto";
 import { ChatCompletionRequestSchema, EmbeddingRequestSchema, embeddingInputs } from "./types.js";
-import { appendEvent, appendOperatorNote, newEvent, readEvents, requestHash } from "./ledger.js";
+import { appendEvent, appendOperatorNote, findEventsByRequestId, newEvent, readEvents, requestHash } from "./ledger.js";
 import { estimateCostUsd } from "./pricing.js";
 import { mockChatCompletion, mockChatCompletionStream, mockEmbeddings } from "./mockUpstream.js";
 import { evaluateBudget } from "./budget.js";
@@ -21,7 +21,7 @@ import {
 import { adminSummary, dashboardHtml } from "./admin.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 import { listenHost, listenPort } from "./runtime.js";
-import { bindRequestId, resolveRequestId } from "./correlation.js";
+import { bindRequestId, isSafeRequestId, resolveRequestId } from "./correlation.js";
 
 function header(req: IncomingMessage, name: string): string | undefined {
   const v = req.headers[name.toLowerCase()];
@@ -747,12 +747,17 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
   if (req.method === "GET" && url.pathname === "/v1/admin/events") {
     const day = url.searchParams.get("day") ?? undefined;
     const decision = url.searchParams.get("decision");
-    let events = await readEvents({ day });
-    if (decision === "allow" || decision === "block") {
+    const requestId = (url.searchParams.get("requestId") ?? "").trim();
+    if (requestId && !isSafeRequestId(requestId)) {
+      json(res, 400, { error: "invalid_request_id", message: "requestId must be 8–64 chars of [A-Za-z0-9._:-]" });
+      return;
+    }
+    let events = requestId ? await findEventsByRequestId(requestId, { day }) : await readEvents({ day });
+    if (decision === "allow" || decision === "block" || decision === "note") {
       events = events.filter((e) => e.decision === decision);
     }
     const limit = Math.min(Math.max(Number(url.searchParams.get("limit") ?? 50) || 50, 1), 200);
-    json(res, 200, { events: events.slice(-limit).reverse() });
+    json(res, 200, { requestId: requestId || undefined, count: events.length, events: events.slice(-limit).reverse() });
     return;
   }
 

@@ -75,4 +75,46 @@ describe("correlation", () => {
       server.close();
     }
   });
+
+  it("looks up a ledger event by request id", async () => {
+    process.env.TOKENPULSE_MOCK_UPSTREAM = "1";
+    process.env.TOKENPULSE_GATEWAY_TOKEN = "test-token";
+    process.env.TOKENPULSE_LEDGER_DIR = await mkdtemp(join(tmpdir(), "tp-lookup-"));
+    const server = createServer((req, res) => {
+      handleRequest(req, res).catch((e) => {
+        res.statusCode = 500;
+        res.end(String(e));
+      });
+    });
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+    const addr = server.address();
+    if (!addr || typeof addr === "string") throw new Error("no addr");
+    const url = `http://127.0.0.1:${addr.port}`;
+    try {
+      const res = await fetch(`${url}/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: "Bearer test-token",
+          "x-tokenpulse-request-id": "pilot-req-9",
+        },
+        body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: "lookup" }] }),
+      });
+      assert.equal(res.status, 200);
+      const bad = await fetch(`${url}/v1/admin/events?requestId=bad`, {
+        headers: { authorization: "Bearer test-token" },
+      });
+      assert.equal(bad.status, 400);
+      const ok = await fetch(`${url}/v1/admin/events?requestId=pilot-req-9`, {
+        headers: { authorization: "Bearer test-token" },
+      });
+      assert.equal(ok.status, 200);
+      const body = (await ok.json()) as { count: number; events: Array<{ requestId?: string; decision: string }> };
+      assert.equal(body.count, 1);
+      assert.equal(body.events[0]?.requestId, "pilot-req-9");
+      assert.equal(body.events[0]?.decision, "allow");
+    } finally {
+      server.close();
+    }
+  });
 });

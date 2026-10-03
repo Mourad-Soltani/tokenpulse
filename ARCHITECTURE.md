@@ -353,3 +353,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Security pack JSON/CSV include `requestId` on blocked rows. Raw prompts stay off.
 - Admin summary exposes `correlation`. Dashboard renders a Correlation table. Live ids are not listed there.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Request id lookup (Session 41)
+
+- `GET /v1/admin/events?requestId=` returns exact ledger matches (optional `day`, `decision`, `limit`).
+- Invalid ids (not 8–64 chars of `[A-Za-z0-9._:-]`) are HTTP 400 `invalid_request_id`.
+- CLI: `--request-id=` prints `{ requestId, count, events }`. No raw prompts.
+- Dashboard Correlation card has a Lookup field. Same admin auth as other `/v1/admin/*` routes.
+- Does not change hash chain membership. `requestId` stays out of the digest.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

@@ -71,6 +71,12 @@ export async function readEvents(opts?: { day?: string; month?: string }): Promi
   return readJsonl(opts);
 }
 
+/** Exact requestId match across the selected day, or all days when day is omitted. */
+export async function findEventsByRequestId(requestId: string, opts?: { day?: string }): Promise<UsageEvent[]> {
+  const events = await readEvents({ day: opts?.day });
+  return events.filter((e) => e.requestId === requestId);
+}
+
 export function summarize(events: UsageEvent[]) {
   const allowed = events.filter((e) => e.decision === "allow");
   const blocked = events.filter((e) => e.decision === "block");

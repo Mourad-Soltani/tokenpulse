@@ -1,4 +1,5 @@
-import { appendOperatorNote, readEvents, summarize, verifyChain } from "./ledger.js";
+import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verifyChain } from "./ledger.js";
+import { isSafeRequestId } from "./correlation.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
 async function main() {
@@ -27,6 +28,17 @@ async function main() {
     for (const e of events) console.log(JSON.stringify(e));
     return;
   }
+  const reqArg = args.find((a) => a.startsWith("--request-id="));
+  if (reqArg) {
+    const requestId = reqArg.slice("--request-id=".length).trim();
+    if (!isSafeRequestId(requestId)) {
+      console.error("invalid request id (8–64 chars of [A-Za-z0-9._:-])");
+      process.exit(1);
+    }
+    const hits = await findEventsByRequestId(requestId, { day: dayArg });
+    console.log(JSON.stringify({ requestId, count: hits.length, events: hits }, null, 2));
+    return;
+  }
   if (args.includes("--verify-ledger")) {
     const report = verifyChain(events);
     console.log(JSON.stringify(report, null, 2));
@@ -41,7 +53,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

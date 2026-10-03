@@ -620,3 +620,29 @@ Request correlation shipped. Sale materials unchanged. Operator still must deplo
 
 **Active project:** Tokenpulse only.
 Session 40 adds audit correlation ids. Automation cannot log into Railway. Do not paste Railway or provider tokens into chat.
+
+## Decisions (Session 41 — request id lookup)
+
+- Admin events accept `requestId` (exact match). Optional `day` narrows the scan. `decision` may be allow, block, or note.
+- Ids that fail the Session 40 charset return HTTP 400 `invalid_request_id`.
+- CLI `--request-id=` prints matching events. Dashboard Correlation card looks up the same route.
+- Response includes `count`. Raw prompts stay off. Hash chain unchanged.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 41 — 2026-10-03)
+
+Request-id audit lookup shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 41 — request id lookup on admin events, CLI, and dashboard
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Correlation id lookup is available during the recording.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 41 makes correlation ids queryable. Automation cannot log into Railway. Do not paste Railway or provider tokens into chat.
+

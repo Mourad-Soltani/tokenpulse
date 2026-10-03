@@ -8,9 +8,13 @@ const store = new AsyncLocalStorage<string>();
 /** Client-supplied ids must be opaque tokens, not free text. */
 const CLIENT_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{7,63}$/;
 
+export function isSafeRequestId(raw: string | undefined): boolean {
+  return CLIENT_ID.test((raw ?? "").trim());
+}
+
 export function resolveRequestId(raw: string | undefined): string {
   const trimmed = (raw ?? "").trim();
-  if (CLIENT_ID.test(trimmed)) return trimmed;
+  if (isSafeRequestId(trimmed)) return trimmed;
   return `tp_${randomUUID().replaceAll("-", "")}`;
 }
 
@@ -40,6 +44,6 @@ export function correlationStatus(): CorrelationStatus {
     ledgerField: "requestId",
     inHashChain: false,
     storesRawPrompts: false,
-    notes: "Echoed on every response. Client id accepted when 8–64 chars of [A-Za-z0-9._:-]. Otherwise generated. Not part of the SHA-256 chain body so legacy hashes stay valid.",
+    notes: "Echoed on every response. Client id accepted when 8–64 chars of [A-Za-z0-9._:-]. Otherwise generated. Not part of the SHA-256 chain body. Lookup: GET /v1/admin/events?requestId= or CLI --request-id= (exact match, no raw prompts).",
   };
 }

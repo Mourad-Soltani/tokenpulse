@@ -136,6 +136,11 @@ export function dashboardHtml(): string {
     <h2 style="margin:0 0 8px;font-size:1rem">Correlation</h2>
     <p class="sub" id="corrmeta"></p>
     <table id="correlation"><thead><tr><th>Header</th><th>Ledger field</th><th>In hash chain</th><th>Raw prompts</th></tr></thead><tbody></tbody></table>
+    <div class="row" style="margin-top:8px">
+      <input id="reqid" placeholder="Request id" />
+      <button id="lookup" type="button">Lookup</button>
+    </div>
+    <table id="hits"><thead><tr><th>Time</th><th>Decision</th><th>Team</th><th>App</th><th>Model</th><th>Policy</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Budgets</h2>
@@ -191,6 +196,7 @@ export function dashboardHtml(): string {
 const tokenEl = document.getElementById('token');
 tokenEl.value = localStorage.getItem('tokenpulse.token') || '';
 document.getElementById('load').onclick = load;
+document.getElementById('lookup').onclick = lookupRequest;
 document.getElementById('finops').onclick = () => download('/v1/admin/export/finops');
 document.getElementById('security').onclick = () => download('/v1/admin/export/security');
 document.getElementById('savenote').onclick = async () => {
@@ -213,6 +219,17 @@ async function download(path) {
   a.download = path.includes('security') ? 'tokenpulse-security.json' : 'tokenpulse-finops.json';
   a.click();
 }
+async function lookupRequest() {
+  const id = document.getElementById('reqid').value.trim();
+  const tb = document.querySelector('#hits tbody');
+  if (!id) { tb.innerHTML = ''; return; }
+  const res = await fetch('/v1/admin/events?requestId=' + encodeURIComponent(id) + '&limit=50', { headers: headers() });
+  if (!res.ok) { alert('lookup ' + res.status); return; }
+  const body = await res.json();
+  const rows = body.events || [];
+  tb.innerHTML = rows.map(e => '<tr><td>'+esc(e.timestamp)+'</td><td>'+esc(e.decision)+'</td><td>'+esc(e.teamId)+'</td><td>'+esc(e.appId)+'</td><td>'+esc(e.model)+'</td><td>'+esc((e.policyIds||[]).join(', '))+'</td></tr>').join('') || '<tr><td colspan="6">No events</td></tr>';
+}
+function esc(v) { return String(v ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
 async function load() {
   const token = tokenEl.value.trim();
   localStorage.setItem('tokenpulse.token', token);
