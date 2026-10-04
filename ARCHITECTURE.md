@@ -375,3 +375,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Ledger policy id `key:<id>` (included in the hash chain). Notes from a key use the bound team/app.
 - No gateway token and no enabled keys = open, same as before. Health stays open. `authRequired` is true if either a gateway token or an enabled key is configured.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Client key issuance (Session 43)
+
+- CLI: `npx tsx src/cli.ts --issue-key --id= --team= --app=`.
+- Generates a 24-byte base64url bearer when none is supplied to `issueClientKey`.
+- Writes only `tokenSha256` into `TOKENPULSE_KEYS_PATH`. Plaintext is printed once on stdout and is not stored.
+- Duplicate ids are rejected. Invalid keys files are not overwritten.
+- Issued keys follow Session 42 match rules (headers cannot override).
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

@@ -69,3 +69,24 @@ test("disabled keys do not match", async () => {
     },
   );
 });
+
+test("issueClientKey writes digest only and matches once", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "tp-issue-"));
+  const path = join(dir, "keys.json");
+  const prev = process.env.TOKENPULSE_KEYS_PATH;
+  process.env.TOKENPULSE_KEYS_PATH = path;
+  try {
+    const { issueClientKey } = await import("../src/keys.js");
+    const issued = await issueClientKey({ id: "finance-bot", teamId: "finance", appId: "bot", token: "issued-secret-value" });
+    assert.equal(issued.token, "issued-secret-value");
+    const raw = await (await import("node:fs/promises")).readFile(path, "utf8");
+    assert.equal(raw.includes("issued-secret-value"), false);
+    assert.equal(raw.includes(sha256Hex("issued-secret-value")), true);
+    const hit = await matchClientKey("issued-secret-value");
+    assert.deepEqual(hit, { id: "finance-bot", teamId: "finance", appId: "bot" });
+    await assert.rejects(() => issueClientKey({ id: "finance-bot", teamId: "finance", appId: "bot" }), /already exists/);
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_KEYS_PATH;
+    else process.env.TOKENPULSE_KEYS_PATH = prev;
+  }
+});

@@ -1,7 +1,7 @@
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { readFile as readFileAsync } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, readFile as readFileAsync, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { z } from "zod";
 
 export const ClientKeySchema = z.object({
@@ -91,6 +91,50 @@ export async function matchClientKey(token: string): Promise<KeyMatch | undefine
     }
   }
   return undefined;
+}
+
+
+const ID_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/;
+
+export type IssuedKey = {
+  id: string;
+  teamId: string;
+  appId: string;
+  token: string;
+  path: string;
+};
+
+/** Append a digest-only key. Plaintext is returned once and never written. */
+export async function issueClientKey(input: {
+  id: string;
+  teamId: string;
+  appId: string;
+  token?: string;
+}): Promise<IssuedKey> {
+  const id = input.id.trim();
+  const teamId = input.teamId.trim();
+  const appId = input.appId.trim();
+  if (!ID_RE.test(id) || !ID_RE.test(teamId) || !ID_RE.test(appId)) {
+    throw new Error("invalid id, team, or app (1–64 chars of [A-Za-z0-9._:-])");
+  }
+  const path = keysPath();
+  let existing: ClientKey[] = [];
+  try {
+    const raw = await readFileAsync(path, "utf8");
+    const parsed = KeysFileSchema.safeParse(JSON.parse(raw));
+    if (!parsed.success) throw new Error("keys file is invalid; refusing to overwrite");
+    existing = parsed.data.keys;
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code !== "ENOENT") throw err;
+  }
+  if (existing.some((k) => k.id === id)) throw new Error("key id already exists");
+  const token = input.token ?? randomBytes(24).toString("base64url");
+  if (token.length < 16 || token.length > 128) throw new Error("token must be 16–128 chars");
+  const next = [...existing, { id, tokenSha256: sha256Hex(token), teamId, appId }];
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, JSON.stringify({ keys: next }, null, 2) + "\n", { mode: 0o600 });
+  return { id, teamId, appId, token, path };
 }
 
 /** Operator-visible key map. Digests and bearer tokens are never serialized. */

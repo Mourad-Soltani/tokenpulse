@@ -673,3 +673,29 @@ Client key binding shipped. Sale materials unchanged. Operator still must deploy
 
 **Active project:** Tokenpulse only.
 Session 42 adds non-spoofable client attribution. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+## Decisions (Session 43 — client key issuance)
+
+- `issueClientKey()` appends a SHA-256 digest to `TOKENPULSE_KEYS_PATH` and returns the bearer once.
+- CLI: `--issue-key --id= --team= --app=`. Stderr warns to store the token; stdout JSON includes it once.
+- Duplicate ids rejected. Invalid keys files are not overwritten. Missing file is created mode 0600.
+- Does not change match rules from Session 42. Digests still never appear on admin or dashboard.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 43 — 2026-10-04)
+
+Digest-only key issuance shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 43 — issue client keys without storing plaintext
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Optional local: `npm run issue-key -- --id=finance-bot --team=finance --app=bot` and mount the digest file; never show the printed token.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 43 adds digest-only key issuance. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

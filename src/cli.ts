@@ -1,4 +1,5 @@
 import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verifyChain } from "./ledger.js";
+import { issueClientKey } from "./keys.js";
 import { isSafeRequestId } from "./correlation.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
@@ -45,6 +46,15 @@ async function main() {
     if (!report.ok) process.exit(1);
     return;
   }
+  if (args.includes("--issue-key")) {
+    const id = args.find((a) => a.startsWith("--id="))?.slice("--id=".length) ?? "";
+    const team = args.find((a) => a.startsWith("--team="))?.slice("--team=".length) ?? "";
+    const app = args.find((a) => a.startsWith("--app="))?.slice("--app=".length) ?? "";
+    const issued = await issueClientKey({ id, teamId: team, appId: app });
+    console.error("store this token now; only its SHA-256 digest was written");
+    console.log(JSON.stringify({ ok: true, id: issued.id, teamId: issued.teamId, appId: issued.appId, token: issued.token, path: issued.path }, null, 2));
+    return;
+  }
   const noteArg = args.find((a) => a.startsWith("--note="));
   if (noteArg) {
     const team = args.find((a) => a.startsWith("--team="))?.slice("--team=".length);
@@ -53,7 +63,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--issue-key --id= --team= --app=|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 
