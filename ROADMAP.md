@@ -48,6 +48,7 @@
 - [x] Policy pipeline status on admin summary
 - [x] Request correlation id (`X-Tokenpulse-Request-Id` on responses + ledger; not in hash body)
 - [x] Request id lookup (`GET /v1/admin/events?requestId=` / CLI `--request-id=`)
+- [x] Client key binding (`TOKENPULSE_KEYS_PATH`, SHA-256, headers cannot override)
 
 ## Sale readiness
 

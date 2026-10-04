@@ -22,6 +22,8 @@ import { adminSummary, dashboardHtml } from "./admin.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 import { listenHost, listenPort } from "./runtime.js";
 import { bindRequestId, isSafeRequestId, resolveRequestId } from "./correlation.js";
+import { keysConfiguredSync, matchClientKey } from "./keys.js";
+import type { UsageEvent } from "./types.js";
 
 function header(req: IncomingMessage, name: string): string | undefined {
   const v = req.headers[name.toLowerCase()];
@@ -50,12 +52,40 @@ async function readBody(req: IncomingMessage): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-function authOk(req: IncomingMessage): boolean {
-  const expected = process.env.TOKENPULSE_GATEWAY_TOKEN;
-  if (!expected) return true;
+function presentedToken(req: IncomingMessage): string {
   const raw = header(req, "authorization") ?? header(req, "x-tokenpulse-token") ?? "";
-  const token = raw.startsWith("Bearer ") ? raw.slice(7) : raw;
-  return safeEqual(token, expected);
+  return raw.startsWith("Bearer ") ? raw.slice(7) : raw;
+}
+
+type Authz =
+  | { ok: true; mode: "open" | "operator" | "key"; keyId?: string; teamId?: string; appId?: string }
+  | { ok: false };
+
+async function authorize(req: IncomingMessage): Promise<Authz> {
+  const token = presentedToken(req);
+  const expected = process.env.TOKENPULSE_GATEWAY_TOKEN;
+  if (expected && token && safeEqual(token, expected)) return { ok: true, mode: "operator" };
+  const key = token ? await matchClientKey(token) : undefined;
+  if (key) return { ok: true, mode: "key", keyId: key.id, teamId: key.teamId, appId: key.appId };
+  if (!expected && !keysConfiguredSync()) return { ok: true, mode: "open" };
+  return { ok: false };
+}
+
+function stampKey(event: UsageEvent, keyId?: string): UsageEvent {
+  if (!keyId) return event;
+  const id = `key:${keyId}`;
+  if (!event.policyIds.includes(id)) event.policyIds = [...event.policyIds, id];
+  return event;
+}
+
+function resolveTeamApp(req: IncomingMessage, auth: Extract<Authz, { ok: true }>): { teamId: string; appId: string; keyId?: string } {
+  if (auth.mode === "key" && auth.teamId && auth.appId) {
+    return { teamId: auth.teamId, appId: auth.appId, keyId: auth.keyId };
+  }
+  return {
+    teamId: header(req, "x-tokenpulse-team") || "default",
+    appId: header(req, "x-tokenpulse-app") || "default",
+  };
 }
 
 export async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -71,12 +101,13 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       liveConfigured: Boolean(resolveUpstream()),
       upstreams: resolveUpstreamChain().length,
       weighted: Boolean(process.env.TOKENPULSE_UPSTREAM_WEIGHTS?.trim()),
-      authRequired: Boolean(process.env.TOKENPULSE_GATEWAY_TOKEN),
+      authRequired: Boolean(process.env.TOKENPULSE_GATEWAY_TOKEN) || keysConfiguredSync(),
     });
     return;
   }
 
-  if (!authOk(req)) {
+  const auth = await authorize(req);
+  if (!auth.ok) {
     json(res, 401, { error: { message: "unauthorized", type: "auth_error" } });
     return;
   }
@@ -104,8 +135,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     }
     const wantStream = Boolean(parsed.data.stream);
 
-    const teamId = header(req, "x-tokenpulse-team") || "default";
-    const appId = header(req, "x-tokenpulse-app") || "default";
+    const { teamId, appId, keyId } = resolveTeamApp(req, auth);
     const mock = isMockUpstream();
 
     const limits = await evaluateLimits({
@@ -128,7 +158,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [limits.policyId],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 413, {
         error: {
           message: limits.reason ?? "request exceeds size limits",
@@ -163,7 +193,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [sensitive.policyId, ...sensitive.categories.map((c) => `sensitive:${c}`)],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 403, {
         error: {
           message: sensitive.reason ?? "sensitive payload blocked",
@@ -189,7 +219,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [modelPolicy.policyId],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 403, {
         error: {
           message: modelPolicy.reason ?? "model not allowed",
@@ -219,7 +249,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [rate.policyId],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       res.setHeader("Retry-After", String(Math.ceil(rate.retryAfterMs / 1000)));
       json(res, 429, {
         error: {
@@ -250,7 +280,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [budget.policyId],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 429, {
         error: {
           message: budget.reason ?? "budget exceeded",
@@ -295,7 +325,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", "stream", ...remapIds],
           requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: true }),
         });
-        await appendEvent(event);
+        await appendEvent(stampKey(event, keyId));
         res.end();
         return;
       }
@@ -318,7 +348,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", ...remapIds],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 200, mockRes.body);
       return;
     }
@@ -378,7 +408,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
           ],
           requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: true }),
         });
-        await appendEvent(event);
+        await appendEvent(stampKey(event, keyId));
         res.end();
         return;
       }
@@ -410,7 +440,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         ],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 200, live.body);
       return;
     } catch (err) {
@@ -429,7 +459,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [modelPolicy.policyId, budget.policyId, "upstream_error", ...(wantStream ? ["stream"] : [])],
         requestHash: requestHash({ model: parsed.data.model, n: parsed.data.messages.length, stream: wantStream }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       const status = typeof err === "object" && err && "status" in err ? Number((err as { status: number }).status) || 502 : 502;
       if (!res.headersSent) {
         json(res, status >= 400 && status < 600 ? status : 502, {
@@ -459,8 +489,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     }
 
     const texts = embeddingInputs(parsed.data);
-    const teamId = header(req, "x-tokenpulse-team") || "default";
-    const appId = header(req, "x-tokenpulse-app") || "default";
+    const { teamId, appId, keyId } = resolveTeamApp(req, auth);
     const mock = isMockUpstream();
 
     const limits = await evaluateLimits({
@@ -482,7 +511,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [limits.policyId, "endpoint:embeddings"],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 413, {
         error: {
           message: limits.reason ?? "request exceeds size limits",
@@ -509,7 +538,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [sensitive.policyId, ...sensitive.categories.map((c) => `sensitive:${c}`), "endpoint:embeddings"],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 403, {
         error: {
           message: sensitive.reason ?? "sensitive payload blocked",
@@ -535,7 +564,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [modelPolicy.policyId, "endpoint:embeddings"],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 403, {
         error: {
           message: modelPolicy.reason ?? "model not allowed",
@@ -566,7 +595,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [rate.policyId, "endpoint:embeddings"],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       res.setHeader("Retry-After", String(Math.ceil((rate.retryAfterMs ?? 1000) / 1000)));
       json(res, 429, {
         error: {
@@ -597,7 +626,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [budget.policyId, "endpoint:embeddings"],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 429, {
         error: {
           message: budget.reason ?? "budget exceeded",
@@ -629,7 +658,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [modelPolicy.policyId, budget.policyId, "mock-allow", "endpoint:embeddings", ...remapIds],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 200, mockRes.body);
       return;
     }
@@ -676,7 +705,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         ],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       json(res, 200, live.body);
       return;
     } catch (err) {
@@ -695,7 +724,7 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
         policyIds: [modelPolicy.policyId, budget.policyId, "upstream_error", "endpoint:embeddings"],
         requestHash: requestHash({ model: parsed.data.model, n: texts.length, endpoint: "embeddings" }),
       });
-      await appendEvent(event);
+      await appendEvent(stampKey(event, keyId));
       const status = typeof err === "object" && err && "status" in err ? Number((err as { status: number }).status) || 502 : 502;
       json(res, status >= 400 && status < 600 ? status : 502, {
         error: { message, type: "upstream_error" },
@@ -724,10 +753,12 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
     try {
+      const bound = resolveTeamApp(req, auth);
       const event = await appendOperatorNote({
         text: String(body.text ?? ""),
-        teamId: body.teamId,
-        appId: body.appId,
+        teamId: bound.keyId ? bound.teamId : body.teamId,
+        appId: bound.keyId ? bound.appId : body.appId,
+        extraPolicyIds: bound.keyId ? [`key:${bound.keyId}`] : undefined,
       });
       json(res, 200, { ok: true, event });
     } catch (err) {

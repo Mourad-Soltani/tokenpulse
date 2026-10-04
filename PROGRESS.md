@@ -646,3 +646,30 @@ Request-id audit lookup shipped. Sale materials unchanged. Operator still must d
 **Active project:** Tokenpulse only.
 Session 41 makes correlation ids queryable. Automation cannot log into Railway. Do not paste Railway or provider tokens into chat.
 
+
+
+## Decisions (Session 42 — client key binding)
+
+- `TOKENPULSE_KEYS_PATH` (default `data/keys.json`) maps bearer SHA-256 digests to `teamId` / `appId`.
+- Example file `keys.example.json` is a disabled placeholder. Digests and tokens never appear on admin or dashboard.
+- Gateway token match remains the operator path and still honors attribution headers.
+- A matching enabled key ignores `X-Tokenpulse-Team` / `X-Tokenpulse-App`. Policy id `key:<id>` is chained.
+- Missing file = no keys. No gateway token and no enabled keys stays open. `/health` stays open; `authRequired` is true if either control is set.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 42 — 2026-10-04)
+
+Client key binding shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 42 — hashed client keys bind team/app and cannot be header-spoofed
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Optional: show a client key binding with the digest file mounted locally, never the secret.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 42 adds non-spoofable client attribution. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

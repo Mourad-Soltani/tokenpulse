@@ -128,8 +128,10 @@ export async function appendOperatorNote(opts: {
   text: string;
   teamId?: string;
   appId?: string;
+  extraPolicyIds?: string[];
 }): Promise<UsageEvent> {
   const text = normalizeNote(opts.text);
+  const extra = (opts.extraPolicyIds ?? []).filter((id) => id && id !== "operator-note");
   const event = newEvent({
     teamId: opts.teamId?.trim() || "ops",
     appId: opts.appId?.trim() || "admin",
@@ -140,7 +142,7 @@ export async function appendOperatorNote(opts: {
     estimatedCostUsd: 0,
     latencyMs: 0,
     decision: "note",
-    policyIds: ["operator-note"],
+    policyIds: ["operator-note", ...extra],
     note: text,
   });
   await appendEvent(event);

@@ -363,3 +363,15 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Dashboard Correlation card has a Lookup field. Same admin auth as other `/v1/admin/*` routes.
 - Does not change hash chain membership. `requestId` stays out of the digest.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Client keys (Session 42)
+
+- File: `TOKENPULSE_KEYS_PATH` (default `data/keys.json`). Example: `keys.example.json` (disabled placeholder only).
+- Each entry stores `tokenSha256` (hex SHA-256 of the bearer), `id`, `teamId`, `appId`. Optional `disabled`.
+- Plaintext tokens and digests are never returned on admin or dashboard.
+- Gateway token still wins when it matches (operator path; headers apply).
+- Otherwise a matching enabled key binds `teamId` / `appId`. `X-Tokenpulse-Team` and `X-Tokenpulse-App` cannot override.
+- Ledger policy id `key:<id>` (included in the hash chain). Notes from a key use the bound team/app.
+- No gateway token and no enabled keys = open, same as before. Health stays open. `authRequired` is true if either a gateway token or an enabled key is configured.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 import { handleRequest } from "../src/gateway.ts";
 import { readEvents } from "../src/ledger.ts";
 
@@ -166,6 +167,37 @@ describe("gateway", () => {
       assert.ok(hit!.policyIds.includes("remap:gpt-4o:gpt-4o-mini"));
     } finally {
       delete process.env.TOKENPULSE_MODEL_REMAP;
+      server.close();
+    }
+  });
+
+  it("client key binds team and ignores spoofed headers", async () => {
+    const token = "client-key-secret";
+    const digest = createHash("sha256").update(token).digest("hex");
+    const dir = await mkdtemp(join(tmpdir(), "tp-keys-"));
+    const path = join(dir, "keys.json");
+    await writeFile(path, JSON.stringify({ keys: [{ id: "finance-bot", tokenSha256: digest, teamId: "finance", appId: "bot" }] }));
+    process.env.TOKENPULSE_KEYS_PATH = path;
+    const { server, url } = await listen();
+    try {
+      const res = await fetch(`${url}/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${token}`,
+          "x-tokenpulse-team": "spoofed",
+          "x-tokenpulse-app": "spoofed",
+        },
+        body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: "key bind" }] }),
+      });
+      assert.equal(res.status, 200);
+      const events = await readEvents();
+      const hit = events.find((e) => e.policyIds.includes("key:finance-bot"));
+      assert.ok(hit);
+      assert.equal(hit!.teamId, "finance");
+      assert.equal(hit!.appId, "bot");
+    } finally {
+      delete process.env.TOKENPULSE_KEYS_PATH;
       server.close();
     }
   });

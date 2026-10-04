@@ -11,6 +11,7 @@ import { exportStatus, type ExportStatus } from "./export.js";
 import { policyPipelineStatus, type PolicyPipelineStatus } from "./policy.js";
 import { attributionStatus, type AttributionStatus } from "./attribution.js";
 import { correlationStatus, type CorrelationStatus } from "./correlation.js";
+import { keyStatus, type KeyStatus } from "./keys.js";
 import type { UsageEvent } from "./types.js";
 
 export type AdminSummary = ReturnType<typeof summarize> & {
@@ -34,6 +35,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   policy: PolicyPipelineStatus;
   attribution: AttributionStatus;
   correlation: CorrelationStatus;
+  keys: KeyStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -72,6 +74,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     policy: policyPipelineStatus(),
     attribution: attributionStatus(),
     correlation: correlationStatus(),
+    keys: await keyStatus(),
   };
 }
 
@@ -126,6 +129,11 @@ export function dashboardHtml(): string {
     <h2 style="margin:0 0 8px;font-size:1rem">Policy pipeline</h2>
     <p class="sub" id="policymeta"></p>
     <table id="policy"><thead><tr><th>#</th><th>Stage</th><th>On deny</th><th>Applies</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Client keys</h2>
+    <p class="sub" id="keymeta"></p>
+    <table id="keys"><thead><tr><th>Id</th><th>Team</th><th>App</th><th>Status</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Attribution</h2>
@@ -273,6 +281,14 @@ async function load() {
   plt.innerHTML = (pol.stages||[]).map(st =>
     '<tr><td>'+st.order+'</td><td>'+st.name+'</td><td>'+st.onDeny+'</td><td>'+(st.appliesTo||[]).join(', ')+'</td></tr>'
   ).join('') || '<tr><td colspan="4">no stages</td></tr>';
+  const ks = s.keys || { version:'tokenpulse-keys-v1', configured:false, enabledCount:0, keys:[], storesTokenMaterial:false, notes:'' };
+  document.getElementById('keymeta').textContent = (ks.configured ? 'enabled ' + ks.enabledCount : 'no enabled keys') + ' · digests not shown';
+  const kt = document.querySelector('#keys tbody');
+  kt.innerHTML = (ks.keys || []).map(k => {
+    const st = k.disabled ? 'disabled' : 'enabled';
+    const cls = k.disabled ? 'bad' : 'ok';
+    return '<tr><td>'+k.id+'</td><td>'+k.teamId+'</td><td>'+k.appId+'</td><td class="'+cls+'">'+st+'</td></tr>';
+  }).join('') || '<tr><td colspan="4">no client keys configured</td></tr>';
   const attr = s.attribution || { version:'tokenpulse-attribution-v1', storesRawPrompts:false, fieldCount:2, fields:[], notes:'' };
   document.getElementById('attrmeta').textContent = attr.version + ' · ' + (attr.fieldCount||0) + ' fields · ' + (attr.notes||'');
   const at = document.querySelector('#attribution tbody');
