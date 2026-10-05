@@ -57,6 +57,7 @@ Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks
 | Attribution header status | Live (admin summary + dashboard) |
 | Client key binding | Live (`TOKENPULSE_KEYS_PATH`, SHA-256, header override off) |
 | Client key issuance | Live (`--issue-key`; digest written, token printed once) |
+| Client key revoke | Live (`--revoke-key --id=`; digest kept, match disabled) |
 | Pilot demo deploy | Live (`Dockerfile`, `compose.pilot.yaml`, `DEPLOY.md`) |
 | Railway demo config | Live (`railway.toml`; listens on platform `PORT`) |
 | Diligence proof pack | Live (`PROOF.md`, `proof/` sample packs) |

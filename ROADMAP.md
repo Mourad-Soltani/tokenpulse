@@ -50,6 +50,7 @@
 - [x] Request id lookup (`GET /v1/admin/events?requestId=` / CLI `--request-id=`)
 - [x] Client key binding (`TOKENPULSE_KEYS_PATH`, SHA-256, headers cannot override)
 - [x] Digest-only client key issuance (`--issue-key`; plaintext printed once)
+- [x] Client key revoke (`--revoke-key --id=`; digest retained, match disabled)
 
 ## Sale readiness
 

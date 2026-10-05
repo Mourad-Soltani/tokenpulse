@@ -1,5 +1,5 @@
 import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verifyChain } from "./ledger.js";
-import { issueClientKey } from "./keys.js";
+import { issueClientKey, keyStatus, revokeClientKey } from "./keys.js";
 import { isSafeRequestId } from "./correlation.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
@@ -55,6 +55,17 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: issued.id, teamId: issued.teamId, appId: issued.appId, token: issued.token, path: issued.path }, null, 2));
     return;
   }
+  if (args.includes("--revoke-key")) {
+    const id = args.find((a) => a.startsWith("--id="))?.slice("--id=".length) ?? "";
+    const revoked = await revokeClientKey(id);
+    console.log(JSON.stringify({ ok: true, id: revoked.id, teamId: revoked.teamId, appId: revoked.appId, disabled: true, alreadyDisabled: revoked.alreadyDisabled, path: revoked.path }, null, 2));
+    return;
+  }
+  if (args.includes("--list-keys")) {
+    const status = await keyStatus();
+    console.log(JSON.stringify({ ok: true, configured: status.configured, enabledCount: status.enabledCount, storesTokenMaterial: status.storesTokenMaterial, keys: status.keys }, null, 2));
+    return;
+  }
   const noteArg = args.find((a) => a.startsWith("--note="));
   if (noteArg) {
     const team = args.find((a) => a.startsWith("--team="))?.slice("--team=".length);
@@ -63,7 +74,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--issue-key --id= --team= --app=|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--issue-key --id= --team= --app=|--revoke-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

@@ -12,7 +12,9 @@
     "export-finops": "tsx src/cli.ts --export-finops",
     "export-security": "tsx src/cli.ts --export-security",
     "verify-ledger": "tsx src/cli.ts --verify-ledger",
-    "issue-key": "tsx src/cli.ts --issue-key"
+    "issue-key": "tsx src/cli.ts --issue-key",
+    "revoke-key": "tsx src/cli.ts --revoke-key",
+    "list-keys": "tsx src/cli.ts --list-keys"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

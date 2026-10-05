@@ -137,6 +137,52 @@ export async function issueClientKey(input: {
   return { id, teamId, appId, token, path };
 }
 
+
+export type RevokedKey = {
+  id: string;
+  teamId: string;
+  appId: string;
+  alreadyDisabled: boolean;
+  path: string;
+};
+
+async function readKeysFile(): Promise<{ path: string; keys: ClientKey[] }> {
+  const path = keysPath();
+  let raw: string;
+  try {
+    raw = await readFileAsync(path, "utf8");
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") throw new Error("keys file does not exist");
+    throw err;
+  }
+  const parsed = KeysFileSchema.safeParse(JSON.parse(raw));
+  if (!parsed.success) throw new Error("keys file is invalid; refusing to overwrite");
+  return { path, keys: parsed.data.keys };
+}
+
+/** Disable a key by id. Digest stays on disk so the row remains auditable. */
+export async function revokeClientKey(id: string): Promise<RevokedKey> {
+  const keyId = id.trim();
+  if (!ID_RE.test(keyId)) throw new Error("invalid id (1–64 chars of [A-Za-z0-9._:-])");
+  const { path, keys } = await readKeysFile();
+  const idx = keys.findIndex((k) => k.id === keyId);
+  if (idx < 0) throw new Error("key id not found");
+  const current = keys[idx]!;
+  const alreadyDisabled = Boolean(current.disabled);
+  if (!alreadyDisabled) {
+    const next = keys.map((k, i) => (i === idx ? { ...k, disabled: true } : k));
+    await writeFile(path, JSON.stringify({ keys: next }, null, 2) + "\n", { mode: 0o600 });
+  }
+  return {
+    id: current.id,
+    teamId: current.teamId,
+    appId: current.appId,
+    alreadyDisabled,
+    path,
+  };
+}
+
 /** Operator-visible key map. Digests and bearer tokens are never serialized. */
 export async function keyStatus(): Promise<KeyStatus> {
   const keys = await loadKeys();

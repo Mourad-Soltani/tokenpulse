@@ -385,3 +385,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Duplicate ids are rejected. Invalid keys files are not overwritten.
 - Issued keys follow Session 42 match rules (headers cannot override).
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Client key revoke (Session 44)
+
+- CLI: `npx tsx src/cli.ts --revoke-key --id=`. `--list-keys` prints id/team/app/disabled only.
+- Sets `disabled: true` on the matching row. The SHA-256 digest is not deleted and not rewritten.
+- Revoke is idempotent (`alreadyDisabled`). Unknown ids and invalid key files are rejected.
+- Disabled keys no longer match. Dashboard status already lists `disabled`.
+- Digests and bearer tokens are never printed by list or revoke.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

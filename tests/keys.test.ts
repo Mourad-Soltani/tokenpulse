@@ -90,3 +90,32 @@ test("issueClientKey writes digest only and matches once", async () => {
     else process.env.TOKENPULSE_KEYS_PATH = prev;
   }
 });
+
+test("revokeClientKey disables match and keeps digest", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "tp-revoke-"));
+  const path = join(dir, "keys.json");
+  const prev = process.env.TOKENPULSE_KEYS_PATH;
+  process.env.TOKENPULSE_KEYS_PATH = path;
+  try {
+    const { issueClientKey, revokeClientKey } = await import("../src/keys.js");
+    const issued = await issueClientKey({ id: "finance-bot", teamId: "finance", appId: "bot", token: "issued-secret-value" });
+    const digest = sha256Hex(issued.token);
+    const revoked = await revokeClientKey("finance-bot");
+    assert.equal(revoked.alreadyDisabled, false);
+    assert.equal(await matchClientKey(issued.token), undefined);
+    const raw = await (await import("node:fs/promises")).readFile(path, "utf8");
+    assert.equal(raw.includes(issued.token), false);
+    assert.equal(raw.includes(digest), true);
+    assert.equal(raw.includes('"disabled": true'), true);
+    const again = await revokeClientKey("finance-bot");
+    assert.equal(again.alreadyDisabled, true);
+    const status = await keyStatus();
+    assert.equal(status.enabledCount, 0);
+    assert.equal(status.keys[0]?.disabled, true);
+    assert.equal(JSON.stringify(status).includes(digest), false);
+    await assert.rejects(() => revokeClientKey("missing"), /not found/);
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_KEYS_PATH;
+    else process.env.TOKENPULSE_KEYS_PATH = prev;
+  }
+});
