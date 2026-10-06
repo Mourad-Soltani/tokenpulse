@@ -14,6 +14,7 @@
     "verify-ledger": "tsx src/cli.ts --verify-ledger",
     "issue-key": "tsx src/cli.ts --issue-key",
     "revoke-key": "tsx src/cli.ts --revoke-key",
+    "enable-key": "tsx src/cli.ts --enable-key",
     "list-keys": "tsx src/cli.ts --list-keys"
   },
   "devDependencies": {

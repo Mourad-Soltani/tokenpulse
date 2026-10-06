@@ -724,3 +724,28 @@ Digest-preserving revoke shipped. Sale materials unchanged. Operator still must 
 
 **Active project:** Tokenpulse only.
 Session 44 adds digest-preserving key revoke and a secret-free key list. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+## Decisions (Session 45 — client key re-enable)
+
+- `--enable-key --id=` sets `disabled: false` and leaves the SHA-256 digest unchanged.
+- No new bearer is minted. Operators must still hold the original token from issuance.
+- Unknown ids are rejected. Invalid keys files are not overwritten. Second enable is `alreadyEnabled`.
+- Does not change Session 42 match rules, Session 43 issuance, or Session 44 revoke.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 45 — 2026-10-06)
+
+Digest-preserving key re-enable shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 45 — re-enable client keys without minting a new secret
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Optional local: `npm run issue-key -- --id=finance-bot --team=finance --app=bot`, `npm run revoke-key -- --id=finance-bot`, then `npm run enable-key -- --id=finance-bot`; never show the printed token.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 45 adds digest-preserving key re-enable. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

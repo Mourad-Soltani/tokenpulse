@@ -119,3 +119,35 @@ test("revokeClientKey disables match and keeps digest", async () => {
     else process.env.TOKENPULSE_KEYS_PATH = prev;
   }
 });
+
+test("enableClientKey restores match and keeps digest", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "tp-enable-"));
+  const path = join(dir, "keys.json");
+  const prev = process.env.TOKENPULSE_KEYS_PATH;
+  process.env.TOKENPULSE_KEYS_PATH = path;
+  try {
+    const { issueClientKey, revokeClientKey, enableClientKey } = await import("../src/keys.js");
+    const issued = await issueClientKey({ id: "finance-bot", teamId: "finance", appId: "bot", token: "issued-secret-value" });
+    const digest = sha256Hex(issued.token);
+    await revokeClientKey("finance-bot");
+    assert.equal(await matchClientKey(issued.token), undefined);
+    const enabled = await enableClientKey("finance-bot");
+    assert.equal(enabled.alreadyEnabled, false);
+    assert.deepEqual(await matchClientKey(issued.token), { id: "finance-bot", teamId: "finance", appId: "bot" });
+    const raw = await (await import("node:fs/promises")).readFile(path, "utf8");
+    assert.equal(raw.includes(issued.token), false);
+    assert.equal(raw.includes(digest), true);
+    assert.equal(raw.includes('"disabled": false'), true);
+    const again = await enableClientKey("finance-bot");
+    assert.equal(again.alreadyEnabled, true);
+    const status = await keyStatus();
+    assert.equal(status.enabledCount, 1);
+    assert.equal(status.keys[0]?.disabled, false);
+    assert.equal(JSON.stringify(status).includes(digest), false);
+    await assert.rejects(() => enableClientKey("missing"), /not found/);
+    await assert.rejects(() => enableClientKey(""), /invalid id/);
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_KEYS_PATH;
+    else process.env.TOKENPULSE_KEYS_PATH = prev;
+  }
+});

@@ -183,6 +183,36 @@ export async function revokeClientKey(id: string): Promise<RevokedKey> {
   };
 }
 
+export type EnabledKey = {
+  id: string;
+  teamId: string;
+  appId: string;
+  alreadyEnabled: boolean;
+  path: string;
+};
+
+/** Re-enable a disabled key by id. Digest is unchanged; no new bearer is minted. */
+export async function enableClientKey(id: string): Promise<EnabledKey> {
+  const keyId = id.trim();
+  if (!ID_RE.test(keyId)) throw new Error("invalid id (1–64 chars of [A-Za-z0-9._:-])");
+  const { path, keys } = await readKeysFile();
+  const idx = keys.findIndex((k) => k.id === keyId);
+  if (idx < 0) throw new Error("key id not found");
+  const current = keys[idx]!;
+  const alreadyEnabled = !current.disabled;
+  if (!alreadyEnabled) {
+    const next = keys.map((k, i) => (i === idx ? { ...k, disabled: false } : k));
+    await writeFile(path, JSON.stringify({ keys: next }, null, 2) + "\n", { mode: 0o600 });
+  }
+  return {
+    id: current.id,
+    teamId: current.teamId,
+    appId: current.appId,
+    alreadyEnabled,
+    path,
+  };
+}
+
 /** Operator-visible key map. Digests and bearer tokens are never serialized. */
 export async function keyStatus(): Promise<KeyStatus> {
   const keys = await loadKeys();

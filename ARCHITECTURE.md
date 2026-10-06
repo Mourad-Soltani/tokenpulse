@@ -394,3 +394,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Disabled keys no longer match. Dashboard status already lists `disabled`.
 - Digests and bearer tokens are never printed by list or revoke.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Client key re-enable (Session 45)
+
+- CLI: `npx tsx src/cli.ts --enable-key --id=` (also `npm run enable-key -- --id=`).
+- Clears `disabled` on the matching row (`disabled: false`). SHA-256 digest is not rewritten and no new bearer is minted.
+- Idempotent when the key is already enabled (`alreadyEnabled`). Unknown ids and invalid key files are rejected.
+- Restored keys follow Session 42 match rules (headers cannot override).
+- Digests and bearer tokens are never printed by enable.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
