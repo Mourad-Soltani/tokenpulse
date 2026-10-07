@@ -10,6 +10,8 @@ export const ClientKeySchema = z.object({
   teamId: z.string().min(1).max(64),
   appId: z.string().min(1).max(64),
   disabled: z.boolean().optional(),
+  /** Inclusive UTC expiry. Date-only values are stored as end of that UTC day. */
+  expiresAt: z.string().min(10).max(40).optional(),
 });
 
 export const KeysFileSchema = z.object({
@@ -29,12 +31,15 @@ export type KeyStatusRow = {
   teamId: string;
   appId: string;
   disabled: boolean;
+  expiresAt: string | null;
+  expired: boolean;
 };
 
 export type KeyStatus = {
   version: "tokenpulse-keys-v1";
   configured: boolean;
   enabledCount: number;
+  expiredCount: number;
   keys: KeyStatusRow[];
   storesTokenMaterial: false;
   notes: string;
@@ -63,6 +68,7 @@ export async function loadKeys(): Promise<ClientKey[]> {
   }
 }
 
+/** True when a non-disabled key row exists. Expired rows still lock the gateway. */
 export function keysConfiguredSync(): boolean {
   try {
     const raw = readFileSync(keysPath(), "utf8");
@@ -70,6 +76,27 @@ export function keysConfiguredSync(): boolean {
   } catch {
     return false;
   }
+}
+
+/** Date-only `YYYY-MM-DD` is inclusive through 23:59:59.999Z that UTC day. */
+export function normalizeExpiresAt(raw: string | undefined): string | undefined {
+  if (raw === undefined || raw.trim() === "") return undefined;
+  const value = raw.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const end = Date.parse(`${value}T23:59:59.999Z`);
+    if (Number.isNaN(end)) throw new Error("invalid expires");
+    return `${value}T23:59:59.999Z`;
+  }
+  const ms = Date.parse(value);
+  if (Number.isNaN(ms)) throw new Error("invalid expires");
+  return new Date(ms).toISOString();
+}
+
+export function isKeyExpired(expiresAt: string | undefined, now = Date.now()): boolean {
+  if (!expiresAt) return false;
+  const ms = Date.parse(expiresAt);
+  if (Number.isNaN(ms)) return true;
+  return ms <= now;
 }
 
 function digestEqual(a: string, b: string): boolean {
@@ -86,6 +113,7 @@ export async function matchClientKey(token: string): Promise<KeyMatch | undefine
   const keys = await loadKeys();
   for (const key of keys) {
     if (key.disabled) continue;
+    if (isKeyExpired(key.expiresAt)) continue;
     if (digestEqual(digest, key.tokenSha256)) {
       return { id: key.id, teamId: key.teamId, appId: key.appId };
     }
@@ -101,6 +129,7 @@ export type IssuedKey = {
   teamId: string;
   appId: string;
   token: string;
+  expiresAt: string | null;
   path: string;
 };
 
@@ -110,6 +139,7 @@ export async function issueClientKey(input: {
   teamId: string;
   appId: string;
   token?: string;
+  expiresAt?: string;
 }): Promise<IssuedKey> {
   const id = input.id.trim();
   const teamId = input.teamId.trim();
@@ -131,10 +161,11 @@ export async function issueClientKey(input: {
   if (existing.some((k) => k.id === id)) throw new Error("key id already exists");
   const token = input.token ?? randomBytes(24).toString("base64url");
   if (token.length < 16 || token.length > 128) throw new Error("token must be 16–128 chars");
-  const next = [...existing, { id, tokenSha256: sha256Hex(token), teamId, appId }];
+  const expiresAt = normalizeExpiresAt(input.expiresAt);
+  const next = [...existing, { id, tokenSha256: sha256Hex(token), teamId, appId, ...(expiresAt ? { expiresAt } : {}) }];
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, JSON.stringify({ keys: next }, null, 2) + "\n", { mode: 0o600 });
-  return { id, teamId, appId, token, path };
+  return { id, teamId, appId, token, expiresAt: expiresAt ?? null, path };
 }
 
 
@@ -221,14 +252,17 @@ export async function keyStatus(): Promise<KeyStatus> {
     teamId: k.teamId,
     appId: k.appId,
     disabled: Boolean(k.disabled),
+    expiresAt: k.expiresAt ?? null,
+    expired: isKeyExpired(k.expiresAt),
   }));
   return {
     version: "tokenpulse-keys-v1",
     configured: rows.some((k) => !k.disabled),
-    enabledCount: rows.filter((k) => !k.disabled).length,
+    enabledCount: rows.filter((k) => !k.disabled && !k.expired).length,
+    expiredCount: rows.filter((k) => k.expired && !k.disabled).length,
     keys: rows,
     storesTokenMaterial: false,
-    notes: "Enabled keys bind teamId and appId. Client headers cannot override a key match. Gateway token remains the operator path.",
+    notes: "Enabled keys bind teamId and appId. Expired keys do not match but still require auth until disabled. Digests are never shown. Gateway token remains the operator path.",
   };
 }
 

@@ -5,7 +5,8 @@
       "tokenSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "teamId": "finance",
       "appId": "bot",
-      "disabled": true
+      "disabled": true,
+      "expiresAt": "2099-01-01T23:59:59.999Z"
     }
   ]
 }

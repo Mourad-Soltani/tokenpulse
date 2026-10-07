@@ -151,3 +151,45 @@ test("enableClientKey restores match and keeps digest", async () => {
     else process.env.TOKENPULSE_KEYS_PATH = prev;
   }
 });
+
+test("expired client key does not match and status omits digest", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "tp-expire-"));
+  const path = join(dir, "keys.json");
+  const prev = process.env.TOKENPULSE_KEYS_PATH;
+  process.env.TOKENPULSE_KEYS_PATH = path;
+  try {
+    const { issueClientKey, isKeyExpired, normalizeExpiresAt } = await import("../src/keys.js");
+    assert.equal(normalizeExpiresAt("2020-01-02"), "2020-01-02T23:59:59.999Z");
+    assert.equal(isKeyExpired("2020-01-02T23:59:59.999Z", Date.parse("2020-01-03T00:00:00.000Z")), true);
+    const issued = await issueClientKey({
+      id: "finance-bot",
+      teamId: "finance",
+      appId: "bot",
+      token: "issued-secret-value",
+      expiresAt: "2020-01-01",
+    });
+    assert.equal(issued.expiresAt, "2020-01-01T23:59:59.999Z");
+    assert.equal(await matchClientKey(issued.token), undefined);
+    const status = await keyStatus();
+    assert.equal(status.enabledCount, 0);
+    assert.equal(status.expiredCount, 1);
+    assert.equal(status.configured, true);
+    assert.equal(status.keys[0]?.expired, true);
+    assert.equal(JSON.stringify(status).includes(sha256Hex(issued.token)), false);
+    const live = await issueClientKey({
+      id: "finance-live",
+      teamId: "finance",
+      appId: "bot",
+      token: "issued-secret-live01",
+      expiresAt: "2099-01-01",
+    });
+    assert.deepEqual(await matchClientKey(live.token), { id: "finance-live", teamId: "finance", appId: "bot" });
+    await assert.rejects(
+      () => issueClientKey({ id: "bad-exp", teamId: "finance", appId: "bot", token: "issued-secret-value2", expiresAt: "not-a-date" }),
+      /invalid expires/,
+    );
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_KEYS_PATH;
+    else process.env.TOKENPULSE_KEYS_PATH = prev;
+  }
+});

@@ -404,3 +404,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Restored keys follow Session 42 match rules (headers cannot override).
 - Digests and bearer tokens are never printed by enable.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Client key expiry (Session 46)
+
+- Optional `expiresAt` on a key row. CLI: `--issue-key --id= --team= --app= --expires=YYYY-MM-DD` (or full ISO).
+- Date-only values are stored as end of that UTC day (`T23:59:59.999Z`) so the calendar day is inclusive.
+- Expired keys do not match. They still count as configured auth until `disabled`, so a stale bearer cannot fall through to an open gateway.
+- Admin summary and dashboard show `expired` and `expiresAt`. Digests stay off the status payload.
+- Does not mint a new bearer and does not rewrite an existing digest. Revoke and re-enable are unchanged.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

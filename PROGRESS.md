@@ -749,3 +749,28 @@ Digest-preserving key re-enable shipped. Sale materials unchanged. Operator stil
 
 **Active project:** Tokenpulse only.
 Session 45 adds digest-preserving key re-enable. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+## Decisions (Session 46 — client key expiry)
+
+- Optional `expiresAt` on issue (`--expires=YYYY-MM-DD` or ISO). Date-only is inclusive through end of that UTC day.
+- Expired keys do not match. Non-disabled expired rows still set `authRequired` so the gateway does not fall open.
+- Status adds `expired`, `expiresAt`, and `expiredCount`. Digests stay off admin and dashboard.
+- Does not change revoke, re-enable, or digest-only issuance. No new bearer on expiry.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 46 — 2026-10-07)
+
+Optional client-key expiry shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 46 — optional client key expiry (fail closed, digest unchanged)
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Optional local: `npm run issue-key -- --id=finance-bot --team=finance --app=bot --expires=2026-12-31`; never show the printed token.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 46 adds optional client-key expiry. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

@@ -50,9 +50,10 @@ async function main() {
     const id = args.find((a) => a.startsWith("--id="))?.slice("--id=".length) ?? "";
     const team = args.find((a) => a.startsWith("--team="))?.slice("--team=".length) ?? "";
     const app = args.find((a) => a.startsWith("--app="))?.slice("--app=".length) ?? "";
-    const issued = await issueClientKey({ id, teamId: team, appId: app });
+    const expiresAt = args.find((a) => a.startsWith("--expires="))?.slice("--expires=".length);
+    const issued = await issueClientKey({ id, teamId: team, appId: app, expiresAt });
     console.error("store this token now; only its SHA-256 digest was written");
-    console.log(JSON.stringify({ ok: true, id: issued.id, teamId: issued.teamId, appId: issued.appId, token: issued.token, path: issued.path }, null, 2));
+    console.log(JSON.stringify({ ok: true, id: issued.id, teamId: issued.teamId, appId: issued.appId, expiresAt: issued.expiresAt, token: issued.token, path: issued.path }, null, 2));
     return;
   }
   if (args.includes("--revoke-key")) {
@@ -80,7 +81,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--issue-key --id= --team= --app=|--revoke-key --id=|--enable-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

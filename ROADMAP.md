@@ -52,6 +52,7 @@
 - [x] Digest-only client key issuance (`--issue-key`; plaintext printed once)
 - [x] Client key revoke (`--revoke-key --id=`; digest retained, match disabled)
 - [x] Client key re-enable (`--enable-key --id=`; same digest, no new bearer)
+- [x] Client key expiry (`--expires=` on issue; expired keys do not match, auth stays locked)
 
 ## Sale readiness
 
