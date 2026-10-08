@@ -222,6 +222,45 @@ export type EnabledKey = {
   path: string;
 };
 
+export type RotatedKey = {
+  id: string;
+  teamId: string;
+  appId: string;
+  token: string;
+  expiresAt: string | null;
+  previousDisabled: boolean;
+  path: string;
+};
+
+/**
+ * Replace the SHA-256 digest for an existing id. Team, app, and expiry stay.
+ * Disabled is cleared so the new bearer can match. Old bearer no longer matches.
+ * Plaintext is returned once and never written.
+ */
+export async function rotateClientKey(input: { id: string; token?: string }): Promise<RotatedKey> {
+  const keyId = input.id.trim();
+  if (!ID_RE.test(keyId)) throw new Error("invalid id (1–64 chars of [A-Za-z0-9._:-])");
+  const { path, keys } = await readKeysFile();
+  const idx = keys.findIndex((k) => k.id === keyId);
+  if (idx < 0) throw new Error("key id not found");
+  const current = keys[idx]!;
+  const token = input.token ?? randomBytes(24).toString("base64url");
+  if (token.length < 16 || token.length > 128) throw new Error("token must be 16–128 chars");
+  const next = keys.map((k, i) =>
+    i === idx ? { ...k, tokenSha256: sha256Hex(token), disabled: false } : k,
+  );
+  await writeFile(path, JSON.stringify({ keys: next }, null, 2) + "\n", { mode: 0o600 });
+  return {
+    id: current.id,
+    teamId: current.teamId,
+    appId: current.appId,
+    token,
+    expiresAt: current.expiresAt ?? null,
+    previousDisabled: Boolean(current.disabled),
+    path,
+  };
+}
+
 /** Re-enable a disabled key by id. Digest is unchanged; no new bearer is minted. */
 export async function enableClientKey(id: string): Promise<EnabledKey> {
   const keyId = id.trim();
@@ -262,7 +301,7 @@ export async function keyStatus(): Promise<KeyStatus> {
     expiredCount: rows.filter((k) => k.expired && !k.disabled).length,
     keys: rows,
     storesTokenMaterial: false,
-    notes: "Enabled keys bind teamId and appId. Expired keys do not match but still require auth until disabled. Digests are never shown. Gateway token remains the operator path.",
+    notes: "Enabled keys bind teamId and appId. Expired keys do not match but still require auth until disabled. Rotate replaces the digest and clears disabled. Digests are never shown. Gateway token remains the operator path.",
   };
 }
 

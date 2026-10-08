@@ -413,3 +413,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary and dashboard show `expired` and `expiresAt`. Digests stay off the status payload.
 - Does not mint a new bearer and does not rewrite an existing digest. Revoke and re-enable are unchanged.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Client key rotate (Session 47)
+
+- CLI: `npx tsx src/cli.ts --rotate-key --id=` (also `npm run rotate-key -- --id=`).
+- Replaces `tokenSha256` for that id. Team, app, and `expiresAt` are unchanged.
+- Clears `disabled` so the new bearer can match. The previous bearer no longer matches.
+- Plaintext is printed once and is not stored. Digests stay off admin and dashboard.
+- Unknown ids and invalid key files are rejected. Does not mint a second row.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

@@ -1,5 +1,5 @@
 import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verifyChain } from "./ledger.js";
-import { enableClientKey, issueClientKey, keyStatus, revokeClientKey } from "./keys.js";
+import { enableClientKey, issueClientKey, keyStatus, revokeClientKey, rotateClientKey } from "./keys.js";
 import { isSafeRequestId } from "./correlation.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 
@@ -68,6 +68,13 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: enabled.id, teamId: enabled.teamId, appId: enabled.appId, disabled: false, alreadyEnabled: enabled.alreadyEnabled, path: enabled.path }, null, 2));
     return;
   }
+  if (args.includes("--rotate-key")) {
+    const id = args.find((a) => a.startsWith("--id="))?.slice("--id=".length) ?? "";
+    const rotated = await rotateClientKey({ id });
+    console.error("store this token now; previous digest was replaced and no longer matches");
+    console.log(JSON.stringify({ ok: true, id: rotated.id, teamId: rotated.teamId, appId: rotated.appId, expiresAt: rotated.expiresAt, previousDisabled: rotated.previousDisabled, token: rotated.token, path: rotated.path }, null, 2));
+    return;
+  }
   if (args.includes("--list-keys")) {
     const status = await keyStatus();
     console.log(JSON.stringify({ ok: true, configured: status.configured, enabledCount: status.enabledCount, storesTokenMaterial: status.storesTokenMaterial, keys: status.keys }, null, 2));
@@ -81,7 +88,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

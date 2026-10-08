@@ -774,3 +774,30 @@ Optional client-key expiry shipped. Sale materials unchanged. Operator still mus
 
 **Active project:** Tokenpulse only.
 Session 46 adds optional client-key expiry. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+## Decisions (Session 47 — client key rotate)
+
+- CLI: `--rotate-key --id=` (also `npm run rotate-key -- --id=`).
+- Replaces the SHA-256 digest for that id. Team, app, and `expiresAt` stay. No second row.
+- Clears `disabled` so the new bearer can match. Previous bearer no longer matches.
+- Plaintext is printed once and is not stored. Status still omits digests.
+- Unknown ids, short tokens, and invalid key files are rejected.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 47 — 2026-10-08)
+
+Digest-replacing key rotate shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 47 — rotate client keys without changing id, team, app, or expiry
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Optional local: `npm run rotate-key -- --id=finance-bot`; never show the printed token.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 47 adds digest-replacing key rotate. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

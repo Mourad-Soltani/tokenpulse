@@ -193,3 +193,41 @@ test("expired client key does not match and status omits digest", async () => {
     else process.env.TOKENPULSE_KEYS_PATH = prev;
   }
 });
+
+test("rotate client key replaces digest and drops the old bearer", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "tp-rotate-"));
+  const path = join(dir, "keys.json");
+  const prev = process.env.TOKENPULSE_KEYS_PATH;
+  process.env.TOKENPULSE_KEYS_PATH = path;
+  try {
+    const { issueClientKey, rotateClientKey, revokeClientKey } = await import("../src/keys.js");
+    const issued = await issueClientKey({
+      id: "finance-bot",
+      teamId: "finance",
+      appId: "bot",
+      token: "issued-secret-value",
+      expiresAt: "2099-06-01",
+    });
+    await revokeClientKey("finance-bot");
+    const rotated = await rotateClientKey({ id: "finance-bot", token: "rotated-secret-value" });
+    assert.equal(rotated.previousDisabled, true);
+    assert.equal(rotated.teamId, "finance");
+    assert.equal(rotated.appId, "bot");
+    assert.equal(rotated.expiresAt, "2099-06-01T23:59:59.999Z");
+    assert.equal(await matchClientKey(issued.token), undefined);
+    assert.deepEqual(await matchClientKey(rotated.token), { id: "finance-bot", teamId: "finance", appId: "bot" });
+    const raw = await (await import("node:fs/promises")).readFile(path, "utf8");
+    assert.equal(raw.includes(sha256Hex(issued.token)), false);
+    assert.equal(raw.includes(sha256Hex(rotated.token)), true);
+    assert.equal(raw.includes(rotated.token), false);
+    const status = await keyStatus();
+    assert.equal(status.enabledCount, 1);
+    assert.equal(status.keys[0]?.disabled, false);
+    assert.equal(JSON.stringify(status).includes(sha256Hex(rotated.token)), false);
+    await assert.rejects(() => rotateClientKey({ id: "missing", token: "rotated-secret-value2" }), /not found/);
+    await assert.rejects(() => rotateClientKey({ id: "finance-bot", token: "short" }), /16–128/);
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_KEYS_PATH;
+    else process.env.TOKENPULSE_KEYS_PATH = prev;
+  }
+});
