@@ -33,6 +33,9 @@ export type KeyStatusRow = {
   disabled: boolean;
   expiresAt: string | null;
   expired: boolean;
+  /** Ledger events in the supplied window whose policyIds include key:<id>. */
+  calls: number;
+  lastSeenAt: string | null;
 };
 
 export type KeyStatus = {
@@ -283,17 +286,42 @@ export async function enableClientKey(id: string): Promise<EnabledKey> {
   };
 }
 
+export function keyPolicyId(id: string): string {
+  return `key:${id}`;
+}
+
+/** Count ledger hits for key:<id>. Notes count. Digests are never read. */
+export function keyUsageFromEvents(
+  events: { timestamp: string; policyIds: string[] }[],
+  id: string,
+): { calls: number; lastSeenAt: string | null } {
+  const needle = keyPolicyId(id);
+  let calls = 0;
+  let lastSeenAt: string | null = null;
+  for (const event of events) {
+    if (!event.policyIds.includes(needle)) continue;
+    calls += 1;
+    if (lastSeenAt === null || event.timestamp > lastSeenAt) lastSeenAt = event.timestamp;
+  }
+  return { calls, lastSeenAt };
+}
+
 /** Operator-visible key map. Digests and bearer tokens are never serialized. */
-export async function keyStatus(): Promise<KeyStatus> {
+export async function keyStatus(events: { timestamp: string; policyIds: string[] }[] = []): Promise<KeyStatus> {
   const keys = await loadKeys();
-  const rows = keys.map((k) => ({
-    id: k.id,
-    teamId: k.teamId,
-    appId: k.appId,
-    disabled: Boolean(k.disabled),
-    expiresAt: k.expiresAt ?? null,
-    expired: isKeyExpired(k.expiresAt),
-  }));
+  const rows = keys.map((k) => {
+    const usage = keyUsageFromEvents(events, k.id);
+    return {
+      id: k.id,
+      teamId: k.teamId,
+      appId: k.appId,
+      disabled: Boolean(k.disabled),
+      expiresAt: k.expiresAt ?? null,
+      expired: isKeyExpired(k.expiresAt),
+      calls: usage.calls,
+      lastSeenAt: usage.lastSeenAt,
+    };
+  });
   return {
     version: "tokenpulse-keys-v1",
     configured: rows.some((k) => !k.disabled),
@@ -301,7 +329,7 @@ export async function keyStatus(): Promise<KeyStatus> {
     expiredCount: rows.filter((k) => k.expired && !k.disabled).length,
     keys: rows,
     storesTokenMaterial: false,
-    notes: "Enabled keys bind teamId and appId. Expired keys do not match but still require auth until disabled. Rotate replaces the digest and clears disabled. Digests are never shown. Gateway token remains the operator path.",
+    notes: "Enabled keys bind teamId and appId. Expired keys do not match but still require auth until disabled. Rotate replaces the digest and clears disabled. calls and lastSeenAt come from ledger policy id key:<id> in the summary window. Digests are never shown. Gateway token remains the operator path.",
   };
 }
 

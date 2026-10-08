@@ -74,7 +74,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     policy: policyPipelineStatus(),
     attribution: attributionStatus(),
     correlation: correlationStatus(),
-    keys: await keyStatus(),
+    keys: await keyStatus(events),
   };
 }
 
@@ -133,7 +133,7 @@ export function dashboardHtml(): string {
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Client keys</h2>
     <p class="sub" id="keymeta"></p>
-    <table id="keys"><thead><tr><th>Id</th><th>Team</th><th>App</th><th>Status</th><th>Expires</th></tr></thead><tbody></tbody></table>
+    <table id="keys"><thead><tr><th>Id</th><th>Team</th><th>App</th><th>Status</th><th>Expires</th><th>Calls</th><th>Last seen</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Attribution</h2>
@@ -287,8 +287,8 @@ async function load() {
   kt.innerHTML = (ks.keys || []).map(k => {
     const st = k.disabled ? 'disabled' : (k.expired ? 'expired' : 'enabled');
     const cls = k.disabled || k.expired ? 'bad' : 'ok';
-    return '<tr><td>'+k.id+'</td><td>'+k.teamId+'</td><td>'+k.appId+'</td><td class="'+cls+'">'+st+'</td><td>'+(k.expiresAt || '—')+'</td></tr>';
-  }).join('') || '<tr><td colspan="5">no client keys configured</td></tr>';
+    return '<tr><td>'+k.id+'</td><td>'+k.teamId+'</td><td>'+k.appId+'</td><td class="'+cls+'">'+st+'</td><td>'+(k.expiresAt || '—')+'</td><td>'+(k.calls||0)+'</td><td>'+(k.lastSeenAt || '—')+'</td></tr>';
+  }).join('') || '<tr><td colspan="7">no client keys configured</td></tr>';
   const attr = s.attribution || { version:'tokenpulse-attribution-v1', storesRawPrompts:false, fieldCount:2, fields:[], notes:'' };
   document.getElementById('attrmeta').textContent = attr.version + ' · ' + (attr.fieldCount||0) + ' fields · ' + (attr.notes||'');
   const at = document.querySelector('#attribution tbody');

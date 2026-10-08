@@ -54,6 +54,7 @@
 - [x] Client key re-enable (`--enable-key --id=`; same digest, no new bearer)
 - [x] Client key expiry (`--expires=` on issue; expired keys do not match, auth stays locked)
 - [x] Client key rotate (`--rotate-key --id=`; digest replaced, id/team/app/expiry kept)
+- [x] Client key last-seen (`calls` / `lastSeenAt` from ledger `key:<id>`; no digests)
 
 ## Sale readiness
 

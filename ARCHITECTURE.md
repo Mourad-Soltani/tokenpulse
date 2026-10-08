@@ -423,3 +423,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Plaintext is printed once and is not stored. Digests stay off admin and dashboard.
 - Unknown ids and invalid key files are rejected. Does not mint a second row.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Client key last-seen (Session 48)
+
+- `keyStatus(events)` counts ledger events whose `policyIds` include `key:<id>`.
+- Each row adds `calls` and `lastSeenAt`. Missing events = 0 / null.
+- The window is the same event set as the admin summary (day filter, or all days when omitted).
+- Digests and bearer tokens are still never serialized. Match behavior is unchanged.
+- Dashboard Client keys table shows Calls and Last seen.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

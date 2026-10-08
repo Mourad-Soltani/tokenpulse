@@ -3,7 +3,7 @@ import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { keyStatus, matchClientKey, sha256Hex } from "../src/keys.js";
+import { keyStatus, keyUsageFromEvents, matchClientKey, sha256Hex } from "../src/keys.js";
 
 async function withKeys(body: unknown, fn: () => Promise<void>) {
   const dir = await mkdtemp(join(tmpdir(), "tp-keys-"));
@@ -230,4 +230,33 @@ test("rotate client key replaces digest and drops the old bearer", async () => {
     if (prev === undefined) delete process.env.TOKENPULSE_KEYS_PATH;
     else process.env.TOKENPULSE_KEYS_PATH = prev;
   }
+});
+
+test("key status last-seen counts policy id only", async () => {
+  await withKeys(
+    {
+      keys: [
+        { id: "finance-bot", tokenSha256: sha256Hex("never-shown"), teamId: "finance", appId: "bot" },
+      ],
+    },
+    async () => {
+      const usage = keyUsageFromEvents(
+        [
+          { timestamp: "2026-10-08T01:00:00.000Z", policyIds: ["key:finance-bot", "model-open"] },
+          { timestamp: "2026-10-08T02:00:00.000Z", policyIds: ["key:other"] },
+          { timestamp: "2026-10-08T03:00:00.000Z", policyIds: ["key:finance-bot"] },
+        ],
+        "finance-bot",
+      );
+      assert.equal(usage.calls, 2);
+      assert.equal(usage.lastSeenAt, "2026-10-08T03:00:00.000Z");
+      const status = await keyStatus([
+        { timestamp: "2026-10-08T03:00:00.000Z", policyIds: ["key:finance-bot"] },
+      ]);
+      assert.equal(status.keys[0]?.calls, 1);
+      assert.equal(status.keys[0]?.lastSeenAt, "2026-10-08T03:00:00.000Z");
+      assert.equal(JSON.stringify(status).includes("never-shown"), false);
+      assert.equal(JSON.stringify(status).includes(sha256Hex("never-shown")), false);
+    },
+  );
 });

@@ -801,3 +801,30 @@ Digest-replacing key rotate shipped. Sale materials unchanged. Operator still mu
 
 **Active project:** Tokenpulse only.
 Session 47 adds digest-replacing key rotate. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+## Decisions (Session 48 — client key last-seen)
+
+- `keyStatus(events)` counts events with policy id `key:<id>`.
+- Rows add `calls` and `lastSeenAt`. Empty window is 0 / null.
+- Admin summary passes the same event set used for spend (optional day filter).
+- Dashboard Client keys table shows Calls and Last seen.
+- Digests and bearers stay off the status payload. Match, rotate, and expiry are unchanged.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 48 — 2026-10-08)
+
+Client-key last-seen shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 48 — last-seen and call counts on client key status from ledger policy ids
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Key last-seen appears on the Client keys table after traffic.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 48 adds ledger-derived last-seen on client keys. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
