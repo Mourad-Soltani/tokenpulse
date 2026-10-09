@@ -260,3 +260,41 @@ test("key status last-seen counts policy id only", async () => {
     },
   );
 });
+
+test("key status idle warns unused matchable keys only", async () => {
+  const prev = process.env.TOKENPULSE_KEY_IDLE_DAYS;
+  process.env.TOKENPULSE_KEY_IDLE_DAYS = "30";
+  try {
+    await withKeys(
+      {
+        keys: [
+          { id: "fresh", tokenSha256: sha256Hex("never-shown-fresh"), teamId: "finance", appId: "bot" },
+          { id: "stale", tokenSha256: sha256Hex("never-shown-stale"), teamId: "finance", appId: "bot" },
+          { id: "off", tokenSha256: sha256Hex("never-shown-off"), teamId: "finance", appId: "bot", disabled: true },
+        ],
+      },
+      async () => {
+        const now = Date.parse("2026-10-09T00:00:00.000Z");
+        const status = await keyStatus([
+          { timestamp: "2026-10-08T00:00:00.000Z", policyIds: ["key:fresh"] },
+          { timestamp: "2026-08-01T00:00:00.000Z", policyIds: ["key:stale"] },
+        ]);
+        const fresh = status.keys.find((k) => k.id === "fresh");
+        const stale = status.keys.find((k) => k.id === "stale");
+        const off = status.keys.find((k) => k.id === "off");
+        assert.equal(fresh?.idle, false);
+        assert.equal(stale?.idle, true);
+        assert.equal(off?.idle, false);
+        assert.equal(status.idleDays, 30);
+        assert.equal(status.idleWarnCount, 1);
+        assert.equal(JSON.stringify(status).includes("never-shown"), false);
+        const { keyIsIdle } = await import("../src/keys.js");
+        assert.equal(keyIsIdle({ disabled: false, expired: false, calls: 0, lastSeenAt: null, idleDays: 30, nowMs: now }), true);
+        assert.equal(keyIsIdle({ disabled: false, expired: false, calls: 0, lastSeenAt: null, idleDays: 0, nowMs: now }), false);
+      },
+    );
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_KEY_IDLE_DAYS;
+    else process.env.TOKENPULSE_KEY_IDLE_DAYS = prev;
+  }
+});

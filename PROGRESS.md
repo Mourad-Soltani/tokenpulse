@@ -828,3 +828,29 @@ Client-key last-seen shipped. Sale materials unchanged. Operator still must depl
 
 **Active project:** Tokenpulse only.
 Session 48 adds ledger-derived last-seen on client keys. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+## Decisions (Session 49 — client key idle warn)
+
+- `keyStatus()` sets `idle` on matchable keys with no calls or `lastSeenAt` older than `TOKENPULSE_KEY_IDLE_DAYS` (default 30).
+- `TOKENPULSE_KEY_IDLE_DAYS=0` disables idle warnings. Disabled and expired keys are never idle.
+- Status adds `idleDays` and `idleWarnCount`. Dashboard Client keys table adds an Idle column.
+- Does not change match, rotate, revoke, or expiry. Digests and bearers stay off the payload.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 49 — 2026-10-09)
+
+Client-key idle warn shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 49 — idle / unused warn on client key status from last-seen
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Idle keys show on the Client keys table after traffic (or with no calls).
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 49 adds idle warnings on client keys. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

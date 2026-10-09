@@ -433,3 +433,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Digests and bearer tokens are still never serialized. Match behavior is unchanged.
 - Dashboard Client keys table shows Calls and Last seen.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Client key idle warn (Session 49)
+
+- `keyStatus()` marks matchable keys `idle` when `calls` is 0 or `lastSeenAt` is older than `TOKENPULSE_KEY_IDLE_DAYS` (default 30).
+- `0` disables idle warnings. Disabled and expired rows are never idle.
+- Status adds `idleDays` and `idleWarnCount`. Dashboard Client keys table adds an Idle column.
+- Does not change match, rotate, revoke, or expiry. Digests stay off the payload.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
