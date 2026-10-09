@@ -55,7 +55,7 @@ Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks
 | Export pack status | Live (admin summary + dashboard) |
 | Policy pipeline status | Live (admin summary + dashboard) |
 | Attribution header status | Live (admin summary + dashboard) |
-| Client key binding | Live (`TOKENPULSE_KEYS_PATH`, SHA-256, header override off) |
+| Client key binding | Live (`TOKENPULSE_KEYS_PATH`, SHA-256, header override off, idle + expiry warns) |
 | Client key issuance | Live (`--issue-key`; digest written, token printed once) |
 | Client key revoke | Live (`--revoke-key --id=`; digest kept, match disabled) |
 | Client key re-enable | Live (`--enable-key --id=`; same digest, match restored) |

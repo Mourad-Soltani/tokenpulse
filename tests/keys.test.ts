@@ -298,3 +298,49 @@ test("key status idle warns unused matchable keys only", async () => {
     else process.env.TOKENPULSE_KEY_IDLE_DAYS = prev;
   }
 });
+
+test("key status warns when expiry is inside the warn window", async () => {
+  const prev = process.env.TOKENPULSE_KEY_EXPIRY_WARN_DAYS;
+  process.env.TOKENPULSE_KEY_EXPIRY_WARN_DAYS = "7";
+  try {
+    const now = Date.parse("2026-10-09T00:00:00.000Z");
+    await withKeys(
+      {
+        keys: [
+          { id: "soon", tokenSha256: sha256Hex("never-shown-soon"), teamId: "finance", appId: "bot", expiresAt: "2026-10-12T00:00:00.000Z" },
+          { id: "later", tokenSha256: sha256Hex("never-shown-later"), teamId: "finance", appId: "bot", expiresAt: "2026-12-01T00:00:00.000Z" },
+          { id: "gone", tokenSha256: sha256Hex("never-shown-gone"), teamId: "finance", appId: "bot", expiresAt: "2026-10-01T00:00:00.000Z" },
+          { id: "off", tokenSha256: sha256Hex("never-shown-off2"), teamId: "finance", appId: "bot", disabled: true, expiresAt: "2026-10-10T00:00:00.000Z" },
+        ],
+      },
+      async () => {
+        const status = await keyStatus([], now);
+        const soon = status.keys.find((k) => k.id === "soon");
+        const later = status.keys.find((k) => k.id === "later");
+        const gone = status.keys.find((k) => k.id === "gone");
+        const off = status.keys.find((k) => k.id === "off");
+        assert.equal(soon?.expiringSoon, true);
+        assert.equal(soon?.expired, false);
+        assert.equal(later?.expiringSoon, false);
+        assert.equal(gone?.expiringSoon, false);
+        assert.equal(gone?.expired, true);
+        assert.equal(off?.expiringSoon, false);
+        assert.equal(status.expiryWarnDays, 7);
+        assert.equal(status.expiryWarnCount, 1);
+        assert.equal(JSON.stringify(status).includes("never-shown"), false);
+        const { keyIsExpiringSoon } = await import("../src/keys.js");
+        assert.equal(
+          keyIsExpiringSoon({ disabled: false, expired: false, expiresAt: "2026-10-12T00:00:00.000Z", nowMs: now, warnDays: 7 }),
+          true,
+        );
+        assert.equal(
+          keyIsExpiringSoon({ disabled: false, expired: false, expiresAt: "2026-10-12T00:00:00.000Z", nowMs: now, warnDays: 0 }),
+          false,
+        );
+      },
+    );
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_KEY_EXPIRY_WARN_DAYS;
+    else process.env.TOKENPULSE_KEY_EXPIRY_WARN_DAYS = prev;
+  }
+});

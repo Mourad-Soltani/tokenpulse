@@ -442,3 +442,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Status adds `idleDays` and `idleWarnCount`. Dashboard Client keys table adds an Idle column.
 - Does not change match, rotate, revoke, or expiry. Digests stay off the payload.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Client key expiry warn (Session 50)
+
+- `keyStatus()` sets `expiringSoon` on matchable keys whose `expiresAt` is within `TOKENPULSE_KEY_EXPIRY_WARN_DAYS` (default 7).
+- `0` disables expiry warnings. Disabled and already-expired keys are never `expiringSoon`.
+- Status adds `expiryWarnDays` and `expiryWarnCount`. Dashboard Client keys table adds an Expiring column.
+- Does not change match, rotate, revoke, or expiry. Digests and bearers stay off the payload.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.

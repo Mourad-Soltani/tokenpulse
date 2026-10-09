@@ -38,6 +38,8 @@ export type KeyStatusRow = {
   lastSeenAt: string | null;
   /** Matchable key with no calls, or last seen older than the idle window. */
   idle: boolean;
+  /** Matchable key whose expiry is within TOKENPULSE_KEY_EXPIRY_WARN_DAYS. */
+  expiringSoon: boolean;
 };
 
 export type KeyStatus = {
@@ -47,6 +49,8 @@ export type KeyStatus = {
   expiredCount: number;
   idleDays: number;
   idleWarnCount: number;
+  expiryWarnDays: number;
+  expiryWarnCount: number;
   keys: KeyStatusRow[];
   storesTokenMaterial: false;
   notes: string;
@@ -310,6 +314,33 @@ export function keyUsageFromEvents(
   return { calls, lastSeenAt };
 }
 
+/** Days before expiry that still-valid keys warn. 0 disables. Default 7. */
+export function keyExpiryWarnDays(): number {
+  const raw = process.env.TOKENPULSE_KEY_EXPIRY_WARN_DAYS;
+  if (raw === undefined || raw.trim() === "") return 7;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0) return 7;
+  return Math.floor(n);
+}
+
+/** Matchable keys only. Already expired or disabled rows are not expiry warns. */
+export function keyIsExpiringSoon(input: {
+  disabled: boolean;
+  expired: boolean;
+  expiresAt: string | null;
+  nowMs?: number;
+  warnDays?: number;
+}): boolean {
+  if (input.disabled || input.expired) return false;
+  const warnDays = input.warnDays ?? keyExpiryWarnDays();
+  if (warnDays === 0 || !input.expiresAt) return false;
+  const ms = Date.parse(input.expiresAt);
+  if (!Number.isFinite(ms)) return false;
+  const now = input.nowMs ?? Date.now();
+  const remaining = ms - now;
+  return remaining > 0 && remaining <= warnDays * 24 * 60 * 60 * 1000;
+}
+
 /** Idle window in days. 0 disables idle warnings. Default 30. */
 export function keyIdleDays(): number {
   const raw = process.env.TOKENPULSE_KEY_IDLE_DAYS;
@@ -339,23 +370,36 @@ export function keyIsIdle(input: {
 }
 
 /** Operator-visible key map. Digests and bearer tokens are never serialized. */
-export async function keyStatus(events: { timestamp: string; policyIds: string[] }[] = []): Promise<KeyStatus> {
+export async function keyStatus(
+  events: { timestamp: string; policyIds: string[] }[] = [],
+  nowMs = Date.now(),
+): Promise<KeyStatus> {
   const keys = await loadKeys();
   const idleDays = keyIdleDays();
+  const expiryWarnDays = keyExpiryWarnDays();
   const rows = keys.map((k) => {
     const usage = keyUsageFromEvents(events, k.id);
     const disabled = Boolean(k.disabled);
-    const expired = isKeyExpired(k.expiresAt);
+    const expiresAt = k.expiresAt ?? null;
+    const expired = isKeyExpired(k.expiresAt, nowMs);
     return {
       id: k.id,
       teamId: k.teamId,
       appId: k.appId,
       disabled,
-      expiresAt: k.expiresAt ?? null,
+      expiresAt,
       expired,
       calls: usage.calls,
       lastSeenAt: usage.lastSeenAt,
-      idle: keyIsIdle({ disabled, expired, calls: usage.calls, lastSeenAt: usage.lastSeenAt, idleDays }),
+      idle: keyIsIdle({
+        disabled,
+        expired,
+        calls: usage.calls,
+        lastSeenAt: usage.lastSeenAt,
+        idleDays,
+        nowMs,
+      }),
+      expiringSoon: keyIsExpiringSoon({ disabled, expired, expiresAt, nowMs, warnDays: expiryWarnDays }),
     };
   });
   return {
@@ -365,9 +409,11 @@ export async function keyStatus(events: { timestamp: string; policyIds: string[]
     expiredCount: rows.filter((k) => k.expired && !k.disabled).length,
     idleDays,
     idleWarnCount: rows.filter((k) => k.idle).length,
+    expiryWarnDays,
+    expiryWarnCount: rows.filter((k) => k.expiringSoon).length,
     keys: rows,
     storesTokenMaterial: false,
-    notes: "Enabled keys bind teamId and appId. Expired keys do not match but still require auth until disabled. Rotate replaces the digest and clears disabled. calls and lastSeenAt come from ledger policy id key:<id> in the summary window. idle warns matchable keys with no calls or last seen older than TOKENPULSE_KEY_IDLE_DAYS (default 30; 0 disables). Digests are never shown. Gateway token remains the operator path.",
+    notes: "Enabled keys bind teamId and appId. Expired keys do not match but still require auth until disabled. Rotate replaces the digest and clears disabled. calls and lastSeenAt come from ledger policy id key:<id> in the summary window. idle warns matchable keys with no calls or last seen older than TOKENPULSE_KEY_IDLE_DAYS (default 30; 0 disables). expiringSoon warns matchable keys whose expiresAt is within TOKENPULSE_KEY_EXPIRY_WARN_DAYS (default 7; 0 disables). Digests are never shown. Gateway token remains the operator path.",
   };
 }
 

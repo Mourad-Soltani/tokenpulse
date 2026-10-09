@@ -854,3 +854,29 @@ Client-key idle warn shipped. Sale materials unchanged. Operator still must depl
 
 **Active project:** Tokenpulse only.
 Session 49 adds idle warnings on client keys. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+## Decisions (Session 50 — client key expiry warn)
+
+- `keyStatus()` sets `expiringSoon` on matchable keys whose `expiresAt` is within `TOKENPULSE_KEY_EXPIRY_WARN_DAYS` (default 7).
+- `TOKENPULSE_KEY_EXPIRY_WARN_DAYS=0` disables expiry warnings. Disabled and already-expired keys are never expiring-soon.
+- Status adds `expiryWarnDays` and `expiryWarnCount`. Dashboard Client keys table adds an Expiring column.
+- Does not change match, rotate, revoke, or expiry. Digests and bearers stay off the payload.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 50 — 2026-10-09)
+
+Client-key expiry warn shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 50 — expiry-soon warn on client key status
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Expiring keys show on the Client keys table.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 50 adds expiry-soon warnings on client keys. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

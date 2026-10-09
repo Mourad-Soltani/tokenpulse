@@ -56,6 +56,7 @@
 - [x] Client key rotate (`--rotate-key --id=`; digest replaced, id/team/app/expiry kept)
 - [x] Client key last-seen (`calls` / `lastSeenAt` from ledger `key:<id>`; no digests)
 - [x] Client key idle warn (`idle` / `idleWarnCount`; `TOKENPULSE_KEY_IDLE_DAYS`, default 30)
+- [x] Client key expiry warn (`expiringSoon` / `expiryWarnCount`; `TOKENPULSE_KEY_EXPIRY_WARN_DAYS`, default 7)
 
 ## Sale readiness
 
