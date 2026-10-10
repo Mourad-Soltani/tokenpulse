@@ -188,7 +188,7 @@ export function dashboardHtml(): string {
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Shadow discovery</h2>
     <p class="sub" id="discmeta"></p>
-    <table id="discovery"><thead><tr><th>Model</th><th>Calls</th><th>Last seen</th><th>Teams</th><th>Apps</th></tr></thead><tbody></tbody></table>
+    <table id="discovery"><thead><tr><th>Model</th><th>Calls</th><th>USD</th><th>Last seen</th><th>Teams</th><th>Apps</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Ledger</h2>
@@ -268,6 +268,7 @@ async function load() {
     ['Ledger', (s.ledger && s.ledger.driver) ? s.ledger.driver : 'jsonl'],
     ['Priced models', (s.pricing && s.pricing.catalogCount) ? s.pricing.catalogCount : 0],
     ['Unknown models', (s.discovery && s.discovery.unknownModelCount) ? s.discovery.unknownModelCount : 0],
+    ['Unknown USD', (s.discovery && s.discovery.unknownCostUsd) ? s.discovery.unknownCostUsd : 0],
     ['Bind', (s.gateway ? (s.gateway.host+':'+s.gateway.port) : '127.0.0.1:8788')],
     ['Exports', (s.exports && s.exports.formats) ? s.exports.formats.join('+') : 'json+csv'],
     ['Policy stages', (s.policy && s.policy.stageCount) ? s.policy.stageCount : 7],
@@ -354,12 +355,12 @@ async function load() {
   pt.innerHTML = (pr.rows||[]).map(r =>
     '<tr><td>'+r.model+'</td><td>$'+r.inputPerMillion+'</td><td>$'+r.outputPerMillion+'</td><td class="ok">'+(r.known?'table':'fallback')+'</td></tr>'
   ).join('') || '<tr><td colspan="4">empty catalog</td></tr>';
-  const disc = s.discovery || { version:'tokenpulse-discovery-v1', unknownModelCount:0, unknownCalls:0, rows:[], notes:'' };
-  document.getElementById('discmeta').textContent = (disc.unknownModelCount||0) + ' unknown models · ' + (disc.unknownCalls||0) + ' calls · ' + (disc.notes||'');
+  const disc = s.discovery || { version:'tokenpulse-discovery-v1', unknownModelCount:0, unknownCalls:0, unknownCostUsd:0, rows:[], notes:'' };
+  document.getElementById('discmeta').textContent = (disc.unknownModelCount||0) + ' unknown models · ' + (disc.unknownCalls||0) + ' calls · $' + (disc.unknownCostUsd||0) + ' · ' + (disc.notes||'');
   const dt = document.querySelector('#discovery tbody');
   dt.innerHTML = (disc.rows||[]).map(r =>
-    '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+esc(r.lastSeenAt)+'</td><td>'+esc((r.teams||[]).join(', '))+'</td><td>'+esc((r.apps||[]).join(', '))+'</td></tr>'
-  ).join('') || '<tr><td colspan="5">no unknown models</td></tr>';
+    '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+(r.estimatedCostUsd??0)+'</td><td>'+esc(r.lastSeenAt)+'</td><td>'+esc((r.teams||[]).join(', '))+'</td><td>'+esc((r.apps||[]).join(', '))+'</td></tr>'
+  ).join('') || '<tr><td colspan="6">no unknown models</td></tr>';
   const ld = s.ledger || { driver:'jsonl', events:0, chainOk:true, chainChecked:0, skippedLegacy:0 };
   document.getElementById('ledgermeta').textContent = (ld.chainOk === false ? 'chain broken' : 'chain ok') + (ld.brokenAt ? ' at '+ld.brokenAt : '');
   const lt = document.querySelector('#ledger tbody');

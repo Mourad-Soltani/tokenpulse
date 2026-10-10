@@ -59,6 +59,7 @@
 - [x] Client key expiry warn (`expiringSoon` / `expiryWarnCount`; `TOKENPULSE_KEY_EXPIRY_WARN_DAYS`, default 7)
 - [x] Shadow discovery signals (unknown models vs pricing catalog on admin + dashboard)
 - [x] Shadow discovery signals (unknown models on admin summary + dashboard)
+- [x] Shadow discovery spend (`unknownCostUsd`, ranked by USD, CLI `--discovery`)
 
 ## Sale readiness
 

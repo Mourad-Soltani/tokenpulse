@@ -459,3 +459,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Rows include calls, lastSeenAt, teams, and apps. Notes and empty models are skipped.
 - Admin summary exposes `discovery`. Dashboard renders a Shadow discovery table and an Unknown models KPI.
 - Does not block or change policy. Raw prompts stay off. Live upstream remains operator-env only.
+
+## Shadow discovery spend (Session 52)
+
+- `discoveryStatus()` also sums `estimatedCostUsd` from ledger events for unknown models.
+- Rows include `estimatedCostUsd` and are ranked by spend then calls.
+- Status adds `unknownCostUsd`. Dashboard Shadow discovery table shows USD; KPI adds Unknown USD.
+- CLI: `npx tsx src/cli.ts --discovery` (optional `--day=`).
+- Cost for unknown models uses the existing fallback price already applied at metering time. No raw prompts. Does not change block policy.
+- Operator live proof remains the gate. No keys in git or chat.

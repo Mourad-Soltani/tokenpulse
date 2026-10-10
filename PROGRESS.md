@@ -906,3 +906,28 @@ Shadow discovery signals shipped. Sale materials unchanged. Operator still must 
 
 **Active project:** Tokenpulse only.
 Session 51 adds basic shadow-AI discovery (unknown models). Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+## Decisions (Session 52 — shadow discovery spend)
+
+- `discoveryStatus()` sums `estimatedCostUsd` for unknown models and ranks rows by spend.
+- Status field `unknownCostUsd`. Dashboard table adds a USD column; KPI adds Unknown USD.
+- CLI flag `--discovery` prints the same object (respects `--day=`).
+- Does not change catalog matching or any block policy. Fallback price is already on the event.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 52 — 2026-10-10)
+
+Shadow discovery spend shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 52 — unknown-model cost on admin, dashboard, and CLI
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models and their estimated spend appear in the Shadow discovery table after traffic.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 52 adds estimated spend to shadow discovery. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
