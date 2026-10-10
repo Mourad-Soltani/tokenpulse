@@ -880,3 +880,29 @@ Client-key expiry warn shipped. Sale materials unchanged. Operator still must de
 
 **Active project:** Tokenpulse only.
 Session 50 adds expiry-soon warnings on client keys. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+## Decisions (Session 51 — shadow discovery)
+
+- `discoveryStatus()` scans the supplied ledger events for models not present in the static pricing catalog.
+- Known = exact key or trailing segment after `/` in `PRICING_TABLE`.
+- Rows: model, calls, lastSeenAt, teams, apps. Notes skipped. No raw prompts.
+- Admin summary includes `discovery`. Dashboard adds Shadow discovery table + Unknown models KPI.
+- Does not change any block policy. Operator live proof remains the gate. No keys in git or chat.
+
+## Current Status (Session 51 — 2026-10-10)
+
+Shadow discovery signals shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 51 — unknown-model discovery on admin summary and dashboard
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models appear in the Shadow discovery table after traffic.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 51 adds basic shadow-AI discovery (unknown models). Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

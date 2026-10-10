@@ -450,3 +450,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Status adds `expiryWarnDays` and `expiryWarnCount`. Dashboard Client keys table adds an Expiring column.
 - Does not change match, rotate, revoke, or expiry. Digests and bearers stay off the payload.
 - Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+
+## Shadow discovery (Session 51)
+
+- `discoveryStatus(events)` lists models from the supplied ledger window that are absent from the static pricing catalog.
+- A model is known when it matches `PRICING_TABLE` exactly or after the last `/`.
+- Rows include calls, lastSeenAt, teams, and apps. Notes and empty models are skipped.
+- Admin summary exposes `discovery`. Dashboard renders a Shadow discovery table and an Unknown models KPI.
+- Does not block or change policy. Raw prompts stay off. Live upstream remains operator-env only.

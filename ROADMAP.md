@@ -57,6 +57,8 @@
 - [x] Client key last-seen (`calls` / `lastSeenAt` from ledger `key:<id>`; no digests)
 - [x] Client key idle warn (`idle` / `idleWarnCount`; `TOKENPULSE_KEY_IDLE_DAYS`, default 30)
 - [x] Client key expiry warn (`expiringSoon` / `expiryWarnCount`; `TOKENPULSE_KEY_EXPIRY_WARN_DAYS`, default 7)
+- [x] Shadow discovery signals (unknown models vs pricing catalog on admin + dashboard)
+- [x] Shadow discovery signals (unknown models on admin summary + dashboard)
 
 ## Sale readiness
 
@@ -72,7 +74,7 @@
 
 ## Later
 
-- Shadow-AI discovery signals
+- [x] Shadow-AI discovery signals
 - [x] Multi-upstream weighted routing
 - SSO-backed team mapping
 - Cloud single-tenant deploy
