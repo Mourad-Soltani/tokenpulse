@@ -2,7 +2,7 @@ import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verif
 import { enableClientKey, issueClientKey, keyStatus, revokeClientKey, rotateClientKey } from "./keys.js";
 import { isSafeRequestId } from "./correlation.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
-import { discoveryStatus } from "./discovery.js";
+import { discoveryStatus, unattributedStatus } from "./discovery.js";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -32,6 +32,10 @@ async function main() {
   }
   if (args.includes("--discovery")) {
     console.log(JSON.stringify(discoveryStatus(events), null, 2));
+    return;
+  }
+  if (args.includes("--unattributed")) {
+    console.log(JSON.stringify(unattributedStatus(events), null, 2));
     return;
   }
   const reqArg = args.find((a) => a.startsWith("--request-id="));
@@ -93,7 +97,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

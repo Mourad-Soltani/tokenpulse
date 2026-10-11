@@ -1,4 +1,4 @@
-import { discoveryStatus, type DiscoveryStatus } from "./discovery.js";
+import { discoveryStatus, unattributedStatus, type DiscoveryStatus, type UnattributedStatus } from "./discovery.js";
 import { budgetStatus, type BudgetStatusRow } from "./budget.js";
 import { rateStatus, type RateStatusRow } from "./ratelimit.js";
 import { limitStatus, type LimitStatusRow } from "./limits.js";
@@ -38,6 +38,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   correlation: CorrelationStatus;
   keys: KeyStatus;
   discovery: DiscoveryStatus;
+  unattributed: UnattributedStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -78,6 +79,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     correlation: correlationStatus(),
     keys: await keyStatus(events),
     discovery: discoveryStatus(events),
+    unattributed: unattributedStatus(events),
   };
 }
 
@@ -191,6 +193,11 @@ export function dashboardHtml(): string {
     <table id="discovery"><thead><tr><th>Model</th><th>Calls</th><th>USD</th><th>Last seen</th><th>Teams</th><th>Apps</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Unattributed traffic</h2>
+    <p class="sub" id="unattrmeta"></p>
+    <table id="unattributed"><thead><tr><th>Scope</th><th>Calls</th><th>USD</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Ledger</h2>
     <p class="sub" id="ledgermeta"></p>
     <table id="ledger"><thead><tr><th>Driver</th><th>Events</th><th>Chain</th><th>Checked</th><th>Legacy skipped</th><th>Tip</th></tr></thead><tbody></tbody></table>
@@ -269,6 +276,7 @@ async function load() {
     ['Priced models', (s.pricing && s.pricing.catalogCount) ? s.pricing.catalogCount : 0],
     ['Unknown models', (s.discovery && s.discovery.unknownModelCount) ? s.discovery.unknownModelCount : 0],
     ['Unknown USD', (s.discovery && s.discovery.unknownCostUsd) ? s.discovery.unknownCostUsd : 0, !!(s.discovery && s.discovery.warn)],
+    ['Unattributed USD', (s.unattributed && s.unattributed.unattributedCostUsd) ? s.unattributed.unattributedCostUsd : 0, !!(s.unattributed && s.unattributed.warn)],
     ['Bind', (s.gateway ? (s.gateway.host+':'+s.gateway.port) : '127.0.0.1:8788')],
     ['Exports', (s.exports && s.exports.formats) ? s.exports.formats.join('+') : 'json+csv'],
     ['Policy stages', (s.policy && s.policy.stageCount) ? s.policy.stageCount : 7],
@@ -362,6 +370,13 @@ async function load() {
   dt.innerHTML = (disc.rows||[]).map(r =>
     '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+(r.estimatedCostUsd??0)+'</td><td>'+esc(r.lastSeenAt)+'</td><td>'+esc((r.teams||[]).join(', '))+'</td><td>'+esc((r.apps||[]).join(', '))+'</td></tr>'
   ).join('') || '<tr><td colspan="6">no unknown models</td></tr>';
+  const ua = s.unattributed || { version:'tokenpulse-unattributed-v1', defaultTeamCalls:0, defaultTeamCostUsd:0, defaultAppCalls:0, defaultAppCostUsd:0, unattributedCostUsd:0, warnThresholdUsd:10, warn:false, notes:'' };
+  const uaWarn = ua.warn ? ' · WARN ≥$' + (ua.warnThresholdUsd||0) : '';
+  document.getElementById('unattrmeta').textContent = '$' + (ua.unattributedCostUsd||0) + ' unattributed' + uaWarn + ' · ' + (ua.notes||'');
+  const ut = document.querySelector('#unattributed tbody');
+  ut.innerHTML = '<tr><td>default team</td><td>'+(ua.defaultTeamCalls||0)+'</td><td>'+(ua.defaultTeamCostUsd||0)+'</td></tr>' +
+    '<tr><td>default app</td><td>'+(ua.defaultAppCalls||0)+'</td><td>'+(ua.defaultAppCostUsd||0)+'</td></tr>' +
+    '<tr><td class="'+(ua.warn?'bad':'')+'">team or app</td><td></td><td class="'+(ua.warn?'bad':'')+'">'+(ua.unattributedCostUsd||0)+'</td></tr>';
   const ld = s.ledger || { driver:'jsonl', events:0, chainOk:true, chainChecked:0, skippedLegacy:0 };
   document.getElementById('ledgermeta').textContent = (ld.chainOk === false ? 'chain broken' : 'chain ok') + (ld.brokenAt ? ' at '+ld.brokenAt : '');
   const lt = document.querySelector('#ledger tbody');

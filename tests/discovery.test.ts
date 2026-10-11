@@ -90,3 +90,53 @@ test("does not warn below threshold or when disabled", () => {
   assert.equal(status2.warnThresholdUsd, discoveryWarnThresholdUsd());
   assert.equal(status2.warn, false);
 });
+
+test("unattributedStatus counts default team and app spend", async () => {
+  const { unattributedStatus } = await import("../src/discovery.js");
+  const events = [
+    ev("gpt-4o", "default", "billing", "2026-10-10T00:00:00.000Z", 1.2),
+    ev("gpt-4o", "finance", "default", "2026-10-10T00:00:00.000Z", 0.8),
+    ev("gpt-4o", "finance", "billing", "2026-10-10T00:00:00.000Z", 5),
+    ev("gpt-4o", "default", "default", "2026-10-10T00:00:00.000Z", 2),
+  ];
+  const status = unattributedStatus(events);
+  assert.equal(status.defaultTeamCalls, 2);
+  assert.equal(status.defaultTeamCostUsd, 3.2);
+  assert.equal(status.defaultAppCalls, 2);
+  assert.equal(status.defaultAppCostUsd, 2.8);
+  assert.equal(status.unattributedCostUsd, 4);
+  assert.equal(status.warn, false);
+});
+
+test("unattributedStatus warns at threshold", async () => {
+  const { unattributedStatus } = await import("../src/discovery.js");
+  const prev = process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD;
+  process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD = "3";
+  try {
+    const status = unattributedStatus([
+      ev("m", "default", "a", "2026-10-10T00:00:00.000Z", 2),
+      ev("m", "t", "default", "2026-10-10T00:00:00.000Z", 1.5),
+    ]);
+    assert.equal(status.unattributedCostUsd, 3.5);
+    assert.equal(status.warnThresholdUsd, 3);
+    assert.equal(status.warn, true);
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD;
+    else process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD = prev;
+  }
+});
+
+test("unattributedStatus skips notes and disables warn at 0", async () => {
+  const { unattributedStatus } = await import("../src/discovery.js");
+  const prev = process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD;
+  process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD = "0";
+  try {
+    const note = { ...ev("m", "default", "default", "2026-10-10T00:00:00.000Z", 100), decision: "note" as const };
+    const status = unattributedStatus([note, ev("m", "default", "a", "2026-10-10T00:00:00.000Z", 1)]);
+    assert.equal(status.unattributedCostUsd, 1);
+    assert.equal(status.warn, false);
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD;
+    else process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD = prev;
+  }
+});

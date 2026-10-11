@@ -957,3 +957,29 @@ Shadow discovery spend warn shipped. Sale materials unchanged. Operator still mu
 
 **Active project:** Tokenpulse only.
 Session 53 adds a configurable spend warn for unknown-model discovery. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+## Decisions (Session 54 — unattributed traffic status)
+
+- `unattributedStatus()` sums calls and estimated cost where `teamId` or `appId` is `"default"` (missing attribution headers).
+- Status fields: defaultTeamCalls/Cost, defaultAppCalls/Cost, unattributedCostUsd (OR of the two), warnThresholdUsd, warn.
+- `TOKENPULSE_UNATTRIBUTED_WARN_USD` (default 10; 0 disables). Notes are skipped.
+- Admin summary includes `unattributed`. Dashboard adds Unattributed traffic table + Unattributed USD KPI (highlighted on warn).
+- CLI: `--unattributed`. Does not change any block policy or header parsing.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 54 — 2026-10-11)
+
+Unattributed traffic status shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 54 — default team/app unattributed spend on admin, dashboard, and CLI
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models, unattributed spend, and warns appear after traffic.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 54 adds unattributed (default team/app) spend visibility as a shadow signal. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

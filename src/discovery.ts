@@ -78,3 +78,64 @@ export function discoveryWarnThresholdUsd(): number {
   if (!Number.isFinite(n) || n < 0) return 10;
   return n;
 }
+
+export type UnattributedStatus = {
+  version: "tokenpulse-unattributed-v1";
+  defaultTeamCalls: number;
+  defaultTeamCostUsd: number;
+  defaultAppCalls: number;
+  defaultAppCostUsd: number;
+  unattributedCostUsd: number;
+  warnThresholdUsd: number;
+  warn: boolean;
+  notes: string;
+};
+
+/** Shadow signal: spend on the default team or app (missing attribution headers). */
+export function unattributedStatus(events: UsageEvent[]): UnattributedStatus {
+  let defaultTeamCalls = 0;
+  let defaultTeamCost = 0;
+  let defaultAppCalls = 0;
+  let defaultAppCost = 0;
+  let orCost = 0;
+  for (const e of events) {
+    if (e.decision === "note") continue;
+    const teamDefault = e.teamId === "default";
+    const appDefault = e.appId === "default";
+    const cost = Number(e.estimatedCostUsd) || 0;
+    if (teamDefault) {
+      defaultTeamCalls += 1;
+      defaultTeamCost += cost;
+    }
+    if (appDefault) {
+      defaultAppCalls += 1;
+      defaultAppCost += cost;
+    }
+    if (teamDefault || appDefault) {
+      orCost += cost;
+    }
+  }
+  const warnThresholdUsd = unattributedWarnThresholdUsd();
+  const unattributedCostUsd = Math.round(orCost * 1_000_000) / 1_000_000;
+  const warn = warnThresholdUsd > 0 && unattributedCostUsd >= warnThresholdUsd;
+  return {
+    version: "tokenpulse-unattributed-v1",
+    defaultTeamCalls,
+    defaultTeamCostUsd: Math.round(defaultTeamCost * 1_000_000) / 1_000_000,
+    defaultAppCalls,
+    defaultAppCostUsd: Math.round(defaultAppCost * 1_000_000) / 1_000_000,
+    unattributedCostUsd,
+    warnThresholdUsd,
+    warn,
+    notes: "Traffic on the default team or app id (missing X-Tokenpulse-Team / X-Tokenpulse-App). Potential unmanaged spend. Not a block. No raw prompts.",
+  };
+}
+
+/** USD threshold for unattributed warn. 0 disables. Default 10. */
+export function unattributedWarnThresholdUsd(): number {
+  const raw = process.env.TOKENPULSE_UNATTRIBUTED_WARN_USD;
+  if (raw == null || raw === "") return 10;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0) return 10;
+  return n;
+}

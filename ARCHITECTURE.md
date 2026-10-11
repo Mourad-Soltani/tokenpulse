@@ -477,3 +477,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Dashboard Shadow discovery meta and Unknown USD KPI highlight when warn is true.
 - Does not change catalog matching, cost estimation, or any block policy.
 - Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Unattributed traffic status (Session 54)
+
+- `unattributedStatus()` reports calls and estimated USD on `teamId === "default"` and `appId === "default"`.
+- `unattributedCostUsd` is the sum of events that have either default team or default app.
+- Warn when cost ≥ `TOKENPULSE_UNATTRIBUTED_WARN_USD` (default 10; 0 disables).
+- Admin summary exposes `unattributed`. Dashboard renders an Unattributed traffic table and KPI.
+- CLI: `--unattributed`. Notes are excluded. Does not alter attribution defaults or any policy block.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
