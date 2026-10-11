@@ -15,6 +15,8 @@ export type DiscoveryStatus = {
   unknownModelCount: number;
   unknownCalls: number;
   unknownCostUsd: number;
+  warnThresholdUsd: number;
+  warn: boolean;
   rows: DiscoveryRow[];
   notes: string;
 };
@@ -54,12 +56,25 @@ export function discoveryStatus(events: UsageEvent[]): DiscoveryStatus {
     .sort((a, b) => b.estimatedCostUsd - a.estimatedCostUsd || b.calls - a.calls || b.lastSeenAt.localeCompare(a.lastSeenAt));
   const unknownCalls = rows.reduce((n, r) => n + r.calls, 0);
   const unknownCostUsd = Math.round(rows.reduce((n, r) => n + r.estimatedCostUsd, 0) * 1_000_000) / 1_000_000;
+  const warnThresholdUsd = discoveryWarnThresholdUsd();
+  const warn = warnThresholdUsd > 0 && unknownCostUsd >= warnThresholdUsd;
   return {
     version: "tokenpulse-discovery-v1",
     unknownModelCount: rows.length,
     unknownCalls,
     unknownCostUsd,
+    warnThresholdUsd,
+    warn,
     rows,
     notes: "Models requested that are absent from the static pricing catalog. Cost uses the event estimatedCostUsd (fallback price when unknown). Not a block. No raw prompts.",
   };
+}
+
+/** USD threshold for discovery warn. 0 disables. Default 10. */
+export function discoveryWarnThresholdUsd(): number {
+  const raw = process.env.TOKENPULSE_DISCOVERY_WARN_USD;
+  if (raw == null || raw === "") return 10;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 0) return 10;
+  return n;
 }

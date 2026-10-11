@@ -931,3 +931,29 @@ Shadow discovery spend shipped. Sale materials unchanged. Operator still must de
 
 **Active project:** Tokenpulse only.
 Session 52 adds estimated spend to shadow discovery. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+## Decisions (Session 53 — shadow discovery spend warn)
+
+- `discoveryStatus()` sets `warn` when unknown-model estimated spend meets `TOKENPULSE_DISCOVERY_WARN_USD` (default 10).
+- `TOKENPULSE_DISCOVERY_WARN_USD=0` disables warnings. Status adds `warnThresholdUsd`.
+- Dashboard Shadow discovery meta shows WARN and Unknown USD KPI is highlighted when warn is true.
+- Does not change catalog matching, cost estimation, or any block policy.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 53 — 2026-10-11)
+
+Shadow discovery spend warn shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 53 — discovery spend warn on admin summary and dashboard
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models, their estimated spend, and a warn (when ≥ threshold) appear in the Shadow discovery table after traffic.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 53 adds a configurable spend warn for unknown-model discovery. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

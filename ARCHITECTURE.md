@@ -468,3 +468,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `npx tsx src/cli.ts --discovery` (optional `--day=`).
 - Cost for unknown models uses the existing fallback price already applied at metering time. No raw prompts. Does not change block policy.
 - Operator live proof remains the gate. No keys in git or chat.
+
+
+## Discovery warn (Session 53)
+
+- `discoveryStatus()` sets `warn` when `unknownCostUsd >= TOKENPULSE_DISCOVERY_WARN_USD` (default 10).
+- `TOKENPULSE_DISCOVERY_WARN_USD=0` disables the warn. Status exposes `warnThresholdUsd`.
+- Dashboard Shadow discovery meta and Unknown USD KPI highlight when warn is true.
+- Does not change catalog matching, cost estimation, or any block policy.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.

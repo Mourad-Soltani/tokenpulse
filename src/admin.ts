@@ -268,14 +268,14 @@ async function load() {
     ['Ledger', (s.ledger && s.ledger.driver) ? s.ledger.driver : 'jsonl'],
     ['Priced models', (s.pricing && s.pricing.catalogCount) ? s.pricing.catalogCount : 0],
     ['Unknown models', (s.discovery && s.discovery.unknownModelCount) ? s.discovery.unknownModelCount : 0],
-    ['Unknown USD', (s.discovery && s.discovery.unknownCostUsd) ? s.discovery.unknownCostUsd : 0],
+    ['Unknown USD', (s.discovery && s.discovery.unknownCostUsd) ? s.discovery.unknownCostUsd : 0, !!(s.discovery && s.discovery.warn)],
     ['Bind', (s.gateway ? (s.gateway.host+':'+s.gateway.port) : '127.0.0.1:8788')],
     ['Exports', (s.exports && s.exports.formats) ? s.exports.formats.join('+') : 'json+csv'],
     ['Policy stages', (s.policy && s.policy.stageCount) ? s.policy.stageCount : 7],
     ['Attr fields', (s.attribution && s.attribution.fieldCount) ? s.attribution.fieldCount : 2],
     ['Request id', (s.correlation && s.correlation.header) ? s.correlation.header : 'X-Tokenpulse-Request-Id'],
     ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok']
-  ].map(([k,v]) => '<div class="card">'+k+'<b>'+v+'</b></div>').join('');
+  ].map(([k,v,bad]) => '<div class="card">'+k+'<b class="'+(bad?'bad':'')+'">'+v+'</b></div>').join('');
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
   document.getElementById('gwmeta').textContent = (gw.loopback ? 'loopback' : 'non-loopback') + ' · ' + (gw.mockUpstream ? 'mock' : 'live-capable') + ' · ' + (gw.authRequired ? 'auth on' : 'auth off');
   const gwt = document.querySelector('#gateway tbody');
@@ -355,8 +355,9 @@ async function load() {
   pt.innerHTML = (pr.rows||[]).map(r =>
     '<tr><td>'+r.model+'</td><td>$'+r.inputPerMillion+'</td><td>$'+r.outputPerMillion+'</td><td class="ok">'+(r.known?'table':'fallback')+'</td></tr>'
   ).join('') || '<tr><td colspan="4">empty catalog</td></tr>';
-  const disc = s.discovery || { version:'tokenpulse-discovery-v1', unknownModelCount:0, unknownCalls:0, unknownCostUsd:0, rows:[], notes:'' };
-  document.getElementById('discmeta').textContent = (disc.unknownModelCount||0) + ' unknown models · ' + (disc.unknownCalls||0) + ' calls · $' + (disc.unknownCostUsd||0) + ' · ' + (disc.notes||'');
+  const disc = s.discovery || { version:'tokenpulse-discovery-v1', unknownModelCount:0, unknownCalls:0, unknownCostUsd:0, warnThresholdUsd:10, warn:false, rows:[], notes:'' };
+  const warnBit = disc.warn ? ' · WARN ≥$' + (disc.warnThresholdUsd||0) : '';
+  document.getElementById('discmeta').textContent = (disc.unknownModelCount||0) + ' unknown models · ' + (disc.unknownCalls||0) + ' calls · $' + (disc.unknownCostUsd||0) + warnBit + ' · ' + (disc.notes||'');
   const dt = document.querySelector('#discovery tbody');
   dt.innerHTML = (disc.rows||[]).map(r =>
     '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+(r.estimatedCostUsd??0)+'</td><td>'+esc(r.lastSeenAt)+'</td><td>'+esc((r.teams||[]).join(', '))+'</td><td>'+esc((r.apps||[]).join(', '))+'</td></tr>'

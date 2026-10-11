@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { discoveryStatus, isKnownCatalogModel } from "../src/discovery.js";
+import { discoveryStatus, discoveryWarnThresholdUsd, isKnownCatalogModel } from "../src/discovery.js";
 import type { UsageEvent } from "../src/types.js";
 
 function ev(model: string, team = "t1", app = "a1", ts = "2026-10-10T00:00:00.000Z", cost = 0): UsageEvent {
@@ -55,4 +55,38 @@ test("sums estimated cost and ranks by spend", () => {
   assert.equal(status.rows[0]?.model, "pricey-shadow");
   assert.equal(status.rows[0]?.estimatedCostUsd, 4);
   assert.equal(status.rows[1]?.estimatedCostUsd, 0.1);
+});
+
+
+test("warns when unknown cost meets threshold", () => {
+  const prev = process.env.TOKENPULSE_DISCOVERY_WARN_USD;
+  process.env.TOKENPULSE_DISCOVERY_WARN_USD = "3";
+  try {
+    const status = discoveryStatus([
+      ev("shadow", "t", "a", "2026-10-10T00:00:00.000Z", 2),
+      ev("shadow", "t", "a", "2026-10-10T00:00:00.000Z", 1.5),
+    ]);
+    assert.equal(status.unknownCostUsd, 3.5);
+    assert.equal(status.warnThresholdUsd, 3);
+    assert.equal(status.warn, true);
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_DISCOVERY_WARN_USD;
+    else process.env.TOKENPULSE_DISCOVERY_WARN_USD = prev;
+  }
+});
+
+test("does not warn below threshold or when disabled", () => {
+  const prev = process.env.TOKENPULSE_DISCOVERY_WARN_USD;
+  process.env.TOKENPULSE_DISCOVERY_WARN_USD = "0";
+  try {
+    const status = discoveryStatus([ev("shadow", "t", "a", "2026-10-10T00:00:00.000Z", 100)]);
+    assert.equal(status.warn, false);
+    assert.equal(status.warnThresholdUsd, 0);
+  } finally {
+    if (prev === undefined) delete process.env.TOKENPULSE_DISCOVERY_WARN_USD;
+    else process.env.TOKENPULSE_DISCOVERY_WARN_USD = prev;
+  }
+  const status2 = discoveryStatus([ev("shadow", "t", "a", "2026-10-10T00:00:00.000Z", 1)]);
+  assert.equal(status2.warnThresholdUsd, discoveryWarnThresholdUsd());
+  assert.equal(status2.warn, false);
 });
