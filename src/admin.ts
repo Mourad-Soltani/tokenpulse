@@ -1,4 +1,5 @@
 import { discoveryStatus, unattributedStatus, type DiscoveryStatus, type UnattributedStatus } from "./discovery.js";
+import { alertsStatus, type AlertsStatus } from "./alerts.js";
 import { budgetStatus, type BudgetStatusRow } from "./budget.js";
 import { rateStatus, type RateStatusRow } from "./ratelimit.js";
 import { limitStatus, type LimitStatusRow } from "./limits.js";
@@ -39,6 +40,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   keys: KeyStatus;
   discovery: DiscoveryStatus;
   unattributed: UnattributedStatus;
+  alerts: AlertsStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -55,7 +57,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
   const upstreams = upstreamStatus();
   const models = await modelStatusAsync();
   const sensitive = sensitiveStatus();
-  return {
+  const partial = {
     ...summarize(events),
     day: opts?.day,
     recentBlocked,
@@ -80,6 +82,10 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     keys: await keyStatus(events),
     discovery: discoveryStatus(events),
     unattributed: unattributedStatus(events),
+  };
+  return {
+    ...partial,
+    alerts: alertsStatus(partial),
   };
 }
 
@@ -188,6 +194,11 @@ export function dashboardHtml(): string {
     <table id="pricing"><thead><tr><th>Model</th><th>Input / 1M</th><th>Output / 1M</th><th>Source</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
+    <div class="card" style="margin:16px 0">
+      <h2 style="margin:0 0 8px;font-size:1rem">Alerts</h2>
+      <p class="sub" id="alertsmeta" style="margin:0 0 8px"></p>
+      <table id="alerts"><thead><tr><th>Source</th><th>Message</th><th>Detail</th></tr></thead><tbody></tbody></table>
+    </div>
     <h2 style="margin:0 0 8px;font-size:1rem">Shadow discovery</h2>
     <p class="sub" id="discmeta"></p>
     <table id="discovery"><thead><tr><th>Model</th><th>Calls</th><th>USD</th><th>Last seen</th><th>Teams</th><th>Apps</th></tr></thead><tbody></tbody></table>
@@ -373,6 +384,14 @@ async function load() {
   const ua = s.unattributed || { version:'tokenpulse-unattributed-v1', defaultTeamCalls:0, defaultTeamCostUsd:0, defaultAppCalls:0, defaultAppCostUsd:0, unattributedCostUsd:0, warnThresholdUsd:10, warn:false, notes:'' };
   const uaWarn = ua.warn ? ' · WARN ≥$' + (ua.warnThresholdUsd||0) : '';
   document.getElementById('unattrmeta').textContent = '$' + (ua.unattributedCostUsd||0) + ' unattributed' + uaWarn + ' · ' + (ua.notes||'');
+  
+  const al = s.alerts || { version:'tokenpulse-alerts-v1', count:0, rows:[], notes:'' };
+  document.getElementById('alertsmeta').textContent = (al.count||0) + ' warn(s) · ' + (al.notes||'');
+  const at = document.querySelector('#alerts tbody');
+  at.innerHTML = (al.rows||[]).map(r =>
+    '<tr><td>'+esc(r.source)+'</td><td class="bad">'+esc(r.message)+'</td><td>'+esc(r.detail||'')+'</td></tr>'
+  ).join('') || '<tr><td colspan="3">none</td></tr>';
+
   const ut = document.querySelector('#unattributed tbody');
   ut.innerHTML = '<tr><td>default team</td><td>'+(ua.defaultTeamCalls||0)+'</td><td>'+(ua.defaultTeamCostUsd||0)+'</td></tr>' +
     '<tr><td>default app</td><td>'+(ua.defaultAppCalls||0)+'</td><td>'+(ua.defaultAppCostUsd||0)+'</td></tr>' +

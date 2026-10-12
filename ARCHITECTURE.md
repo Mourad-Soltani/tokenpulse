@@ -486,3 +486,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `unattributed`. Dashboard renders an Unattributed traffic table and KPI.
 - CLI: `--unattributed`. Notes are excluded. Does not alter attribution defaults or any policy block.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Alerts status (Session 55)
+
+- `alertsStatus()` aggregates operator-visible warns from budget, rate, limits, discovery, unattributed, and client-key idle/expiry counts.
+- Admin summary exposes `alerts` (`count`, `rows`, `notes`). Dashboard renders an Alerts table.
+- Does not change any block policy or threshold evaluation. Source statuses remain authoritative.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

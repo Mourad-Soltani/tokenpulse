@@ -983,3 +983,28 @@ Unattributed traffic status shipped. Sale materials unchanged. Operator still mu
 
 **Active project:** Tokenpulse only.
 Session 54 adds unattributed (default team/app) spend visibility as a shadow signal. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+## Decisions (Session 55 — alerts aggregator)
+
+- `alertsStatus()` collects operator-visible warns from existing status objects (budgetWarns, rateWarns, limitWarns, discovery.warn, unattributed.warn, key idle/expiry counts).
+- Admin summary includes `alerts` (version, count, rows, notes). Dashboard renders an Alerts table at the top of the detail section.
+- No new thresholds or block policies. Source status objects remain the source of truth.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 55 — 2026-10-12)
+
+Alerts aggregator shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 55 — unified alerts status on admin summary and dashboard
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models, unattributed spend, alerts, and warns appear after traffic.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 55 adds a single Alerts view aggregating existing warn signals. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
