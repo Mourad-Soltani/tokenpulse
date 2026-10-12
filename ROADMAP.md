@@ -63,6 +63,7 @@
 - [x] Shadow discovery spend warn (`warn` / `warnThresholdUsd`; `TOKENPULSE_DISCOVERY_WARN_USD`, default 10)
 - [x] Unattributed traffic status (default team/app spend; `TOKENPULSE_UNATTRIBUTED_WARN_USD`, default 10)
 - [x] Alerts aggregator (budget/rate/limits/discovery/unattributed/key warns on admin + dashboard)
+- [x] CLI `--alerts` / `npm run alerts`
 
 ## Sale readiness
 

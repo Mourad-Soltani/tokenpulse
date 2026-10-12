@@ -16,7 +16,8 @@
     "revoke-key": "tsx src/cli.ts --revoke-key",
     "enable-key": "tsx src/cli.ts --enable-key",
     "rotate-key": "tsx src/cli.ts --rotate-key",
-    "list-keys": "tsx src/cli.ts --list-keys"
+    "list-keys": "tsx src/cli.ts --list-keys",
+    "alerts": "tsx src/cli.ts --alerts"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

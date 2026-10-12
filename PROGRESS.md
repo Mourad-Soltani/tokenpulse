@@ -1008,3 +1008,30 @@ Alerts aggregator shipped. Sale materials unchanged. Operator still must deploy 
 
 **Active project:** Tokenpulse only.
 Session 55 adds a single Alerts view aggregating existing warn signals. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+
+
+## Decisions (Session 56 — CLI alerts)
+
+- CLI `--alerts` (and `npm run alerts`) prints the same `alerts` object as `/v1/admin/summary`.
+- Reuses `adminSummary()` so warn counts stay consistent with the dashboard.
+- Optional `--day=` scopes the underlying ledger reads.
+- No new thresholds or block policies. Source status objects remain the source of truth.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 56 — 2026-10-12)
+
+CLI alerts flag shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 56 — `--alerts` on CLI and `npm run alerts`
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models, unattributed spend, alerts, and warns appear after traffic. CLI: `npm run alerts`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 56 adds a CLI path to the unified alerts aggregator. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
