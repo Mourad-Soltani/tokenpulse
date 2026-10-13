@@ -4,6 +4,7 @@ import { isSafeRequestId } from "./correlation.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 import { discoveryStatus, unattributedStatus } from "./discovery.js";
 import { adminSummary } from "./admin.js";
+import { postAlerts, webhookStatus } from "./notify.js";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -41,7 +42,12 @@ async function main() {
   }
   if (args.includes("--alerts")) {
     const summary = await adminSummary({ day: dayArg });
-    console.log(JSON.stringify(summary.alerts, null, 2));
+    const wh = webhookStatus();
+    let notified: { ok: boolean; status?: number; error?: string } | null = null;
+    if (wh.configured) {
+      notified = await postAlerts(summary.alerts);
+    }
+    console.log(JSON.stringify({ alerts: summary.alerts, webhook: { configured: wh.configured, host: wh.host, notified } }, null, 2));
     return;
   }
   const reqArg = args.find((a) => a.startsWith("--request-id="));

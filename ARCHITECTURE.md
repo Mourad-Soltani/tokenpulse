@@ -494,3 +494,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `alerts` (`count`, `rows`, `notes`). Dashboard renders an Alerts table.
 - Does not change any block policy or threshold evaluation. Source statuses remain authoritative.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Alert webhook (Session 57)
+
+- Optional `TOKENPULSE_ALERT_WEBHOOK_URL` (http or https).
+- CLI `--alerts` POSTs the `alerts` object (plus `source: "tokenpulse"`) when the URL is set.
+- Admin summary exposes `webhook: { configured, host, notes }`. Host only — full URL never serialized.
+- Dashboard Alerts section shows whether a webhook is configured.
+- Does not change block policy or thresholds. No secrets in git or chat.

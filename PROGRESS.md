@@ -1035,3 +1035,29 @@ CLI alerts flag shipped. Sale materials unchanged. Operator still must deploy th
 
 **Active project:** Tokenpulse only.
 Session 56 adds a CLI path to the unified alerts aggregator. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+## Decisions (Session 57 — alert webhook)
+
+- Optional `TOKENPULSE_ALERT_WEBHOOK_URL` (http/https).
+- CLI `--alerts` POSTs the alerts object when the URL is set (timeout 10s). Result included in output.
+- `webhookStatus()` exposes configured + host only (full URL never on admin/dashboard).
+- Admin summary includes `webhook`. Dashboard Alerts section shows configured status.
+- Does not change thresholds, block policy, or existing alert aggregation.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 57 — 2026-10-13)
+
+Alert webhook shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 57 — optional webhook POST of alerts from CLI `--alerts`
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models, unattributed spend, alerts, and warns appear after traffic. CLI: `npm run alerts` (optionally with webhook URL).
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 57 adds optional webhook delivery for the unified alerts aggregator. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.

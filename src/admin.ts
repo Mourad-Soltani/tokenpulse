@@ -1,5 +1,6 @@
 import { discoveryStatus, unattributedStatus, type DiscoveryStatus, type UnattributedStatus } from "./discovery.js";
 import { alertsStatus, type AlertsStatus } from "./alerts.js";
+import { webhookStatus, type WebhookStatus } from "./notify.js";
 import { budgetStatus, type BudgetStatusRow } from "./budget.js";
 import { rateStatus, type RateStatusRow } from "./ratelimit.js";
 import { limitStatus, type LimitStatusRow } from "./limits.js";
@@ -41,6 +42,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   discovery: DiscoveryStatus;
   unattributed: UnattributedStatus;
   alerts: AlertsStatus;
+  webhook: WebhookStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -86,6 +88,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
   return {
     ...partial,
     alerts: alertsStatus(partial),
+    webhook: webhookStatus(),
   };
 }
 
@@ -197,6 +200,7 @@ export function dashboardHtml(): string {
     <div class="card" style="margin:16px 0">
       <h2 style="margin:0 0 8px;font-size:1rem">Alerts</h2>
       <p class="sub" id="alertsmeta" style="margin:0 0 8px"></p>
+      <p class="sub" id="webhookmeta" style="margin:0 0 12px;font-size:0.85rem"></p>
       <table id="alerts"><thead><tr><th>Source</th><th>Message</th><th>Detail</th></tr></thead><tbody></tbody></table>
     </div>
     <h2 style="margin:0 0 8px;font-size:1rem">Shadow discovery</h2>
@@ -387,6 +391,10 @@ async function load() {
   
   const al = s.alerts || { version:'tokenpulse-alerts-v1', count:0, rows:[], notes:'' };
   document.getElementById('alertsmeta').textContent = (al.count||0) + ' warn(s) · ' + (al.notes||'');
+  const wh = s.webhook || { configured:false, host:null };
+  document.getElementById('webhookmeta').textContent = wh.configured
+    ? ('Webhook: configured (' + (wh.host||'host') + ')')
+    : 'Webhook: not configured (set TOKENPULSE_ALERT_WEBHOOK_URL)';
   const at = document.querySelector('#alerts tbody');
   at.innerHTML = (al.rows||[]).map(r =>
     '<tr><td>'+esc(r.source)+'</td><td class="bad">'+esc(r.message)+'</td><td>'+esc(r.detail||'')+'</td></tr>'
