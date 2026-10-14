@@ -21,3 +21,16 @@ test("webhookStatus parses host only", () => {
   if (prev) process.env.TOKENPULSE_ALERT_WEBHOOK_URL = prev;
   else delete process.env.TOKENPULSE_ALERT_WEBHOOK_URL;
 });
+
+test("alertIntervalSec defaults to 0 and floors at 30", async () => {
+  const { alertIntervalSec } = await import("../src/notify.js");
+  const prev = process.env.TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC;
+  delete process.env.TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC;
+  assert.equal(alertIntervalSec(), 0);
+  process.env.TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC = "10";
+  assert.equal(alertIntervalSec(), 30);
+  process.env.TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC = "120";
+  assert.equal(alertIntervalSec(), 120);
+  if (prev) process.env.TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC = prev;
+  else delete process.env.TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC;
+});

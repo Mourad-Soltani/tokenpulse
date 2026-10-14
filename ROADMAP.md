@@ -65,6 +65,7 @@
 - [x] Alerts aggregator (budget/rate/limits/discovery/unattributed/key warns on admin + dashboard)
 - [x] CLI `--alerts` / `npm run alerts`
 - [x] Optional alert webhook (`TOKENPULSE_ALERT_WEBHOOK_URL`, CLI posts on `--alerts`)
+- [x] Process-level alert poster (`TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC`)
 
 ## Sale readiness
 

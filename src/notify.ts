@@ -13,7 +13,7 @@ export function webhookStatus(): WebhookStatus {
     return {
       configured: false,
       host: null,
-      notes: "Set TOKENPULSE_ALERT_WEBHOOK_URL to POST alerts JSON on CLI --alerts. No secrets in git.",
+      notes: "Set TOKENPULSE_ALERT_WEBHOOK_URL to POST alerts JSON (CLI --alerts or process interval). No secrets in git.",
     };
   }
   let host: string | null = null;
@@ -25,7 +25,7 @@ export function webhookStatus(): WebhookStatus {
   return {
     configured: true,
     host,
-    notes: "CLI --alerts POSTs the alerts object when this URL is set. Full URL is never serialized.",
+    notes: "CLI --alerts or process interval POSTs the alerts object when this URL is set. Full URL is never serialized.",
   };
 }
 
@@ -52,4 +52,11 @@ export async function postAlerts(alerts: AlertsStatus): Promise<{ ok: boolean; s
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "fetch_failed" };
   }
+}
+
+/** Interval seconds for process-level alert POSTs. 0 / unset = off. Min 30. */
+export function alertIntervalSec(): number {
+  const raw = Number(process.env.TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC ?? "");
+  if (!Number.isFinite(raw) || raw <= 0) return 0;
+  return Math.max(30, Math.floor(raw));
 }

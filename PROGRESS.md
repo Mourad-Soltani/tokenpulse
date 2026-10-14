@@ -1061,3 +1061,36 @@ Alert webhook shipped. Sale materials unchanged. Operator still must deploy the 
 
 **Active project:** Tokenpulse only.
 Session 57 adds optional webhook delivery for the unified alerts aggregator. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+## Decisions (Session 58 — process alert poster)
+
+- Optional `TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC` (min 30 seconds; unset or 0 disables).
+- `startGateway` starts a background timer when the interval is set.
+- Timer loads `adminSummary` and calls `postAlerts` only when `alerts.count > 0`.
+- CLI `--alerts` path is unchanged. Webhook URL still never serialized.
+- Does not change thresholds, block policy, or alert aggregation.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 58 — 2026-10-14)
+
+Process-level alert poster shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 58 — optional background POST of unified alerts from the gateway process
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models, unattributed spend, alerts, and warns appear after traffic. CLI: `npm run alerts`. Optional: set `TOKENPULSE_ALERT_WEBHOOK_URL` + `TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 58 adds an optional process-level alert poster so operators do not need to cron the CLI. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# optional background alerts:
+# TOKENPULSE_ALERT_WEBHOOK_URL=https://hooks.example.com/tokenpulse TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC=300 npm run start:gateway
+```

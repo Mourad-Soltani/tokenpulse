@@ -503,3 +503,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `webhook: { configured, host, notes }`. Host only — full URL never serialized.
 - Dashboard Alerts section shows whether a webhook is configured.
 - Does not change block policy or thresholds. No secrets in git or chat.
+
+## Process alert poster (Session 58)
+
+- Optional `TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC` (min 30; 0 or unset = off).
+- When set and `TOKENPULSE_ALERT_WEBHOOK_URL` is set, `startGateway` starts a timer that calls `adminSummary` and POSTs via `postAlerts` only when `alerts.count > 0`.
+- Does not change thresholds or block policy. Full URL never serialized.
+- CLI `--alerts` remains available. Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.

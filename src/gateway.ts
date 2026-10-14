@@ -24,6 +24,7 @@ import { listenHost, listenPort } from "./runtime.js";
 import { bindRequestId, isSafeRequestId, resolveRequestId } from "./correlation.js";
 import { keysConfiguredSync, matchClientKey } from "./keys.js";
 import type { UsageEvent } from "./types.js";
+import { postAlerts, alertIntervalSec } from "./notify.js";
 
 function header(req: IncomingMessage, name: string): string | undefined {
   const v = req.headers[name.toLowerCase()];
@@ -831,6 +832,26 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
   json(res, 404, { error: { message: "not found", type: "invalid_request_error" } });
 }
 
+
+/** Optional background POSTs of unified alerts when count > 0. */
+export function startAlertPoster(): void {
+  const interval = alertIntervalSec();
+  if (interval <= 0) return;
+  const tick = async () => {
+    try {
+      const summary = await adminSummary({});
+      if (summary.alerts.count > 0) {
+        await postAlerts(summary.alerts);
+      }
+    } catch (err) {
+      console.error("tokenpulse alert poster:", err instanceof Error ? err.message : err);
+    }
+  };
+  setInterval(tick, interval * 1000);
+  // first tick after a short delay so startup isn't blocked
+  setTimeout(tick, 5_000);
+}
+
 export function startGateway(port = listenPort()) {
   const host = listenHost();
   const server = createServer((req, res) => {
@@ -840,6 +861,7 @@ export function startGateway(port = listenPort()) {
     });
   });
   server.listen(port, host, () => {
+    startAlertPoster();
     console.error(`tokenpulse gateway on http://${host}:${port} mock=${process.env.TOKENPULSE_MOCK_UPSTREAM ?? "0"}`);
   });
   return server;
@@ -847,3 +869,4 @@ export function startGateway(port = listenPort()) {
 
 const isMain = process.argv[1]?.endsWith("gateway.ts") || process.argv[1]?.endsWith("gateway.js");
 if (isMain) startGateway();
+
