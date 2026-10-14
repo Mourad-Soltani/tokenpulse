@@ -1,0 +1,38 @@
+import type { AdminSummary } from "./admin.js";
+
+/** Prometheus text exposition for operator scrapes. No secrets. */
+export function metricsText(summary: AdminSummary): string {
+  const lines: string[] = [
+    "# HELP tokenpulse_calls_total Total ledger events (allow + block + note)",
+    "# TYPE tokenpulse_calls_total counter",
+    `tokenpulse_calls_total ${summary.calls}`,
+    "# HELP tokenpulse_allowed_total Allowed requests",
+    "# TYPE tokenpulse_allowed_total counter",
+    `tokenpulse_allowed_total ${summary.allowed}`,
+    "# HELP tokenpulse_blocked_total Blocked requests",
+    "# TYPE tokenpulse_blocked_total counter",
+    `tokenpulse_blocked_total ${summary.blocked}`,
+    "# HELP tokenpulse_notes_total Operator notes",
+    "# TYPE tokenpulse_notes_total counter",
+    `tokenpulse_notes_total ${summary.notes}`,
+    "# HELP tokenpulse_tokens_total Total tokens (prompt + completion)",
+    "# TYPE tokenpulse_tokens_total counter",
+    `tokenpulse_tokens_total ${summary.tokens}`,
+    "# HELP tokenpulse_cost_usd_total Estimated cost in USD",
+    "# TYPE tokenpulse_cost_usd_total counter",
+    `tokenpulse_cost_usd_total ${summary.costUsd}`,
+    "# HELP tokenpulse_alerts_count Current operator-visible warn count",
+    "# TYPE tokenpulse_alerts_count gauge",
+    `tokenpulse_alerts_count ${summary.alerts.count}`,
+    "# HELP tokenpulse_discovery_unknown_cost_usd Estimated spend on models absent from the pricing catalog",
+    "# TYPE tokenpulse_discovery_unknown_cost_usd gauge",
+    `tokenpulse_discovery_unknown_cost_usd ${summary.discovery?.unknownCostUsd ?? 0}`,
+    "# HELP tokenpulse_unattributed_cost_usd Estimated spend on default team or default app",
+    "# TYPE tokenpulse_unattributed_cost_usd gauge",
+    `tokenpulse_unattributed_cost_usd ${summary.unattributed?.unattributedCostUsd ?? 0}`,
+    "# HELP tokenpulse_chain_ok 1 if the visible ledger chain verifies",
+    "# TYPE tokenpulse_chain_ok gauge",
+    `tokenpulse_chain_ok ${summary.chainOk ? 1 : 0}`,
+  ];
+  return lines.join("\n") + "\n";
+}

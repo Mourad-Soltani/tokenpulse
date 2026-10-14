@@ -510,3 +510,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - When set and `TOKENPULSE_ALERT_WEBHOOK_URL` is set, `startGateway` starts a timer that calls `adminSummary` and POSTs via `postAlerts` only when `alerts.count > 0`.
 - Does not change thresholds or block policy. Full URL never serialized.
 - CLI `--alerts` remains available. Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Prometheus metrics (Session 59)
+
+- `GET /v1/admin/metrics` returns `text/plain; version=0.0.4` exposition.
+- Same auth as other `/v1/admin/*` routes. Optional `?day=` window matches admin summary.
+- Exposes calls/allowed/blocked/notes/tokens/cost, alerts count, discovery unknown cost, unattributed cost, chain_ok.
+- No secrets, no raw prompts, no digests. Does not change policy or ledger.
+- Operators can scrape with the gateway token for Grafana or similar.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

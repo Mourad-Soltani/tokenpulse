@@ -25,6 +25,7 @@ import { bindRequestId, isSafeRequestId, resolveRequestId } from "./correlation.
 import { keysConfiguredSync, matchClientKey } from "./keys.js";
 import type { UsageEvent } from "./types.js";
 import { postAlerts, alertIntervalSec } from "./notify.js";
+import { metricsText } from "./metrics.js";
 
 function header(req: IncomingMessage, name: string): string | undefined {
   const v = req.headers[name.toLowerCase()];
@@ -808,6 +809,18 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       return;
     }
     json(res, 200, pack);
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/v1/admin/metrics") {
+    const day = url.searchParams.get("day") ?? undefined;
+    const summary = await adminSummary({ day });
+    const text = metricsText(summary);
+    res.writeHead(200, {
+      "content-type": "text/plain; version=0.0.4; charset=utf-8",
+      "content-length": Buffer.byteLength(text),
+    });
+    res.end(text);
     return;
   }
 

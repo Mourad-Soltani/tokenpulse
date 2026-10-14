@@ -1094,3 +1094,34 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # optional background alerts:
 # TOKENPULSE_ALERT_WEBHOOK_URL=https://hooks.example.com/tokenpulse TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC=300 npm run start:gateway
 ```
+
+## Decisions (Session 59 — Prometheus metrics)
+
+- `GET /v1/admin/metrics` returns Prometheus text exposition (auth required, same as other admin routes).
+- Counters/gauges for calls, allowed, blocked, notes, tokens, costUsd, alerts count, discovery unknown cost, unattributed cost, chain_ok.
+- Generated from the same `adminSummary` window (optional `?day=`). No secrets, no raw prompts.
+- Does not change block policy, thresholds, or ledger writes. Useful for operator scrapes / Grafana.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 59 — 2026-10-14)
+
+Prometheus metrics endpoint shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 59 — optional Prometheus metrics on `GET /v1/admin/metrics`
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Unknown models, unattributed spend, alerts, and warns appear after traffic. CLI: `npm run alerts`. Optional: set `TOKENPULSE_ALERT_WEBHOOK_URL` + `TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC`. Metrics available at `/v1/admin/metrics`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 59 adds a Prometheus metrics endpoint for operator monitoring. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```
