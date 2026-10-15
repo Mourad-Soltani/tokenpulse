@@ -33,6 +33,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_chain_ok 1 if the visible ledger chain verifies",
     "# TYPE tokenpulse_chain_ok gauge",
     `tokenpulse_chain_ok ${summary.chainOk ? 1 : 0}`,
+    "# HELP tokenpulse_latency_avg_ms Average latency in milliseconds",
+    "# TYPE tokenpulse_latency_avg_ms gauge",
+    `tokenpulse_latency_avg_ms ${summary.latency?.avgMs ?? 0}`,
+    "# HELP tokenpulse_latency_p95_ms 95th percentile latency in milliseconds",
+    "# TYPE tokenpulse_latency_p95_ms gauge",
+    `tokenpulse_latency_p95_ms ${summary.latency?.p95Ms ?? 0}`,
   ];
   return lines.join("\n") + "\n";
 }

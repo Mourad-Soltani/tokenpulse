@@ -1,5 +1,6 @@
 import { discoveryStatus, unattributedStatus, type DiscoveryStatus, type UnattributedStatus } from "./discovery.js";
 import { alertsStatus, type AlertsStatus } from "./alerts.js";
+import { latencyStatus, type LatencyStatus } from "./latency.js";
 import { webhookStatus, type WebhookStatus } from "./notify.js";
 import { budgetStatus, type BudgetStatusRow } from "./budget.js";
 import { rateStatus, type RateStatusRow } from "./ratelimit.js";
@@ -43,6 +44,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   unattributed: UnattributedStatus;
   alerts: AlertsStatus;
   webhook: WebhookStatus;
+  latency: LatencyStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -89,6 +91,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     ...partial,
     alerts: alertsStatus(partial),
     webhook: webhookStatus(),
+    latency: latencyStatus(events),
   };
 }
 
@@ -216,6 +219,11 @@ export function dashboardHtml(): string {
     <h2 style="margin:0 0 8px;font-size:1rem">Ledger</h2>
     <p class="sub" id="ledgermeta"></p>
     <table id="ledger"><thead><tr><th>Driver</th><th>Events</th><th>Chain</th><th>Checked</th><th>Legacy skipped</th><th>Tip</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Latency</h2>
+    <p class="sub" id="latmeta"></p>
+    <table id="latency"><thead><tr><th>Samples</th><th>Avg ms</th><th>p50</th><th>p95</th><th>Max</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">By team</h2>
@@ -409,6 +417,10 @@ async function load() {
   const lt = document.querySelector('#ledger tbody');
   const lcls = ld.chainOk === false ? 'bad' : 'ok';
   lt.innerHTML = '<tr><td>'+ld.driver+'</td><td>'+ld.events+'</td><td class="'+lcls+'">'+(ld.chainOk===false?'broken':'ok')+'</td><td>'+(ld.chainChecked??0)+'</td><td>'+(ld.skippedLegacy??0)+'</td><td>'+(ld.tipHashPrefix||'—')+'</td></tr>';
+  const lat = s.latency || { samples:0, avgMs:0, p50Ms:0, p95Ms:0, maxMs:0 };
+  document.getElementById('latmeta').textContent = (lat.samples||0) + ' samples · non-note events';
+  const latt = document.querySelector('#latency tbody');
+  latt.innerHTML = '<tr><td>'+(lat.samples||0)+'</td><td>'+(lat.avgMs||0)+'</td><td>'+(lat.p50Ms||0)+'</td><td>'+(lat.p95Ms||0)+'</td><td>'+(lat.maxMs||0)+'</td></tr>';
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>
     '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';

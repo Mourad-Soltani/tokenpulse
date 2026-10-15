@@ -67,3 +67,4 @@
 - [x] Optional alert webhook (`TOKENPULSE_ALERT_WEBHOOK_URL`, CLI posts on `--alerts`)
 - [x] Process-level alert poster (`TOKENPULSE_ALERT_WEBHOOK_INTERVAL_SEC`)
 - [x] Prometheus metrics endpoint (`GET /v1/admin/metrics`)
+- [x] Latency status on admin summary + dashboard + metrics (`avg` / `p50` / `p95` / `max`)

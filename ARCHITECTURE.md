@@ -519,3 +519,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - No secrets, no raw prompts, no digests. Does not change policy or ledger.
 - Operators can scrape with the gateway token for Grafana or similar.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Latency status (Session 60)
+
+- `latencyStatus()` reports samples, avgMs, p50Ms, p95Ms, maxMs from non-note ledger events in the selected window.
+- Admin summary exposes `latency`. Dashboard renders a Latency table.
+- Prometheus metrics expose `tokenpulse_latency_avg_ms` and `tokenpulse_latency_p95_ms`.
+- Does not change routing, block policy, or ledger writes.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
