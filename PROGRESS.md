@@ -1157,3 +1157,35 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+
+## Decisions (Session 61 — upstream health status)
+
+- `upstreamHealthStatus()` counts successes (allow) and failures (block + `upstream_error`) from non-note ledger events.
+- Admin summary exposes `upstreamHealth` (samples, successes, failures, successRate). Dashboard renders an Upstream health table + Upstream % KPI.
+- Prometheus metrics expose `tokenpulse_upstream_success_rate_percent` and `tokenpulse_upstream_failures_total`.
+- Does not change routing, fallback, or block policy. Notes are excluded.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 61 — 2026-10-15)
+
+Upstream health status shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 61 — upstream success/failure visibility on admin summary, dashboard, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Latency percentiles and upstream health appear after traffic. Metrics at `/v1/admin/metrics`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 61 adds upstream outcome visibility for operators. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```

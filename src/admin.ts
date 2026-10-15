@@ -1,3 +1,4 @@
+import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
 import { discoveryStatus, unattributedStatus, type DiscoveryStatus, type UnattributedStatus } from "./discovery.js";
 import { alertsStatus, type AlertsStatus } from "./alerts.js";
 import { latencyStatus, type LatencyStatus } from "./latency.js";
@@ -45,6 +46,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   alerts: AlertsStatus;
   webhook: WebhookStatus;
   latency: LatencyStatus;
+  upstreamHealth: UpstreamHealthStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -92,6 +94,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     alerts: alertsStatus(partial),
     webhook: webhookStatus(),
     latency: latencyStatus(events),
+    upstreamHealth: upstreamHealthStatus(events),
   };
 }
 
@@ -226,6 +229,11 @@ export function dashboardHtml(): string {
     <table id="latency"><thead><tr><th>Samples</th><th>Avg ms</th><th>p50</th><th>p95</th><th>Max</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Upstream health</h2>
+    <p class="sub" id="uphealthmeta"></p>
+    <table id="upstreamHealth"><thead><tr><th>Samples</th><th>Successes</th><th>Failures</th><th>Success %</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">By team</h2>
     <table id="teams"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
   </div>
@@ -305,7 +313,8 @@ async function load() {
     ['Policy stages', (s.policy && s.policy.stageCount) ? s.policy.stageCount : 7],
     ['Attr fields', (s.attribution && s.attribution.fieldCount) ? s.attribution.fieldCount : 2],
     ['Request id', (s.correlation && s.correlation.header) ? s.correlation.header : 'X-Tokenpulse-Request-Id'],
-    ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok']
+    ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok'],
+    ['Upstream %', (s.upstreamHealth && typeof s.upstreamHealth.successRate === 'number') ? s.upstreamHealth.successRate : 100, !!(s.upstreamHealth && s.upstreamHealth.samples > 0 && s.upstreamHealth.successRate < 95)]
   ].map(([k,v,bad]) => '<div class="card">'+k+'<b class="'+(bad?'bad':'')+'">'+v+'</b></div>').join('');
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
   document.getElementById('gwmeta').textContent = (gw.loopback ? 'loopback' : 'non-loopback') + ' · ' + (gw.mockUpstream ? 'mock' : 'live-capable') + ' · ' + (gw.authRequired ? 'auth on' : 'auth off');
@@ -421,6 +430,11 @@ async function load() {
   document.getElementById('latmeta').textContent = (lat.samples||0) + ' samples · non-note events';
   const latt = document.querySelector('#latency tbody');
   latt.innerHTML = '<tr><td>'+(lat.samples||0)+'</td><td>'+(lat.avgMs||0)+'</td><td>'+(lat.p50Ms||0)+'</td><td>'+(lat.p95Ms||0)+'</td><td>'+(lat.maxMs||0)+'</td></tr>';
+  const uh = s.upstreamHealth || { samples:0, successes:0, failures:0, successRate:100 };
+  document.getElementById('uphealthmeta').textContent = (uh.failures ? uh.failures + ' upstream errors' : 'no upstream errors') + ' · allow vs upstream_error';
+  const uht = document.querySelector('#upstreamHealth tbody');
+  const rateCls = (uh.successRate < 95 && uh.samples > 0) ? 'bad' : 'ok';
+  uht.innerHTML = '<tr><td>'+(uh.samples||0)+'</td><td>'+(uh.successes||0)+'</td><td class="'+(uh.failures?'bad':'')+'">'+(uh.failures||0)+'</td><td class="'+rateCls+'">'+(uh.successRate||0)+'</td></tr>';
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>
     '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';

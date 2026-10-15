@@ -527,3 +527,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Prometheus metrics expose `tokenpulse_latency_avg_ms` and `tokenpulse_latency_p95_ms`.
 - Does not change routing, block policy, or ledger writes.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Upstream health status (Session 61)
+
+- `upstreamHealthStatus()` reports samples, successes (allow), failures (block with `upstream_error`), and successRate percent from non-note ledger events in the selected window.
+- Admin summary exposes `upstreamHealth`. Dashboard renders an Upstream health table and an Upstream % KPI (highlighted when rate < 95% with samples).
+- Prometheus metrics expose `tokenpulse_upstream_success_rate_percent` and `tokenpulse_upstream_failures_total`.
+- Does not change routing, fallback, or block policy. Notes are excluded. No raw prompts.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

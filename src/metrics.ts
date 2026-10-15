@@ -39,6 +39,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_latency_p95_ms 95th percentile latency in milliseconds",
     "# TYPE tokenpulse_latency_p95_ms gauge",
     `tokenpulse_latency_p95_ms ${summary.latency?.p95Ms ?? 0}`,
+    "# HELP tokenpulse_upstream_success_rate_percent Success rate of requests that reached upstream (allow / (allow + upstream_error))",
+    "# TYPE tokenpulse_upstream_success_rate_percent gauge",
+    `tokenpulse_upstream_success_rate_percent ${summary.upstreamHealth?.successRate ?? 100}`,
+    "# HELP tokenpulse_upstream_failures_total Blocks caused by upstream_error",
+    "# TYPE tokenpulse_upstream_failures_total counter",
+    `tokenpulse_upstream_failures_total ${summary.upstreamHealth?.failures ?? 0}`,
   ];
   return lines.join("\n") + "\n";
 }
