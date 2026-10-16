@@ -71,3 +71,4 @@
 - [x] Upstream health status on admin summary + dashboard + metrics (successes / failures / successRate)
 
 - [x] Observability packaging (Prometheus scrape docs + Grafana dashboard JSON)
+- [x] Daily burn-rate projection (admin summary + dashboard + metrics)

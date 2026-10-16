@@ -45,6 +45,9 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_upstream_failures_total Blocks caused by upstream_error",
     "# TYPE tokenpulse_upstream_failures_total counter",
     `tokenpulse_upstream_failures_total ${summary.upstreamHealth?.failures ?? 0}`,
+    "# HELP tokenpulse_burn_exhaust_warn_count Daily caps projected to exhaust by end of UTC day",
+    "# TYPE tokenpulse_burn_exhaust_warn_count gauge",
+    `tokenpulse_burn_exhaust_warn_count ${summary.burnRate?.exhaustWarnCount ?? 0}`,
   ];
   return lines.join("\n") + "\n";
 }

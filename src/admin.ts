@@ -1,4 +1,5 @@
 import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
+import { burnRateStatus, type BurnRateStatus } from "./burnRate.js";
 import { discoveryStatus, unattributedStatus, type DiscoveryStatus, type UnattributedStatus } from "./discovery.js";
 import { alertsStatus, type AlertsStatus } from "./alerts.js";
 import { latencyStatus, type LatencyStatus } from "./latency.js";
@@ -47,6 +48,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   webhook: WebhookStatus;
   latency: LatencyStatus;
   upstreamHealth: UpstreamHealthStatus;
+  burnRate: BurnRateStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -95,6 +97,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     webhook: webhookStatus(),
     latency: latencyStatus(events),
     upstreamHealth: upstreamHealthStatus(events),
+    burnRate: await burnRateStatus(),
   };
 }
 
@@ -234,6 +237,11 @@ export function dashboardHtml(): string {
     <table id="upstreamHealth"><thead><tr><th>Samples</th><th>Successes</th><th>Failures</th><th>Success %</th></tr></thead><tbody></tbody></table>
   </div>
   <div class="card" style="margin-top:16px">
+    <h2 style="margin:0 0 8px;font-size:1rem">Daily burn rate</h2>
+    <p class="sub" id="burnmeta"></p>
+    <table id="burnRate"><thead><tr><th>Scope</th><th>Id</th><th>Spent</th><th>Cap</th><th>Hours</th><th>Projected</th><th>Status</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">By team</h2>
     <table id="teams"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
   </div>
@@ -314,7 +322,8 @@ async function load() {
     ['Attr fields', (s.attribution && s.attribution.fieldCount) ? s.attribution.fieldCount : 2],
     ['Request id', (s.correlation && s.correlation.header) ? s.correlation.header : 'X-Tokenpulse-Request-Id'],
     ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok'],
-    ['Upstream %', (s.upstreamHealth && typeof s.upstreamHealth.successRate === 'number') ? s.upstreamHealth.successRate : 100, !!(s.upstreamHealth && s.upstreamHealth.samples > 0 && s.upstreamHealth.successRate < 95)]
+    ['Upstream %', (s.upstreamHealth && typeof s.upstreamHealth.successRate === 'number') ? s.upstreamHealth.successRate : 100, !!(s.upstreamHealth && s.upstreamHealth.samples > 0 && s.upstreamHealth.successRate < 95)],
+    ['Burn warns', (s.burnRate && s.burnRate.exhaustWarnCount) ? s.burnRate.exhaustWarnCount : 0, !!(s.burnRate && s.burnRate.exhaustWarnCount > 0)]
   ].map(([k,v,bad]) => '<div class="card">'+k+'<b class="'+(bad?'bad':'')+'">'+v+'</b></div>').join('');
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
   document.getElementById('gwmeta').textContent = (gw.loopback ? 'loopback' : 'non-loopback') + ' · ' + (gw.mockUpstream ? 'mock' : 'live-capable') + ' · ' + (gw.authRequired ? 'auth on' : 'auth off');
@@ -435,6 +444,12 @@ async function load() {
   const uht = document.querySelector('#upstreamHealth tbody');
   const rateCls = (uh.successRate < 95 && uh.samples > 0) ? 'bad' : 'ok';
   uht.innerHTML = '<tr><td>'+(uh.samples||0)+'</td><td>'+(uh.successes||0)+'</td><td class="'+(uh.failures?'bad':'')+'">'+(uh.failures||0)+'</td><td class="'+rateCls+'">'+(uh.successRate||0)+'</td></tr>';
+  const br = s.burnRate || { hoursElapsed:0, exhaustWarnCount:0, rows:[] };
+  document.getElementById('burnmeta').textContent = (br.hoursElapsed||0) + 'h elapsed UTC · ' + (br.exhaustWarnCount||0) + ' projected exhaust';
+  const brt = document.querySelector('#burnRate tbody');
+  brt.innerHTML = (br.rows||[]).map(r =>
+    '<tr><td>'+r.scope+'</td><td>'+r.id+'</td><td>'+r.spentUsd+'</td><td>'+r.capUsd+'</td><td>'+r.hoursElapsed+'</td><td>'+r.projectedUsd+'</td><td class="'+(r.willExhaust?'bad':'ok')+'">'+(r.willExhaust?'exhaust':'ok')+'</td></tr>'
+  ).join('') || '<tr><td colspan="7">no daily caps</td></tr>';
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>
     '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';

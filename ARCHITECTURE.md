@@ -536,3 +536,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Prometheus metrics expose `tokenpulse_upstream_success_rate_percent` and `tokenpulse_upstream_failures_total`.
 - Does not change routing, fallback, or block policy. Notes are excluded. No raw prompts.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Daily burn-rate projection (Session 63)
+
+- `burnRateStatus()` projects today's allowed spend linearly to the end of the UTC day for every configured daily team/app cap.
+- Admin summary exposes `burnRate` (hoursElapsed, rows with projectedUsd / willExhaust, exhaustWarnCount).
+- Dashboard renders a Daily burn rate table and a Burn warns KPI.
+- Prometheus metric `tokenpulse_burn_exhaust_warn_count`.
+- Monthly caps are not projected. Does not change `evaluateBudget` or hard blocks.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

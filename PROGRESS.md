@@ -1220,3 +1220,35 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+
+## Decisions (Session 63 — daily burn-rate projection)
+
+- `projectBurnRate()` / `burnRateStatus()` projects today's allowed spend linearly to end of UTC day for every configured daily cap (team and app).
+- Admin summary exposes `burnRate` (hoursElapsed, rows, exhaustWarnCount). Dashboard renders a Daily burn rate table + Burn warns KPI.
+- Prometheus metric `tokenpulse_burn_exhaust_warn_count`. Monthly caps are not projected.
+- Does not change `evaluateBudget` or any block policy. Notes excluded via existing budget status (allowed events only).
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 63 — 2026-10-16)
+
+Daily burn-rate projection shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 63 — projected daily exhaust visibility on admin summary, dashboard, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, burn-rate, and optionally the metrics endpoint. See `docs/observability.md`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 63 adds linear daily burn-rate projection so operators can see which caps will exhaust before midnight UTC. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```

@@ -31,6 +31,7 @@ Returns `text/plain; version=0.0.4`.
 | `tokenpulse_latency_p95_ms` | gauge | p95 latency |
 | `tokenpulse_upstream_success_rate_percent` | gauge | allow / (allow + upstream_error) |
 | `tokenpulse_upstream_failures_total` | counter | upstream_error blocks |
+| `tokenpulse_burn_exhaust_warn_count` | gauge | daily caps projected to exhaust |
 
 ## Scrape example (Prometheus)
 
