@@ -1189,3 +1189,34 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+## Decisions (Session 62 — observability packaging)
+
+- Added `docs/observability.md` with Prometheus scrape examples and metric table.
+- Added importable Grafana dashboard JSON at `docs/grafana-tokenpulse.json` (calls, cost, latency p95, upstream success, alerts, failures).
+- Updated `DEMO.md` with a short optional recording step for the metrics endpoint.
+- Does not change gateway behavior, metrics exposition, or any policy.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 62 — 2026-10-16)
+
+Observability packaging shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 62 — Prometheus scrape docs + basic Grafana dashboard JSON for demo readiness
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, and optionally the metrics endpoint. See `docs/observability.md`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 62 adds ready-to-import Grafana packaging so operators can show enterprise observability in the demo. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```

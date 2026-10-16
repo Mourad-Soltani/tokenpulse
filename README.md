@@ -53,7 +53,7 @@ Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks
 | Pricing catalog status | Live (admin summary + dashboard) |
 | Gateway runtime status | Live (admin summary + dashboard) |
 | Export pack status | Live (admin summary + dashboard) |
-| Prometheus metrics | Live (`GET /v1/admin/metrics`) |
+| Prometheus metrics | Live (`GET /v1/admin/metrics`; see `docs/observability.md` + Grafana JSON) |
 | Policy pipeline status | Live (admin summary + dashboard) |
 | Attribution header status | Live (admin summary + dashboard) |
 | Client key binding | Live (`TOKENPULSE_KEYS_PATH`, SHA-256, header override off, idle + expiry warns) |

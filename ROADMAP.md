@@ -69,3 +69,5 @@
 - [x] Prometheus metrics endpoint (`GET /v1/admin/metrics`)
 - [x] Latency status on admin summary + dashboard + metrics (`avg` / `p50` / `p95` / `max`)
 - [x] Upstream health status on admin summary + dashboard + metrics (successes / failures / successRate)
+
+- [x] Observability packaging (Prometheus scrape docs + Grafana dashboard JSON)

@@ -50,3 +50,16 @@ Unset mock. Set `OPENAI_API_KEY` or `XAI_API_KEY` in the local shell only. Repla
 ## Non-goals for the recording
 
 Buyer outreach, production multi-tenant, storing raw prompts.
+
+## 6. Observability (optional for recording)
+
+After a few requests (allow + at least one policy block):
+
+```bash
+curl -s -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```
+
+Show latency p95, upstream success rate, and alerts count.  
+See `docs/observability.md` for a Prometheus scrape example and a basic Grafana dashboard JSON (`docs/grafana-tokenpulse.json`).
+
+On a Railway public mock URL the same endpoint works with the runtime token. Generate traffic first so percentiles are non-zero.
