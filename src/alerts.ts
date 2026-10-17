@@ -16,7 +16,7 @@ export type AlertsStatus = {
 
 /** Aggregate operator-visible warns from existing status objects. No new policy. */
 export function alertsStatus(summary: Pick<AdminSummary,
-  "budgetWarns" | "rateWarns" | "limitWarns" | "discovery" | "unattributed" | "keys"
+  "budgetWarns" | "rateWarns" | "limitWarns" | "discovery" | "unattributed" | "keys" | "burnRate"
 >): AlertsStatus {
   const rows: AlertRow[] = [];
 
@@ -69,6 +69,14 @@ export function alertsStatus(summary: Pick<AdminSummary,
       source: "keys",
       severity: "warn",
       message: `${keys.expiryWarnCount} client key(s) expiring soon`,
+    });
+  }
+  const burn = summary.burnRate as { exhaustWarnCount?: number } | undefined;
+  if (burn?.exhaustWarnCount && burn.exhaustWarnCount > 0) {
+    rows.push({
+      source: "burn",
+      severity: "warn",
+      message: `${burn.exhaustWarnCount} daily cap(s) projected to exhaust before end of UTC day`,
     });
   }
 

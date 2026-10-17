@@ -1252,3 +1252,35 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+
+## Decisions (Session 64 — burn-rate alerts)
+
+- `alertsStatus()` now includes `burnRate.exhaustWarnCount` as a warn row (`source: burn`).
+- Message: N daily cap(s) projected to exhaust before end of UTC day.
+- No new thresholds. Source remains `burnRateStatus`. Does not change block policy.
+- Admin summary, dashboard Alerts table, CLI `--alerts`, and webhook all pick it up automatically.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 64 — 2026-10-17)
+
+Burn-rate exhaust warns now appear in the unified alerts aggregator. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 64 — burn-rate projected exhaust included in alerts aggregator
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, burn-rate, alerts, and optionally the metrics endpoint. See `docs/observability.md`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 64 wires Session 63 burn-rate exhaust warnings into the existing alerts aggregator so operators see them in one place (dashboard, CLI, webhook). Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```

@@ -546,3 +546,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Prometheus metric `tokenpulse_burn_exhaust_warn_count`.
 - Monthly caps are not projected. Does not change `evaluateBudget` or hard blocks.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Burn-rate alerts (Session 64)
+
+- `alertsStatus()` aggregates `burnRate.exhaustWarnCount` into a `source: burn` warn row.
+- Same path as other operator warns: admin summary, dashboard Alerts table, CLI `--alerts`, optional webhook.
+- Does not change projection math or hard budget caps.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

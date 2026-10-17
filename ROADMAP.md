@@ -72,3 +72,5 @@
 
 - [x] Observability packaging (Prometheus scrape docs + Grafana dashboard JSON)
 - [x] Daily burn-rate projection (admin summary + dashboard + metrics)
+
+- [x] Burn-rate exhaust warns in unified alerts aggregator
