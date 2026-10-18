@@ -1284,3 +1284,34 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+## Decisions (Session 65 — block reasons status)
+
+- `blockReasonsStatus()` aggregates policyIds from block events (top 12 by count).
+- Admin summary exposes `blockReasons`. Dashboard renders a Block reasons table.
+- Prometheus metric `tokenpulse_block_unique_policies`. CLI: `--block-reasons`.
+- Does not change any deny path or HTTP codes. Notes and allows are excluded.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 65 — 2026-10-18)
+
+Block reasons status shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 65 — top block policy reasons on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, burn-rate, alerts, block reasons, and optionally the metrics endpoint. See `docs/observability.md`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 65 adds visibility into the most common reasons requests are blocked. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```

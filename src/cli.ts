@@ -3,6 +3,7 @@ import { enableClientKey, issueClientKey, keyStatus, revokeClientKey, rotateClie
 import { isSafeRequestId } from "./correlation.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 import { discoveryStatus, unattributedStatus } from "./discovery.js";
+import { blockReasonsStatus } from "./blockReasons.js";
 import { adminSummary } from "./admin.js";
 import { postAlerts, webhookStatus } from "./notify.js";
 
@@ -38,6 +39,11 @@ async function main() {
   }
   if (args.includes("--unattributed")) {
     console.log(JSON.stringify(unattributedStatus(events), null, 2));
+    return;
+  }
+
+  if (args.includes("--block-reasons")) {
+    console.log(JSON.stringify(blockReasonsStatus(events), null, 2));
     return;
   }
   if (args.includes("--alerts")) {
@@ -109,7 +115,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

@@ -1,3 +1,4 @@
+import { blockReasonsStatus, type BlockReasonsStatus } from "./blockReasons.js";
 import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
 import { burnRateStatus, type BurnRateStatus } from "./burnRate.js";
 import { discoveryStatus, unattributedStatus, type DiscoveryStatus, type UnattributedStatus } from "./discovery.js";
@@ -49,6 +50,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   latency: LatencyStatus;
   upstreamHealth: UpstreamHealthStatus;
   burnRate: BurnRateStatus;
+  blockReasons: BlockReasonsStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -98,6 +100,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     latency: latencyStatus(events),
     upstreamHealth: upstreamHealthStatus(events),
     burnRate: await burnRateStatus(),
+    blockReasons: blockReasonsStatus(events),
   };
 }
 
@@ -240,6 +243,12 @@ export function dashboardHtml(): string {
     <h2 style="margin:0 0 8px;font-size:1rem">Daily burn rate</h2>
     <p class="sub" id="burnmeta"></p>
     <table id="burnRate"><thead><tr><th>Scope</th><th>Id</th><th>Spent</th><th>Cap</th><th>Hours</th><th>Projected</th><th>Status</th></tr></thead><tbody></tbody></table>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Block reasons</h2>
+      <p class="sub" id="blockreasonsmeta" style="margin:0 0 8px"></p>
+      <table id="blockReasons"><thead><tr><th>Policy</th><th>Count</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+
   </div>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">By team</h2>
@@ -450,6 +459,14 @@ async function load() {
   brt.innerHTML = (br.rows||[]).map(r =>
     '<tr><td>'+r.scope+'</td><td>'+r.id+'</td><td>'+r.spentUsd+'</td><td>'+r.capUsd+'</td><td>'+r.hoursElapsed+'</td><td>'+r.projectedUsd+'</td><td class="'+(r.willExhaust?'bad':'ok')+'">'+(r.willExhaust?'exhaust':'ok')+'</td></tr>'
   ).join('') || '<tr><td colspan="7">no daily caps</td></tr>';
+
+  const brs = s.blockReasons || { totalBlocks:0, uniquePolicies:0, rows:[] };
+  document.getElementById('blockreasonsmeta').textContent = (brs.totalBlocks||0) + ' blocks · ' + (brs.uniquePolicies||0) + ' unique policies';
+  const brst = document.querySelector('#blockReasons tbody');
+  brst.innerHTML = (brs.rows||[]).map(r =>
+    '<tr><td>'+esc(r.policyId)+'</td><td>'+r.count+'</td><td>'+r.percent+'</td></tr>'
+  ).join('') || '<tr><td colspan="3">no blocks</td></tr>';
+
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>
     '<tr><td>'+id+'</td><td>'+t.calls+'</td><td>'+t.tokens+'</td><td>'+t.costUsd+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';

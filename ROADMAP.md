@@ -74,3 +74,5 @@
 - [x] Daily burn-rate projection (admin summary + dashboard + metrics)
 
 - [x] Burn-rate exhaust warns in unified alerts aggregator
+
+- [x] Block reasons status (top policy ids on blocks; admin + dashboard + CLI + metrics)

@@ -554,3 +554,15 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Same path as other operator warns: admin summary, dashboard Alerts table, CLI `--alerts`, optional webhook.
 - Does not change projection math or hard budget caps.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Block reasons status (Session 65)
+
+- `blockReasonsStatus()` counts policyIds on `decision: block` events in the selected window.
+- Admin summary exposes `blockReasons` (totalBlocks, uniquePolicies, top rows with count and percent).
+- Dashboard renders a Block reasons table.
+- Prometheus metric `tokenpulse_block_unique_policies`.
+- CLI: `--block-reasons`.
+- A single event may contribute to multiple rows when it carries several policyIds.
+- Does not change any block policy. Notes and allows are excluded. No raw prompts.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
