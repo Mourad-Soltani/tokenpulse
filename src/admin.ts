@@ -1,4 +1,5 @@
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
+import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
 import { blockReasonsStatus, type BlockReasonsStatus } from "./blockReasons.js";
 import { modelSpendStatus, type ModelSpendStatus } from "./modelSpend.js";
 import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
@@ -55,6 +56,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockReasons: BlockReasonsStatus;
   modelSpend: ModelSpendStatus;
   teamSpend: TeamSpendStatus;
+  appSpend: AppSpendStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -107,6 +109,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockReasons: blockReasonsStatus(events),
     modelSpend: modelSpendStatus(events),
     teamSpend: teamSpendStatus(events),
+    appSpend: appSpendStatus(events),
   };
 }
 
@@ -263,6 +266,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Team spend</h2>
       <p class="sub" id="teamspendmeta" style="margin:0 0 8px"></p>
       <table id="teamSpend"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">App spend</h2>
+      <p class="sub" id="appspendmeta" style="margin:0 0 8px"></p>
+      <table id="appSpend"><thead><tr><th>App</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 
   </div>
@@ -487,6 +495,8 @@ async function load() {
   document.getElementById('modelspendmeta').textContent = (ms.uniqueModels||0) + ' models · $' + (ms.totalCostUsd||0) + ' total';
   const mst = document.querySelector('#modelSpend tbody');
   mst.innerHTML = (ms.rows||[]).map(r =>
+    '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.percent+'</td></tr>'
+  ).join('') || '<tr><td colspan="5">no allowed spend</td></tr>';
 
   const ts = s.teamSpend || { totalCostUsd:0, uniqueTeams:0, rows:[] };
   document.getElementById('teamspendmeta').textContent = (ts.uniqueTeams||0) + ' teams · $' + (ts.totalCostUsd||0) + ' total';
@@ -494,7 +504,12 @@ async function load() {
   tst.innerHTML = (ts.rows||[]).map(r =>
     '<tr><td>'+esc(r.teamId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.percent+'</td></tr>'
   ).join('') || '<tr><td colspan="5">no allowed spend</td></tr>';
-    '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.percent+'</td></tr>'
+
+  const as = s.appSpend || { totalCostUsd:0, uniqueApps:0, rows:[] };
+  document.getElementById('appspendmeta').textContent = (as.uniqueApps||0) + ' apps · $' + (as.totalCostUsd||0) + ' total';
+  const ast = document.querySelector('#appSpend tbody');
+  ast.innerHTML = (as.rows||[]).map(r =>
+    '<tr><td>'+esc(r.appId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.percent+'</td></tr>'
   ).join('') || '<tr><td colspan="5">no allowed spend</td></tr>';
 
   const tb = document.querySelector('#teams tbody');

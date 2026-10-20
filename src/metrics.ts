@@ -57,6 +57,9 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_team_unique_teams Unique team ids with allowed spend",
     "# TYPE tokenpulse_team_unique_teams gauge",
     `tokenpulse_team_unique_teams ${summary.teamSpend?.uniqueTeams ?? 0}`,
+    "# HELP tokenpulse_app_unique_apps Unique app ids with allowed spend",
+    "# TYPE tokenpulse_app_unique_apps gauge",
+    `tokenpulse_app_unique_apps ${summary.appSpend?.uniqueApps ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";

@@ -1377,3 +1377,35 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+
+## Decisions (Session 68 — app spend status)
+
+- `appSpendStatus()` aggregates allowed events by appId: calls, tokens, estimatedCostUsd, percent of total.
+- Admin summary exposes `appSpend`. Dashboard renders an App spend table (ranked with %).
+- Prometheus metric `tokenpulse_app_unique_apps`. CLI: `--app-spend`.
+- Does not change attribution defaults or any block policy. Notes and blocks excluded.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 68 — 2026-10-20)
+
+App spend ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 68 — top apps by estimated spend on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, burn-rate, alerts, block reasons, model/team/app spend, and optionally the metrics endpoint. See `docs/observability.md`.
+2. Personalized emails / first `PILOT.md` conversation.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 68 adds visibility into which apps drive estimated spend so operators can prioritize app-level cost controls. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```

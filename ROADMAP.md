@@ -79,3 +79,5 @@
 
 - [x] Model spend status (top models by estimated USD; admin + dashboard + CLI + metrics)
 - [x] Team spend status (top teams by estimated USD; admin + dashboard + CLI + metrics)
+
+- [x] App spend status (top apps by estimated USD; admin + dashboard + CLI + metrics)

@@ -1,4 +1,5 @@
 import { teamSpendStatus } from "./teamSpend.js";
+import { appSpendStatus } from "./appSpend.js";
 import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verifyChain } from "./ledger.js";
 import { enableClientKey, issueClientKey, keyStatus, revokeClientKey, rotateClientKey } from "./keys.js";
 import { isSafeRequestId } from "./correlation.js";
@@ -54,6 +55,10 @@ async function main() {
   }
   if (args.includes("--team-spend")) {
     console.log(JSON.stringify(teamSpendStatus(events), null, 2));
+    return;
+  }
+  if (args.includes("--app-spend")) {
+    console.log(JSON.stringify(appSpendStatus(events), null, 2));
     return;
   }
   if (args.includes("--alerts")) {
