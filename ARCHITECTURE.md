@@ -577,3 +577,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--model-spend`.
 - Notes and blocks are excluded. Does not change pricing or policy.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Team spend status (Session 67)
+
+- `teamSpendStatus()` ranks allowed events by estimated costUsd, teamId.
+- Admin summary exposes `teamSpend` (totalCostUsd, uniqueTeams, top rows with calls/tokens/cost/percent).
+- Dashboard renders a Team spend table.
+- Prometheus metric `tokenpulse_team_unique_teams`.
+- CLI: `--team-spend`.
+- Notes and blocks are excluded. Does not change attribution or policy.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

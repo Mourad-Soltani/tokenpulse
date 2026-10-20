@@ -54,6 +54,9 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_model_unique_models Unique client model ids with allowed spend",
     "# TYPE tokenpulse_model_unique_models gauge",
     `tokenpulse_model_unique_models ${summary.modelSpend?.uniqueModels ?? 0}`,
+    "# HELP tokenpulse_team_unique_teams Unique team ids with allowed spend",
+    "# TYPE tokenpulse_team_unique_teams gauge",
+    `tokenpulse_team_unique_teams ${summary.teamSpend?.uniqueTeams ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";

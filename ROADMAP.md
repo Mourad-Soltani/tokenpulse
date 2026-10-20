@@ -78,3 +78,4 @@
 - [x] Block reasons status (top policy ids on blocks; admin + dashboard + CLI + metrics)
 
 - [x] Model spend status (top models by estimated USD; admin + dashboard + CLI + metrics)
+- [x] Team spend status (top teams by estimated USD; admin + dashboard + CLI + metrics)

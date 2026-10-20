@@ -1,3 +1,4 @@
+import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { blockReasonsStatus, type BlockReasonsStatus } from "./blockReasons.js";
 import { modelSpendStatus, type ModelSpendStatus } from "./modelSpend.js";
 import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
@@ -53,6 +54,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   burnRate: BurnRateStatus;
   blockReasons: BlockReasonsStatus;
   modelSpend: ModelSpendStatus;
+  teamSpend: TeamSpendStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -104,6 +106,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     burnRate: await burnRateStatus(),
     blockReasons: blockReasonsStatus(events),
     modelSpend: modelSpendStatus(events),
+    teamSpend: teamSpendStatus(events),
   };
 }
 
@@ -255,6 +258,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Model spend</h2>
       <p class="sub" id="modelspendmeta" style="margin:0 0 8px"></p>
       <table id="modelSpend"><thead><tr><th>Model</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Team spend</h2>
+      <p class="sub" id="teamspendmeta" style="margin:0 0 8px"></p>
+      <table id="teamSpend"><thead><tr><th>Team</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 
   </div>
@@ -479,6 +487,13 @@ async function load() {
   document.getElementById('modelspendmeta').textContent = (ms.uniqueModels||0) + ' models · $' + (ms.totalCostUsd||0) + ' total';
   const mst = document.querySelector('#modelSpend tbody');
   mst.innerHTML = (ms.rows||[]).map(r =>
+
+  const ts = s.teamSpend || { totalCostUsd:0, uniqueTeams:0, rows:[] };
+  document.getElementById('teamspendmeta').textContent = (ts.uniqueTeams||0) + ' teams · $' + (ts.totalCostUsd||0) + ' total';
+  const tst = document.querySelector('#teamSpend tbody');
+  tst.innerHTML = (ts.rows||[]).map(r =>
+    '<tr><td>'+esc(r.teamId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.percent+'</td></tr>'
+  ).join('') || '<tr><td colspan="5">no allowed spend</td></tr>';
     '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.percent+'</td></tr>'
   ).join('') || '<tr><td colspan="5">no allowed spend</td></tr>';
 
