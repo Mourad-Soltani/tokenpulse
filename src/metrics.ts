@@ -51,6 +51,9 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_block_unique_policies Unique policy ids observed on block events",
     "# TYPE tokenpulse_block_unique_policies gauge",
     `tokenpulse_block_unique_policies ${summary.blockReasons?.uniquePolicies ?? 0}`,
+    "# HELP tokenpulse_model_unique_models Unique client model ids with allowed spend",
+    "# TYPE tokenpulse_model_unique_models gauge",
+    `tokenpulse_model_unique_models ${summary.modelSpend?.uniqueModels ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";

@@ -1,4 +1,5 @@
 import { blockReasonsStatus, type BlockReasonsStatus } from "./blockReasons.js";
+import { modelSpendStatus, type ModelSpendStatus } from "./modelSpend.js";
 import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
 import { burnRateStatus, type BurnRateStatus } from "./burnRate.js";
 import { discoveryStatus, unattributedStatus, type DiscoveryStatus, type UnattributedStatus } from "./discovery.js";
@@ -51,6 +52,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   upstreamHealth: UpstreamHealthStatus;
   burnRate: BurnRateStatus;
   blockReasons: BlockReasonsStatus;
+  modelSpend: ModelSpendStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -101,6 +103,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     upstreamHealth: upstreamHealthStatus(events),
     burnRate: await burnRateStatus(),
     blockReasons: blockReasonsStatus(events),
+    modelSpend: modelSpendStatus(events),
   };
 }
 
@@ -247,6 +250,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Block reasons</h2>
       <p class="sub" id="blockreasonsmeta" style="margin:0 0 8px"></p>
       <table id="blockReasons"><thead><tr><th>Policy</th><th>Count</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Model spend</h2>
+      <p class="sub" id="modelspendmeta" style="margin:0 0 8px"></p>
+      <table id="modelSpend"><thead><tr><th>Model</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 
   </div>
@@ -466,6 +474,13 @@ async function load() {
   brst.innerHTML = (brs.rows||[]).map(r =>
     '<tr><td>'+esc(r.policyId)+'</td><td>'+r.count+'</td><td>'+r.percent+'</td></tr>'
   ).join('') || '<tr><td colspan="3">no blocks</td></tr>';
+
+  const ms = s.modelSpend || { totalCostUsd:0, uniqueModels:0, rows:[] };
+  document.getElementById('modelspendmeta').textContent = (ms.uniqueModels||0) + ' models · $' + (ms.totalCostUsd||0) + ' total';
+  const mst = document.querySelector('#modelSpend tbody');
+  mst.innerHTML = (ms.rows||[]).map(r =>
+    '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.percent+'</td></tr>'
+  ).join('') || '<tr><td colspan="5">no allowed spend</td></tr>';
 
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>

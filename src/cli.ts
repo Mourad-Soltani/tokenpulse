@@ -4,6 +4,7 @@ import { isSafeRequestId } from "./correlation.js";
 import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./export.js";
 import { discoveryStatus, unattributedStatus } from "./discovery.js";
 import { blockReasonsStatus } from "./blockReasons.js";
+import { modelSpendStatus } from "./modelSpend.js";
 import { adminSummary } from "./admin.js";
 import { postAlerts, webhookStatus } from "./notify.js";
 
@@ -44,6 +45,10 @@ async function main() {
 
   if (args.includes("--block-reasons")) {
     console.log(JSON.stringify(blockReasonsStatus(events), null, 2));
+    return;
+  }
+  if (args.includes("--model-spend")) {
+    console.log(JSON.stringify(modelSpendStatus(events), null, 2));
     return;
   }
   if (args.includes("--alerts")) {

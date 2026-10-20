@@ -566,3 +566,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - A single event may contribute to multiple rows when it carries several policyIds.
 - Does not change any block policy. Notes and allows are excluded. No raw prompts.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Model spend status (Session 66)
+
+- `modelSpendStatus()` ranks allowed events by estimated costUsd, client model id.
+- Admin summary exposes `modelSpend` (totalCostUsd, uniqueModels, top rows with calls/tokens/cost/percent).
+- Dashboard renders a Model spend table.
+- Prometheus metric `tokenpulse_model_unique_models`.
+- CLI: `--model-spend`.
+- Notes and blocks are excluded. Does not change pricing or policy.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
