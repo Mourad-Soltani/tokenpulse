@@ -63,3 +63,15 @@ Show latency p95, upstream success rate, and alerts count.
 See `docs/observability.md` for a Prometheus scrape example and a basic Grafana dashboard JSON (`docs/grafana-tokenpulse.json`).
 
 On a Railway public mock URL the same endpoint works with the runtime token. Generate traffic first so percentiles are non-zero.
+
+## 7. Spend ranking (Session 68 — show in recording)
+
+After traffic, the dashboard shows ranked tables:
+
+- **Model spend** — top models by estimated USD
+- **Team spend** — top teams by estimated USD  
+- **App spend** — top apps by estimated USD
+
+CLI equivalents: `--model-spend`, `--team-spend`, `--app-spend`.
+
+These appear after the demo script has generated allow + block events. Useful for the recording to show “who is driving cost.”

@@ -81,3 +81,4 @@
 - [x] Team spend status (top teams by estimated USD; admin + dashboard + CLI + metrics)
 
 - [x] App spend status (top apps by estimated USD; admin + dashboard + CLI + metrics)
+- [x] Personalized Tier A outreach drafts (`OUTREACH_DRAFTS.md`)

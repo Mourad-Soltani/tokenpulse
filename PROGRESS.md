@@ -1409,3 +1409,34 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+
+## Decisions (Session 69 — outreach drafts)
+
+- Added `OUTREACH_DRAFTS.md` with ready-to-personalize emails for Palo Alto, Cisco/Splunk, and CrowdStrike (Tier A).
+- Drafts follow `OUTREACH.md` rules: short, technical, adjacent value, no bulk, no secrets, no $1B language.
+- Still gated on operator-recorded DEMO (Railway mock URL preferred). Do not send until recording exists.
+- DEMO.md updated with a short note on the spend ranking tables for the recording script.
+
+## Current Status (Session 69 — 2026-10-21)
+
+Personalized Tier A drafts prepared. Product unchanged from Session 68. Operator Railway deploy + DEMO recording remains the hard gate before any outreach.
+
+- [x] Session 69 — personalized outreach drafts for top Tier A buyers (`OUTREACH_DRAFTS.md`) + DEMO.md spend ranking note
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, burn-rate, alerts, block reasons, model/team/app spend, and optionally the metrics endpoint. See `docs/observability.md` and updated `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 69 prepares sale outreach drafts. Automation cannot log into Railway or record the demo. Do not paste Railway, provider, or client-key secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```
