@@ -1472,3 +1472,34 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+## Decisions (Session 71 — README sync + MVP completeness note)
+
+- README “What works today” header updated from Session 63 to Session 70.
+- Added explicit rows for block-reasons status and model/team/app spend ranking (already shipped in Sessions 65–68).
+- No code changes. Product remains feature-complete for the self-hosted MVP scope defined in ARCHITECTURE.md and ROADMAP.md.
+- Operator Railway mock deploy + DEMO.md recording remains the hard gate before any outreach.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Current Status (Session 71 — 2026-10-22)
+
+README synchronized with latest shipped capabilities. Sale materials unchanged. Operator still must deploy the mock demo and record DEMO.md.
+
+- [x] Session 71 — README “What works today” updated to Session 70; confirmed MVP feature completeness for sale packaging
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app spend, and optionally the metrics endpoint. See `docs/observability.md` and updated `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 71 is a documentation sync confirming the MVP is ready for the operator demo recording step. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```
