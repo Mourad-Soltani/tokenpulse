@@ -587,3 +587,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--team-spend`.
 - Notes and blocks are excluded. Does not change attribution or policy.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Monthly burn-rate (Session 70)
+
+- `projectBurnRate` also emits `monthlyRows` / `monthlyExhaustWarnCount`.
+- Linear projection of month-to-date allowed spend to the last UTC day of the month.
+- Admin summary and dashboard expose the table. Prometheus gauge `tokenpulse_burn_monthly_exhaust_warn_count`.
+- Does not change hard caps. Live-upstream demo recording remains an operator gate.

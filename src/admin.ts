@@ -252,6 +252,8 @@ export function dashboardHtml(): string {
     <h2 style="margin:0 0 8px;font-size:1rem">Daily burn rate</h2>
     <p class="sub" id="burnmeta"></p>
     <table id="burnRate"><thead><tr><th>Scope</th><th>Id</th><th>Spent</th><th>Cap</th><th>Hours</th><th>Projected</th><th>Status</th></tr></thead><tbody></tbody></table>
+    <p class="sub" id="burnmonthlymeta" style="margin:12px 0 8px"></p>
+    <table id="burnRateMonthly"><thead><tr><th>Scope</th><th>Id</th><th>Spent</th><th>Cap</th><th>Days</th><th>Projected</th><th>Status</th></tr></thead><tbody></tbody></table>
     <div class="card" style="margin-top:16px">
       <h2 style="margin:0 0 8px;font-size:1rem">Block reasons</h2>
       <p class="sub" id="blockreasonsmeta" style="margin:0 0 8px"></p>
@@ -356,7 +358,7 @@ async function load() {
     ['Request id', (s.correlation && s.correlation.header) ? s.correlation.header : 'X-Tokenpulse-Request-Id'],
     ['Chain', (s.ledger && s.ledger.chainOk === false) || s.chainOk === false ? 'broken' : 'ok'],
     ['Upstream %', (s.upstreamHealth && typeof s.upstreamHealth.successRate === 'number') ? s.upstreamHealth.successRate : 100, !!(s.upstreamHealth && s.upstreamHealth.samples > 0 && s.upstreamHealth.successRate < 95)],
-    ['Burn warns', (s.burnRate && s.burnRate.exhaustWarnCount) ? s.burnRate.exhaustWarnCount : 0, !!(s.burnRate && s.burnRate.exhaustWarnCount > 0)]
+    ['Burn warns', ((s.burnRate && s.burnRate.exhaustWarnCount) || 0) + ((s.burnRate && s.burnRate.monthlyExhaustWarnCount) || 0), !!((s.burnRate && (s.burnRate.exhaustWarnCount || s.burnRate.monthlyExhaustWarnCount)))]
   ].map(([k,v,bad]) => '<div class="card">'+k+'<b class="'+(bad?'bad':'')+'">'+v+'</b></div>').join('');
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
   document.getElementById('gwmeta').textContent = (gw.loopback ? 'loopback' : 'non-loopback') + ' · ' + (gw.mockUpstream ? 'mock' : 'live-capable') + ' · ' + (gw.authRequired ? 'auth on' : 'auth off');
@@ -477,12 +479,17 @@ async function load() {
   const uht = document.querySelector('#upstreamHealth tbody');
   const rateCls = (uh.successRate < 95 && uh.samples > 0) ? 'bad' : 'ok';
   uht.innerHTML = '<tr><td>'+(uh.samples||0)+'</td><td>'+(uh.successes||0)+'</td><td class="'+(uh.failures?'bad':'')+'">'+(uh.failures||0)+'</td><td class="'+rateCls+'">'+(uh.successRate||0)+'</td></tr>';
-  const br = s.burnRate || { hoursElapsed:0, exhaustWarnCount:0, rows:[] };
-  document.getElementById('burnmeta').textContent = (br.hoursElapsed||0) + 'h elapsed UTC · ' + (br.exhaustWarnCount||0) + ' projected exhaust';
+  const br = s.burnRate || { hoursElapsed:0, exhaustWarnCount:0, rows:[], monthlyRows:[], monthlyExhaustWarnCount:0 };
+  document.getElementById('burnmeta').textContent = (br.hoursElapsed||0) + 'h elapsed UTC · ' + (br.exhaustWarnCount||0) + ' daily projected exhaust';
   const brt = document.querySelector('#burnRate tbody');
   brt.innerHTML = (br.rows||[]).map(r =>
     '<tr><td>'+r.scope+'</td><td>'+r.id+'</td><td>'+r.spentUsd+'</td><td>'+r.capUsd+'</td><td>'+r.hoursElapsed+'</td><td>'+r.projectedUsd+'</td><td class="'+(r.willExhaust?'bad':'ok')+'">'+(r.willExhaust?'exhaust':'ok')+'</td></tr>'
   ).join('') || '<tr><td colspan="7">no daily caps</td></tr>';
+  document.getElementById('burnmonthlymeta').textContent = (br.monthlyExhaustWarnCount||0) + ' monthly projected exhaust';
+  const brmt = document.querySelector('#burnRateMonthly tbody');
+  brmt.innerHTML = (br.monthlyRows||[]).map(r =>
+    '<tr><td>'+r.scope+'</td><td>'+r.id+'</td><td>'+r.spentUsd+'</td><td>'+r.capUsd+'</td><td>'+r.daysElapsed+'</td><td>'+r.projectedUsd+'</td><td class="'+(r.willExhaust?'bad':'ok')+'">'+(r.willExhaust?'exhaust':'ok')+'</td></tr>'
+  ).join('') || '<tr><td colspan="7">no monthly caps</td></tr>';
 
   const brs = s.blockReasons || { totalBlocks:0, uniquePolicies:0, rows:[] };
   document.getElementById('blockreasonsmeta').textContent = (brs.totalBlocks||0) + ' blocks · ' + (brs.uniquePolicies||0) + ' unique policies';

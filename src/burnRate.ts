@@ -12,12 +12,26 @@ export type BurnRateRow = {
   willExhaust: boolean;
 };
 
+export type MonthlyBurnRateRow = {
+  scope: "team" | "app";
+  id: string;
+  period: "monthly";
+  spentUsd: number;
+  capUsd: number;
+  daysElapsed: number;
+  projectedUsd: number;
+  projectedRatio: number;
+  willExhaust: boolean;
+};
+
 export type BurnRateStatus = {
   version: "tokenpulse-burn-v1";
   day: string;
   hoursElapsed: number;
   rows: BurnRateRow[];
   exhaustWarnCount: number;
+  monthlyRows: MonthlyBurnRateRow[];
+  monthlyExhaustWarnCount: number;
   notes: string;
 };
 
@@ -25,6 +39,15 @@ export function hoursElapsedUtc(now: Date): number {
   const start = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
   const ms = now.getTime() - start;
   return Math.max(0.05, Math.round((ms / 3_600_000) * 100) / 100);
+}
+
+export function daysElapsedUtc(now: Date): number {
+  const dayOfMonth = now.getUTCDate();
+  return Math.max(0.05, Math.round((dayOfMonth - 1 + now.getUTCHours() / 24) * 100) / 100);
+}
+
+function daysInMonthUtc(now: Date): number {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0)).getUTCDate();
 }
 
 /** Pure projection. Operator visibility only — does not change hard caps. */
@@ -48,13 +71,37 @@ export function projectBurnRate(budgets: BudgetStatusRow[], now = new Date()): B
         willExhaust: projected >= b.capUsd,
       };
     });
+
+  const daysElapsed = daysElapsedUtc(now);
+  const daysInMonth = daysInMonthUtc(now);
+  const monthlyFactor = daysInMonth / daysElapsed;
+  const monthlyRows: MonthlyBurnRateRow[] = budgets
+    .filter((b) => b.period === "monthly" && b.capUsd > 0)
+    .map((b) => {
+      const projected = Math.round(b.spentUsd * monthlyFactor * 1_000_000) / 1_000_000;
+      const ratio = Math.round((projected / b.capUsd) * 10_000) / 10_000;
+      return {
+        scope: b.scope,
+        id: b.id,
+        period: "monthly" as const,
+        spentUsd: b.spentUsd,
+        capUsd: b.capUsd,
+        daysElapsed,
+        projectedUsd: projected,
+        projectedRatio: ratio,
+        willExhaust: projected >= b.capUsd,
+      };
+    });
+
   return {
     version: "tokenpulse-burn-v1",
     day: now.toISOString().slice(0, 10),
     hoursElapsed: hours,
     rows,
     exhaustWarnCount: rows.filter((r) => r.willExhaust).length,
-    notes: "Linear projection of today's allowed spend to 24h UTC. Does not change hard caps.",
+    monthlyRows,
+    monthlyExhaustWarnCount: monthlyRows.filter((r) => r.willExhaust).length,
+    notes: "Linear projection of today's allowed spend to 24h UTC and month-to-date to end of UTC month. Does not change hard caps.",
   };
 }
 

@@ -82,3 +82,4 @@
 
 - [x] App spend status (top apps by estimated USD; admin + dashboard + CLI + metrics)
 - [x] Personalized Tier A outreach drafts (`OUTREACH_DRAFTS.md`)
+- [x] Monthly burn-rate projection (admin summary + dashboard + metrics)

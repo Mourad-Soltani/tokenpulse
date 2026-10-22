@@ -75,3 +75,12 @@ After traffic, the dashboard shows ranked tables:
 CLI equivalents: `--model-spend`, `--team-spend`, `--app-spend`.
 
 These appear after the demo script has generated allow + block events. Useful for the recording to show “who is driving cost.”
+
+## 8. Monthly burn-rate (Session 70 — show in recording)
+
+After traffic with monthly caps configured, the dashboard shows a second projection table under Daily burn rate:
+
+- Linear projection of month-to-date allowed spend to end of UTC month
+- Flags caps that will exhaust before month end
+
+Prometheus: `tokenpulse_burn_monthly_exhaust_warn_count`.

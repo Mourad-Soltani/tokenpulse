@@ -68,6 +68,7 @@ Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks
 | Pilot path | Live (`PILOT.md` — $15k/30d offer + reference capture) |
 | Unattributed traffic | Live (default team/app spend on admin + dashboard + `--unattributed`) |
 | Daily burn-rate projection | Live (admin summary + dashboard + metrics) |
+| Monthly burn-rate projection | Live (admin summary + dashboard + metrics) |
 
 ## Quick start
 
