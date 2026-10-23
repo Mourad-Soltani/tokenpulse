@@ -1,3 +1,4 @@
+import { loadPricingOverrides } from "./pricing.js";
 import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { timingSafeEqual } from "node:crypto";
 import { ChatCompletionRequestSchema, EmbeddingRequestSchema, embeddingInputs } from "./types.js";
@@ -865,7 +866,8 @@ export function startAlertPoster(): void {
   setTimeout(tick, 5_000);
 }
 
-export function startGateway(port = listenPort()) {
+export async function startGateway(port = listenPort()) {
+  await loadPricingOverrides();
   const host = listenHost();
   const server = createServer((req, res) => {
     handleRequest(req, res).catch((err) => {
@@ -881,5 +883,5 @@ export function startGateway(port = listenPort()) {
 }
 
 const isMain = process.argv[1]?.endsWith("gateway.ts") || process.argv[1]?.endsWith("gateway.js");
-if (isMain) startGateway();
+if (isMain) startGateway().catch((err) => { console.error(err); process.exit(1); });
 

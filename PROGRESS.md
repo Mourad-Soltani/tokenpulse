@@ -1503,3 +1503,36 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+## Decisions (Session 72 — operator pricing overrides)
+
+- Optional `TOKENPULSE_PRICING_PATH` (default `data/pricing.json`) supplies model → {input, output} USD-per-1M overrides.
+- Merges over the static default table. Invalid/missing file is a no-op.
+- Loaded at gateway start. `pricingStatus` exposes `overrideCount`.
+- `isKnownCatalogModel` uses the runtime table so custom models can leave shadow discovery.
+- Example file committed as `pricing.example.json`. No secrets.
+- Live-upstream demo recording remains an operator gate. Chat-pasted tokens remain unusable.
+
+## Current Status (Session 72 — 2026-10-23)
+
+Operator pricing overrides shipped. Sale materials unchanged. Operator still must deploy the mock demo and record DEMO.md.
+
+- [x] Session 72 — optional pricing catalog overrides via `TOKENPULSE_PRICING_PATH`
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app spend, and optionally the metrics endpoint. See `docs/observability.md` and updated `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 72 adds operator control over the pricing catalog so real deployments can use accurate list prices without code changes. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# optional: TOKENPULSE_PRICING_PATH=./pricing.example.json
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+```

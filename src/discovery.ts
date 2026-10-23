@@ -1,5 +1,6 @@
 import type { UsageEvent } from "./types.js";
-import { PRICING_TABLE } from "./pricing.js";
+import { isKnownCatalogModel } from "./pricing.js";
+export { isKnownCatalogModel };
 
 export type DiscoveryRow = {
   model: string;
@@ -20,14 +21,6 @@ export type DiscoveryStatus = {
   rows: DiscoveryRow[];
   notes: string;
 };
-
-/** True when the model id is in the static pricing catalog (exact or after /). */
-export function isKnownCatalogModel(model: string): boolean {
-  const key = model.toLowerCase();
-  if (PRICING_TABLE[key]) return true;
-  const short = key.split("/").pop() ?? "";
-  return !!PRICING_TABLE[short];
-}
 
 /** Shadow-AI signal: models seen in the ledger that are not in the pricing catalog. */
 export function discoveryStatus(events: UsageEvent[]): DiscoveryStatus {

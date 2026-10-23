@@ -594,3 +594,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Linear projection of month-to-date allowed spend to the last UTC day of the month.
 - Admin summary and dashboard expose the table. Prometheus gauge `tokenpulse_burn_monthly_exhaust_warn_count`.
 - Does not change hard caps. Live-upstream demo recording remains an operator gate.
+
+## Pricing overrides (Session 72)
+
+- Optional file `TOKENPULSE_PRICING_PATH` (default `data/pricing.json`). Example: `pricing.example.json`.
+- JSON object of `model` → `{ input, output }` (USD per 1M tokens). Keys are lowercased.
+- Merges over the static default table. Unknown models still use the fallback (1 / 3).
+- Loaded once at gateway start. `pricingStatus()` reports `overrideCount` and marks overridden rows.
+- `isKnownCatalogModel` follows the runtime table (so overrides can promote custom models out of shadow discovery).
+- Does not change the hard-coded fallback or ledger schema. No secrets in the file.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
