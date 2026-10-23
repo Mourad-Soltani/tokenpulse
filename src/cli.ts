@@ -7,6 +7,7 @@ import { buildFinopsPack, buildSecurityPack, finopsCsv, securityCsv } from "./ex
 import { discoveryStatus, unattributedStatus } from "./discovery.js";
 import { blockReasonsStatus } from "./blockReasons.js";
 import { modelSpendStatus } from "./modelSpend.js";
+import { highCostStatus } from "./highCost.js";
 import { adminSummary } from "./admin.js";
 import { postAlerts, webhookStatus } from "./notify.js";
 
@@ -55,6 +56,10 @@ async function main() {
   }
   if (args.includes("--team-spend")) {
     console.log(JSON.stringify(teamSpendStatus(events), null, 2));
+    return;
+  }
+  if (args.includes("--high-cost")) {
+    console.log(JSON.stringify(highCostStatus(events), null, 2));
     return;
   }
   if (args.includes("--app-spend")) {

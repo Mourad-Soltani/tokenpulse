@@ -604,3 +604,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `isKnownCatalogModel` follows the runtime table (so overrides can promote custom models out of shadow discovery).
 - Does not change the hard-coded fallback or ledger schema. No secrets in the file.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## High-cost request ranking (Session 73)
+
+- `highCostStatus()` returns the top 10 allowed events sorted by estimatedCostUsd descending.
+- Only events with positive estimatedCostUsd. Notes and blocks excluded.
+- Admin summary exposes `highCost`. Dashboard renders a High-cost requests table.
+- CLI `--high-cost`. Prometheus: `tokenpulse_high_cost_top_usd`, `tokenpulse_high_cost_count`.
+- No raw prompts. Does not alter policy or metering.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

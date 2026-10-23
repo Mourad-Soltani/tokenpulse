@@ -1536,3 +1536,37 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # optional: TOKENPULSE_PRICING_PATH=./pricing.example.json
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 ```
+
+## Decisions (Session 73 — high-cost request ranking)
+
+- `highCostStatus()` ranks the top 10 allowed events by `estimatedCostUsd` (positive cost only).
+- Admin summary exposes `highCost`. Dashboard renders a High-cost requests table (time, team, app, model, tokens, USD, requestId).
+- Prometheus metrics: `tokenpulse_high_cost_top_usd` and `tokenpulse_high_cost_count`.
+- CLI: `--high-cost`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 73 — 2026-10-23)
+
+High-cost request ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 73 — top high-cost allowed requests on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app spend, high-cost requests, and optionally the metrics endpoint. See `docs/observability.md` and updated `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 73 adds visibility into the most expensive individual allowed requests so operators can quickly spot outliers. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+# high-cost: npx tsx src/cli.ts --high-cost
+```

@@ -1,5 +1,6 @@
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
+import { highCostStatus, type HighCostStatus } from "./highCost.js";
 import { blockReasonsStatus, type BlockReasonsStatus } from "./blockReasons.js";
 import { modelSpendStatus, type ModelSpendStatus } from "./modelSpend.js";
 import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
@@ -57,6 +58,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   modelSpend: ModelSpendStatus;
   teamSpend: TeamSpendStatus;
   appSpend: AppSpendStatus;
+  highCost: HighCostStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -110,6 +112,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     modelSpend: modelSpendStatus(events),
     teamSpend: teamSpendStatus(events),
     appSpend: appSpendStatus(events),
+    highCost: highCostStatus(events),
   };
 }
 
@@ -273,6 +276,10 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">App spend</h2>
       <p class="sub" id="appspendmeta" style="margin:0 0 8px"></p>
       <table id="appSpend"><thead><tr><th>App</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card">
+      <h2>High-cost requests</h2>
+      <table id="highCost"><thead><tr><th>Time</th><th>Team</th><th>App</th><th>Model</th><th>Tokens</th><th>USD</th><th>Request</th></tr></thead><tbody></tbody></table>
     </div>
 
   </div>
@@ -518,6 +525,14 @@ async function load() {
   ast.innerHTML = (as.rows||[]).map(r =>
     '<tr><td>'+esc(r.appId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.percent+'</td></tr>'
   ).join('') || '<tr><td colspan="5">no allowed spend</td></tr>';
+
+  const hc = s.highCost || { rows: [] };
+  const hct = document.querySelector('#highCost tbody');
+  if (hct) {
+    hct.innerHTML = (hc.rows||[]).map(r =>
+      '<tr><td>'+(r.timestamp||'').slice(0,19)+'</td><td>'+esc(r.teamId)+'</td><td>'+esc(r.appId)+'</td><td>'+esc(r.model)+'</td><td>'+r.totalTokens+'</td><td>'+r.estimatedCostUsd+'</td><td>'+(r.requestId||'')+'</td></tr>'
+    ).join('') || '<tr><td colspan="7">no high-cost requests</td></tr>';
+  }
 
   const tb = document.querySelector('#teams tbody');
   tb.innerHTML = Object.entries(s.byTeam || {}).map(([id,t]) =>

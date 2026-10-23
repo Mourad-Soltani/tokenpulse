@@ -84,3 +84,14 @@ After traffic with monthly caps configured, the dashboard shows a second project
 - Flags caps that will exhaust before month end
 
 Prometheus: `tokenpulse_burn_monthly_exhaust_warn_count`.
+
+## 9. High-cost requests (Session 73 — optional for recording)
+
+After generating traffic, the dashboard shows a **High-cost requests** table:
+
+- Top 10 allowed events ranked by estimated USD
+- Columns: time, team, app, model, tokens, USD, requestId
+
+CLI: `npx tsx src/cli.ts --high-cost`
+
+Useful to demonstrate outlier spend visibility without raw prompts.

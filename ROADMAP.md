@@ -84,3 +84,4 @@
 - [x] Personalized Tier A outreach drafts (`OUTREACH_DRAFTS.md`)
 - [x] Monthly burn-rate projection (admin summary + dashboard + metrics)
 - [x] Operator pricing overrides (`TOKENPULSE_PRICING_PATH` / `pricing.example.json`)
+- [x] High-cost request ranking (top allowed by USD; admin + dashboard + CLI + metrics)
