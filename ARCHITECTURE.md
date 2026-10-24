@@ -633,3 +633,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - No raw prompts. Does not alter policy or metering.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+
+
+## Daily spend status (Session 78)
+
+- `dailySpendStatus()` aggregates allowed events by UTC day (YYYY-MM-DD from timestamp).
+- Returns the most recent N days present (default 7), ordered chronologically.
+- Admin summary exposes `dailySpend`. Dashboard renders a Daily spend table (day, calls, tokens, USD).
+- CLI: `--daily-spend`.
+- Notes and blocks excluded. Does not change metering or policy.
+- Complements Session 76 high-token ranking for richer demo recordings.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

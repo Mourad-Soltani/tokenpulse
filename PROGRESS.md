@@ -1707,3 +1707,37 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # high-cost: npx tsx src/cli.ts --high-cost
 # slow: npx tsx src/cli.ts --slow
 ```
+
+
+## Decisions (Session 78 — daily spend status)
+
+- `dailySpendStatus()` groups allowed events by UTC day and returns the most recent 7 days present (chronological).
+- Admin summary includes `dailySpend`. Dashboard renders a Daily spend table.
+- CLI `--daily-spend`.
+- Notes and blocks excluded. No raw prompts. Does not change policy or metering.
+- Complements the Session 76 high-token ranking.
+- Operator Railway deploy + DEMO recording remains the hard gate before outreach.
+- Chat-pasted tokens remain unusable. No secrets in git or chat.
+
+## Current Status (Session 78 — 2026-10-24)
+
+Daily spend visibility shipped (after concurrent Session 76/77). Sale materials unchanged. Operator still must deploy the mock demo and record DEMO.md.
+
+- [x] Session 78 — daily spend status (admin summary + dashboard table + CLI `--daily-spend`)
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily spend, high-cost + slow + high-token requests, and optionally the metrics endpoint.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 78 adds daily spend ranking for richer demo recordings. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# daily: npx tsx src/cli.ts --daily-spend
+```
