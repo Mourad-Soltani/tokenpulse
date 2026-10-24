@@ -1604,3 +1604,37 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 # slow: npx tsx src/cli.ts --slow
 ```
+
+## Decisions (Session 75 — project validation)
+
+- Full test suite: **138/138 pass** (including Session 74 `slowRequests` and Session 73 `highCost`).
+- Code integrations verified: `src/slowRequests.ts`, admin summary + dashboard table, CLI `--slow`, Prometheus `tokenpulse_slow_top_ms` / `tokenpulse_slow_count`.
+- Sale / pilot artifacts present: `SALE.md`, `BUYERS.md`, `OUTREACH.md`, `OUTREACH_DRAFTS.md`, `DEMO.md`, `LANDING.md`, `PILOT.md`, `PROOF.md`, `Dockerfile`, `compose.pilot.yaml`, `railway.toml`.
+- Gateway health smoke: mock bind responds `200` on `/health`.
+- README capability table bumped to Session 74 and lists high-cost + slow ranking.
+- No product policy changes. No secrets in git or chat.
+- Operator Railway deploy + DEMO recording remains the hard gate before outreach.
+
+## Current Status (Session 75 — 2026-10-24)
+
+Project validation passed. MVP + sale pack intact. Operator still must deploy mock demo and record `DEMO.md`.
+
+- [x] Session 75 — full suite green (138 tests) + README Session 74 sync + artifact inventory
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app spend, high-cost + slow requests, and optionally the metrics endpoint.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 75 is validation-only: tests green, Session 74 integrations confirmed, README synced. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# slow: npx tsx src/cli.ts --slow
+# high-cost: npx tsx src/cli.ts --high-cost
+```
