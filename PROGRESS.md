@@ -1673,3 +1673,37 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # high-cost: npx tsx src/cli.ts --high-cost
 # slow: npx tsx src/cli.ts --slow
 ```
+
+## Decisions (Session 77 — CI workflow + public package-lock)
+
+- Added `.github/workflows/ci.yml`: on push/PR to main, Node 22, `npm ci` + `npm test`.
+- Regenerated `package-lock.json` against the public npm registry so CI and fresh installs are reliable (prior internal-registry entries caused fetch failures).
+- README capability header confirmed at Session 76 (includes high-token ranking).
+- Full suite: **140/140 pass**.
+- No product policy or ledger changes.
+- Operator Railway deploy + DEMO recording remains the hard gate before outreach. No secrets in git or chat.
+
+## Current Status (Session 77 — 2026-10-24)
+
+CI added. MVP + sale pack intact. Operator still must deploy mock demo and record `DEMO.md`.
+
+- [x] Session 77 — GitHub Actions CI + public package-lock
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app spend, high-cost + slow + high-token requests, and optionally the metrics endpoint.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 77 adds CI so every push is validated automatically. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# token-volume: npx tsx src/cli.ts --token-volume
+# high-cost: npx tsx src/cli.ts --high-cost
+# slow: npx tsx src/cli.ts --slow
+```
