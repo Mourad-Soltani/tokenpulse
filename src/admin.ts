@@ -1,6 +1,7 @@
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
 import { highCostStatus, type HighCostStatus } from "./highCost.js";
+import { slowRequestStatus, type SlowRequestStatus } from "./slowRequests.js";
 import { blockReasonsStatus, type BlockReasonsStatus } from "./blockReasons.js";
 import { modelSpendStatus, type ModelSpendStatus } from "./modelSpend.js";
 import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
@@ -59,6 +60,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   teamSpend: TeamSpendStatus;
   appSpend: AppSpendStatus;
   highCost: HighCostStatus;
+  slowRequests: SlowRequestStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -113,6 +115,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     teamSpend: teamSpendStatus(events),
     appSpend: appSpendStatus(events),
     highCost: highCostStatus(events),
+    slowRequests: slowRequestStatus(events),
   };
 }
 
@@ -281,6 +284,10 @@ export function dashboardHtml(): string {
       <h2>High-cost requests</h2>
       <table id="highCost"><thead><tr><th>Time</th><th>Team</th><th>App</th><th>Model</th><th>Tokens</th><th>USD</th><th>Request</th></tr></thead><tbody></tbody></table>
     </div>
+    <div class="card">
+      <h2>Slow requests</h2>
+      <table id="slowRequests"><thead><tr><th>Time</th><th>Team</th><th>App</th><th>Model</th><th>Latency ms</th><th>Tokens</th><th>USD</th><th>Request</th></tr></thead><tbody></tbody></table>
+    </div>
 
   </div>
   <div class="card" style="margin-top:16px">
@@ -391,7 +398,7 @@ async function load() {
     const idleCls = k.idle ? 'bad' : 'ok';
     const expCls = k.expiringSoon ? 'bad' : 'ok';
     return '<tr><td>'+k.id+'</td><td>'+k.teamId+'</td><td>'+k.appId+'</td><td class="'+cls+'">'+st+'</td><td>'+(k.expiresAt || '—')+'</td><td>'+(k.calls||0)+'</td><td>'+(k.lastSeenAt || '—')+'</td><td class="'+idleCls+'">'+(k.idle?'warn':'ok')+'</td><td class="'+expCls+'">'+(k.expiringSoon?'warn':'ok')+'</td></tr>';
-  }).join('') || '<tr><td colspan="8">no client keys configured</td></tr>';
+  }).join('') || '<tr><td colspan=\"8\">no client keys configured</td></tr>';
   const attr = s.attribution || { version:'tokenpulse-attribution-v1', storesRawPrompts:false, fieldCount:2, fields:[], notes:'' };
   document.getElementById('attrmeta').textContent = attr.version + ' · ' + (attr.fieldCount||0) + ' fields · ' + (attr.notes||'');
   const at = document.querySelector('#attribution tbody');
@@ -527,6 +534,13 @@ async function load() {
   ).join('') || '<tr><td colspan="5">no allowed spend</td></tr>';
 
   const hc = s.highCost || { rows: [] };
+  const sr = s.slowRequests || { rows: [] };
+  const srt = document.querySelector("#slowRequests tbody");
+  if (srt) {
+    srt.innerHTML = (sr.rows||[]).map(r =>
+      "<tr><td>"+(r.timestamp||"").slice(0,19)+"</td><td>"+esc(r.teamId)+"</td><td>"+esc(r.appId)+"</td><td>"+esc(r.model)+"</td><td>"+r.latencyMs+"</td><td>"+r.totalTokens+"</td><td>"+r.estimatedCostUsd+"</td><td>"+(r.requestId||"")+"</td></tr>"
+    ).join("") || "<tr><td colspan=\"8\">no slow requests</td></tr>";
+  }
   const hct = document.querySelector('#highCost tbody');
   if (hct) {
     hct.innerHTML = (hc.rows||[]).map(r =>

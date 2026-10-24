@@ -613,3 +613,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI `--high-cost`. Prometheus: `tokenpulse_high_cost_top_usd`, `tokenpulse_high_cost_count`.
 - No raw prompts. Does not alter policy or metering.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Slow request ranking (Session 74)
+
+- `slowRequestStatus()` returns the top 10 allowed events sorted by latencyMs descending.
+- Only events with positive latencyMs. Notes and blocks excluded.
+- Admin summary exposes `slowRequests`. Dashboard renders a Slow requests table (time, team, app, model, latency ms, tokens, USD, requestId).
+- CLI `--slow`. Prometheus: `tokenpulse_slow_top_ms`, `tokenpulse_slow_count`.
+- No raw prompts. Does not alter policy or metering.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

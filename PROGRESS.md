@@ -1570,3 +1570,37 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
 # high-cost: npx tsx src/cli.ts --high-cost
 ```
+
+## Decisions (Session 74 — slow request ranking)
+
+- `slowRequestStatus()` ranks the top 10 allowed events by `latencyMs` (positive latency only).
+- Admin summary exposes `slowRequests`. Dashboard renders a Slow requests table (time, team, app, model, latency ms, tokens, USD, requestId).
+- Prometheus metrics: `tokenpulse_slow_top_ms` and `tokenpulse_slow_count`.
+- CLI: `--slow`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 74 — 2026-10-24)
+
+Slow request ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 74 — top slow allowed requests on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app spend, high-cost + slow requests, and optionally the metrics endpoint. See `docs/observability.md` and updated `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 74 adds visibility into the slowest individual allowed requests so operators can quickly spot latency outliers. Automation cannot log into Railway. Do not paste Railway, provider, or client-key secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# scrape: curl -H "Authorization: Bearer dev-local-token" http://127.0.0.1:8788/v1/admin/metrics
+# slow: npx tsx src/cli.ts --slow
+```

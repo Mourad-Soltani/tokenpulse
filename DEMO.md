@@ -95,3 +95,13 @@ After generating traffic, the dashboard shows a **High-cost requests** table:
 CLI: `npx tsx src/cli.ts --high-cost`
 
 Useful to demonstrate outlier spend visibility without raw prompts.
+
+## 10. Slow requests (Session 74 — optional for recording)
+
+After generating traffic, the dashboard shows a **Slow requests** table:
+- Time, team, app, model, latency ms, tokens, USD, request id
+- Top 10 allowed events ranked by latencyMs (positive only)
+
+CLI: `npx tsx src/cli.ts --slow`
+
+Use this to call out latency outliers during the recording. No raw prompts appear.

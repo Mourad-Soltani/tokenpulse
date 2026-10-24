@@ -8,6 +8,7 @@ import { discoveryStatus, unattributedStatus } from "./discovery.js";
 import { blockReasonsStatus } from "./blockReasons.js";
 import { modelSpendStatus } from "./modelSpend.js";
 import { highCostStatus } from "./highCost.js";
+import { slowRequestStatus } from "./slowRequests.js";
 import { adminSummary } from "./admin.js";
 import { postAlerts, webhookStatus } from "./notify.js";
 
@@ -59,6 +60,10 @@ async function main() {
     return;
   }
   if (args.includes("--high-cost")) {
+  if (args.includes("--slow")) {
+    console.log(JSON.stringify(slowRequestStatus(events), null, 2));
+    return;
+  }
     console.log(JSON.stringify(highCostStatus(events), null, 2));
     return;
   }
