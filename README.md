@@ -16,7 +16,7 @@ Enterprises are losing control of AI cost and data:
 
 Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks before egress, append-only usage ledger, exportable FinOps and security packs.
 
-## What works today (Session 74)
+## What works today (Session 76)
 
 | Capability | Status |
 |------------|--------|
@@ -56,6 +56,7 @@ Tokenpulse is the gateway + ledger layer: OpenAI-compatible proxy, policy checks
 | Prometheus metrics | Live (`GET /v1/admin/metrics`; see `docs/observability.md` + Grafana JSON) |
 | High-cost request ranking | Live (top allowed by USD; admin + dashboard + CLI + metrics) |
 | Slow request ranking | Live (top allowed by latencyMs; admin + dashboard + CLI + metrics) |
+| High-token request ranking | Live (top allowed by totalTokens; admin + dashboard + CLI + metrics) |
 | Policy pipeline status | Live (admin summary + dashboard) |
 | Attribution header status | Live (admin summary + dashboard) |
 | Client key binding | Live (`TOKENPULSE_KEYS_PATH`, SHA-256, header override off, idle + expiry warns) |

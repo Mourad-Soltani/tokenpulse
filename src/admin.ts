@@ -2,6 +2,7 @@ import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
 import { highCostStatus, type HighCostStatus } from "./highCost.js";
 import { slowRequestStatus, type SlowRequestStatus } from "./slowRequests.js";
+import { tokenVolumeStatus, type TokenVolumeStatus } from "./tokenVolume.js";
 import { blockReasonsStatus, type BlockReasonsStatus } from "./blockReasons.js";
 import { modelSpendStatus, type ModelSpendStatus } from "./modelSpend.js";
 import { upstreamHealthStatus, type UpstreamHealthStatus } from "./upstreamHealth.js";
@@ -61,6 +62,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   appSpend: AppSpendStatus;
   highCost: HighCostStatus;
   slowRequests: SlowRequestStatus;
+  tokenVolume: TokenVolumeStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -116,6 +118,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     appSpend: appSpendStatus(events),
     highCost: highCostStatus(events),
     slowRequests: slowRequestStatus(events),
+    tokenVolume: tokenVolumeStatus(events),
   };
 }
 
@@ -287,6 +290,10 @@ export function dashboardHtml(): string {
     <div class="card">
       <h2>Slow requests</h2>
       <table id="slowRequests"><thead><tr><th>Time</th><th>Team</th><th>App</th><th>Model</th><th>Latency ms</th><th>Tokens</th><th>USD</th><th>Request</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card">
+      <h2>High-token requests</h2>
+      <table id="tokenVolume"><thead><tr><th>Time</th><th>Team</th><th>App</th><th>Model</th><th>Tokens</th><th>USD</th><th>Request</th></tr></thead><tbody></tbody></table>
     </div>
 
   </div>
@@ -535,6 +542,7 @@ async function load() {
 
   const hc = s.highCost || { rows: [] };
   const sr = s.slowRequests || { rows: [] };
+  const tv = s.tokenVolume || { rows: [] };
   const srt = document.querySelector("#slowRequests tbody");
   if (srt) {
     srt.innerHTML = (sr.rows||[]).map(r =>
@@ -546,6 +554,12 @@ async function load() {
     hct.innerHTML = (hc.rows||[]).map(r =>
       '<tr><td>'+(r.timestamp||'').slice(0,19)+'</td><td>'+esc(r.teamId)+'</td><td>'+esc(r.appId)+'</td><td>'+esc(r.model)+'</td><td>'+r.totalTokens+'</td><td>'+r.estimatedCostUsd+'</td><td>'+(r.requestId||'')+'</td></tr>'
     ).join('') || '<tr><td colspan="7">no high-cost requests</td></tr>';
+  }
+  const tvt = document.querySelector('#tokenVolume tbody');
+  if (tvt) {
+    tvt.innerHTML = (tv.rows||[]).map(r =>
+      '<tr><td>'+(r.timestamp||'').slice(0,19)+'</td><td>'+esc(r.teamId)+'</td><td>'+esc(r.appId)+'</td><td>'+esc(r.model)+'</td><td>'+r.totalTokens+'</td><td>'+r.estimatedCostUsd+'</td><td>'+(r.requestId||'')+'</td></tr>'
+    ).join('') || '<tr><td colspan="7">no high-token requests</td></tr>';
   }
 
   const tb = document.querySelector('#teams tbody');

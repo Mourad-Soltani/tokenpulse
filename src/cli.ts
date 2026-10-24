@@ -9,6 +9,7 @@ import { blockReasonsStatus } from "./blockReasons.js";
 import { modelSpendStatus } from "./modelSpend.js";
 import { highCostStatus } from "./highCost.js";
 import { slowRequestStatus } from "./slowRequests.js";
+import { tokenVolumeStatus } from "./tokenVolume.js";
 import { adminSummary } from "./admin.js";
 import { postAlerts, webhookStatus } from "./notify.js";
 
@@ -60,11 +61,15 @@ async function main() {
     return;
   }
   if (args.includes("--high-cost")) {
+    console.log(JSON.stringify(highCostStatus(events), null, 2));
+    return;
+  }
   if (args.includes("--slow")) {
     console.log(JSON.stringify(slowRequestStatus(events), null, 2));
     return;
   }
-    console.log(JSON.stringify(highCostStatus(events), null, 2));
+  if (args.includes("--token-volume")) {
+    console.log(JSON.stringify(tokenVolumeStatus(events), null, 2));
     return;
   }
   if (args.includes("--app-spend")) {

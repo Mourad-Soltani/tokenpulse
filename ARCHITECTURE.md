@@ -622,3 +622,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI `--slow`. Prometheus: `tokenpulse_slow_top_ms`, `tokenpulse_slow_count`.
 - No raw prompts. Does not alter policy or metering.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## High-token request ranking (Session 76)
+
+- `tokenVolumeStatus()` returns the top 10 allowed events sorted by totalTokens descending.
+- Only events with positive totalTokens. Notes and blocks excluded.
+- Admin summary exposes `tokenVolume`. Dashboard renders a High-token requests table (time, team, app, model, tokens, USD, requestId).
+- CLI `--token-volume`. Prometheus: `tokenpulse_token_volume_top_tokens`, `tokenpulse_token_volume_count`.
+- No raw prompts. Does not alter policy or metering.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+

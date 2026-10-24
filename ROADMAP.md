@@ -86,3 +86,4 @@
 - [x] Operator pricing overrides (`TOKENPULSE_PRICING_PATH` / `pricing.example.json`)
 - [x] High-cost request ranking (top allowed by USD; admin + dashboard + CLI + metrics)
 - [x] Slow request ranking (top allowed by latencyMs; admin + dashboard + CLI + metrics)
+- [x] High-token request ranking (top allowed by totalTokens; admin + dashboard + CLI + metrics)

@@ -1638,3 +1638,38 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # slow: npx tsx src/cli.ts --slow
 # high-cost: npx tsx src/cli.ts --high-cost
 ```
+
+## Decisions (Session 76 — high-token request ranking)
+
+- `tokenVolumeStatus()` ranks the top 10 allowed events by `totalTokens` (positive tokens only).
+- Admin summary exposes `tokenVolume`. Dashboard renders a High-token requests table (time, team, app, model, tokens, USD, requestId).
+- Prometheus metrics: `tokenpulse_token_volume_top_tokens` and `tokenpulse_token_volume_count`.
+- CLI: `--token-volume`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 76 — 2026-10-24)
+
+High-token request ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 76 — top high-token allowed requests on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app spend, high-cost + slow + high-token requests, and optionally the metrics endpoint.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 76 adds high-token request ranking parallel to high-cost and slow. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# token-volume: npx tsx src/cli.ts --token-volume
+# high-cost: npx tsx src/cli.ts --high-cost
+# slow: npx tsx src/cli.ts --slow
+```
