@@ -667,3 +667,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Complements daily (Session 78) and monthly (Session 80) spend for multi-period CFO visibility.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+## Endpoint spend status (Session 82)
+
+- `endpointSpendStatus()` groups allowed events by endpoint (`chat` default, `embeddings` when `policyIds` contains `endpoint:embeddings`).
+- Admin summary exposes `endpointSpend`. Dashboard renders an Endpoint spend table (endpoint, calls, tokens, USD, %).
+- Prometheus: `tokenpulse_endpoint_unique_endpoints` and `tokenpulse_endpoint_spend_total_usd`.
+- CLI: `--endpoint-spend`.
+- Notes and blocks excluded. Does not change metering or policy.
+- Complements model/team/app spend for endpoint-level FinOps visibility.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+

@@ -1845,3 +1845,39 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # monthly: npx tsx src/cli.ts --monthly-spend
 ```
 
+
+
+## Decisions (Session 82 — endpoint spend ranking)
+
+- `endpointSpendStatus()` classifies allowed events as `embeddings` (policy id `endpoint:embeddings`) or `chat` (default).
+- Admin summary exposes `endpointSpend`. Dashboard renders an Endpoint spend table (endpoint, calls, tokens, USD, %).
+- Prometheus metrics: `tokenpulse_endpoint_unique_endpoints` and `tokenpulse_endpoint_spend_total_usd`.
+- CLI: `--endpoint-spend`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements weekly (Session 81) and model/team/app spend for richer demo recordings.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 82 — 2026-10-25)
+
+Endpoint spend ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 82 — endpoint (chat vs embeddings) allowed spend on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/monthly/endpoint spend, high-cost + slow + high-token requests, and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 82 adds endpoint spend ranking so the demo can show chat vs embeddings cost split (alongside weekly spend from Session 81). Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# endpoint: npx tsx src/cli.ts --endpoint-spend
+# weekly: npx tsx src/cli.ts --weekly-spend
+```

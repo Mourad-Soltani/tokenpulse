@@ -1,3 +1,4 @@
+import { endpointSpendStatus, type EndpointSpendStatus } from "./endpointSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
 import { dailySpendStatus, type DailySpendStatus } from "./dailySpend.js";
@@ -69,6 +70,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   dailySpend: DailySpendStatus;
   monthlySpend: MonthlySpendStatus;
   weeklySpend: WeeklySpendStatus;
+  endpointSpend: EndpointSpendStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -128,6 +130,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     dailySpend: dailySpendStatus(events),
     monthlySpend: monthlySpendStatus(events),
     weeklySpend: weeklySpendStatus(events),
+    endpointSpend: endpointSpendStatus(events),
   };
 }
 
@@ -306,6 +309,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Monthly spend</h2>
       <p class="sub" id="monthlyspendmeta" style="margin:0 0 8px"></p>
       <table id="monthlySpend"><thead><tr><th>Month (UTC)</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Endpoint spend</h2>
+      <p class="sub" id="endpointspendmeta" style="margin:0 0 8px"></p>
+      <table id="endpointSpend"><thead><tr><th>Endpoint</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 <div class="card">
       <h2>High-cost requests</h2>
@@ -592,6 +600,16 @@ async function load() {
     mst.innerHTML = (ms.rows||[]).map(r =>
       '<tr><td>'+esc(r.month)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no monthly spend</td></tr>';
+  }
+
+  const es = s.endpointSpend || { uniqueEndpoints:0, totalCostUsd:0, rows:[] };
+  const esm = document.getElementById('endpointspendmeta');
+  if (esm) esm.textContent = (es.uniqueEndpoints||0) + ' endpoints · $' + (es.totalCostUsd||0) + ' total';
+  const est = document.querySelector('#endpointSpend tbody');
+  if (est) {
+    est.innerHTML = (es.rows||[]).map(r =>
+      '<tr><td>'+esc(r.endpoint)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.pct+'</td></tr>'
+    ).join('') || '<tr><td colspan="5">no endpoint spend</td></tr>';
   }
 
   const hc = s.highCost || { rows: [] };

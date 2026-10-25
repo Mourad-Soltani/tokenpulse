@@ -93,6 +93,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_app_unique_apps Unique app ids with allowed spend",
     "# TYPE tokenpulse_app_unique_apps gauge",
     `tokenpulse_app_unique_apps ${summary.appSpend?.uniqueApps ?? 0}`,
+    "# HELP tokenpulse_endpoint_unique_endpoints Unique endpoints (chat|embeddings) with allowed spend",
+    "# TYPE tokenpulse_endpoint_unique_endpoints gauge",
+    `tokenpulse_endpoint_unique_endpoints ${summary.endpointSpend?.uniqueEndpoints ?? 0}`,
+    "# HELP tokenpulse_endpoint_spend_total_usd Total estimated USD on allowed events by endpoint",
+    "# TYPE tokenpulse_endpoint_spend_total_usd gauge",
+    `tokenpulse_endpoint_spend_total_usd ${summary.endpointSpend?.totalCostUsd ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";
