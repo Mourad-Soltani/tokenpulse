@@ -105,3 +105,38 @@ After generating traffic, the dashboard shows a **Slow requests** table:
 CLI: `npx tsx src/cli.ts --slow`
 
 Use this to call out latency outliers during the recording. No raw prompts appear.
+
+## 11. High-token requests (Session 76 — show in recording)
+
+After generating traffic, the dashboard shows a **High-token requests** table:
+
+- Top 10 allowed events ranked by `totalTokens`
+- Columns: time, team, app, model, tokens, USD, requestId
+
+CLI: `npx tsx src/cli.ts --token-volume`
+
+Useful to show token-volume outliers (distinct from pure cost). No raw prompts.
+
+## 12. Daily spend (Session 78 — show in recording)
+
+The dashboard shows a **Daily spend** table of the most recent UTC days with allowed spend:
+
+- Day, calls, tokens, estimated USD
+- Complements burn-rate projections
+
+CLI: `npx tsx src/cli.ts --daily-spend`
+
+Show this to illustrate spend trajectory over days for CFO-style visibility.
+
+## Recording checklist (for operator)
+
+Before recording against local or Railway mock URL:
+
+- [ ] Start gateway with `TOKENPULSE_MOCK_UPSTREAM=1` and a non-secret token
+- [ ] Generate mixed traffic (allows + at least one block) via `npm run demo` or manual curls
+- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend
+- [ ] Optional: scrape `/v1/admin/metrics` and mention Prometheus/Grafana path
+- [ ] No keys, no real provider calls, no raw prompts on screen
+- [ ] Keep under ~5 minutes; focus on policy-before-egress + audit packs + operator visibility
+
+See `DEPLOY.md` / `railway.toml` for the public mock deploy steps.

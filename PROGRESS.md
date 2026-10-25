@@ -1741,3 +1741,35 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # daily: npx tsx src/cli.ts --daily-spend
 ```
+
+## Decisions (Session 79 — demo script + README sync for latest rankings)
+
+- Updated `DEMO.md` with explicit sections for high-token ranking (Session 76) and daily spend (Session 78).
+- Added a concise operator recording checklist covering the full set of dashboard tables that should appear in the DEMO recording.
+- README “What works today” header advanced to Session 78 and includes the daily spend row.
+- No code, policy, or ledger changes. Product remains feature-complete for the self-hosted MVP.
+- Operator Railway (or local) mock deploy + DEMO.md recording remains the hard gate before outreach. No secrets in git or chat.
+
+## Current Status (Session 79 — 2026-10-25)
+
+Demo script and README synced to Session 78 visibility features. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 79 — DEMO.md high-token + daily-spend sections + recording checklist; README Session 78 sync
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily spend, high-cost + slow + high-token requests, and optionally the metrics endpoint. Use the new checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 79 prepares a tighter recording script so the operator demo covers every shipped ranking table. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# daily: npx tsx src/cli.ts --daily-spend
+# token-volume: npx tsx src/cli.ts --token-volume
+```
