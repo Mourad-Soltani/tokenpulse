@@ -655,3 +655,15 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Notes and blocks excluded. Does not change metering or policy.
 - Complements Session 78 daily spend and monthly burn-rate for multi-month CFO visibility.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Weekly spend status (Session 81)
+
+- `weeklySpendStatus()` aggregates allowed events by UTC ISO week (`YYYY-Www`).
+- Returns the most recent N weeks present (default 8), ordered chronologically.
+- Admin summary exposes `weeklySpend`. Dashboard renders a Weekly spend table (week, calls, tokens, USD).
+- Prometheus: `tokenpulse_weekly_spend_weeks` and `tokenpulse_weekly_spend_total_usd`.
+- CLI: `--weekly-spend`.
+- Notes and blocks excluded. Does not change metering or policy.
+- Complements daily (Session 78) and monthly (Session 80) spend for multi-period CFO visibility.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+

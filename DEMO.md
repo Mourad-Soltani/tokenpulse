@@ -145,7 +145,7 @@ Before recording against local or Railway mock URL:
 
 - [ ] Start gateway with `TOKENPULSE_MOCK_UPSTREAM=1` and a non-secret token
 - [ ] Generate mixed traffic (allows + at least one block) via `npm run demo` or manual curls
-- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Monthly spend
+- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Weekly spend, Monthly spend
 - [ ] Optional: scrape `/v1/admin/metrics` and mention Prometheus/Grafana path
 - [ ] No keys, no real provider calls, no raw prompts on screen
 - [ ] Keep under ~5 minutes; focus on policy-before-egress + audit packs + operator visibility

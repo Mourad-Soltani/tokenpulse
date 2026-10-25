@@ -1808,3 +1808,40 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # monthly: npx tsx src/cli.ts --monthly-spend
 # daily: npx tsx src/cli.ts --daily-spend
 ```
+
+## Decisions (Session 81 — weekly spend ranking)
+
+- `weeklySpendStatus()` groups allowed events by UTC ISO week (`YYYY-Www`) for the last N weeks present (default 8).
+- Admin summary exposes `weeklySpend`. Dashboard renders a Weekly spend table (week, calls, tokens, USD).
+- Prometheus metrics: `tokenpulse_weekly_spend_weeks` and `tokenpulse_weekly_spend_total_usd`.
+- CLI: `--weekly-spend`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements daily spend (Session 78) and monthly spend (Session 80).
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 81 — 2026-10-25)
+
+Weekly spend ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 81 — top weekly allowed spend on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/monthly spend, high-cost + slow + high-token requests, and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 81 adds weekly spend ranking (ISO weeks) between daily and monthly for richer multi-period CFO visibility in the demo recording. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# weekly: npx tsx src/cli.ts --weekly-spend
+# daily: npx tsx src/cli.ts --daily-spend
+# monthly: npx tsx src/cli.ts --monthly-spend
+```
+

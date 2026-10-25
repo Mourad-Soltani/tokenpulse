@@ -2,6 +2,7 @@ import { teamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus } from "./appSpend.js";
 import { dailySpendStatus } from "./dailySpend.js";
 import { monthlySpendStatus } from "./monthlySpend.js";
+import { weeklySpendStatus } from "./weeklySpend.js";
 import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verifyChain } from "./ledger.js";
 import { enableClientKey, issueClientKey, keyStatus, revokeClientKey, rotateClientKey } from "./keys.js";
 import { isSafeRequestId } from "./correlation.js";
@@ -80,6 +81,10 @@ async function main() {
   }
   if (args.includes("--daily-spend")) {
     console.log(JSON.stringify(dailySpendStatus(events), null, 2));
+    return;
+  }
+  if (args.includes("--weekly-spend")) {
+    console.log(JSON.stringify(weeklySpendStatus(events), null, 2));
     return;
   }
   if (args.includes("--monthly-spend")) {

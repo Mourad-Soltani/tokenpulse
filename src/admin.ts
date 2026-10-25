@@ -2,6 +2,7 @@ import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
 import { dailySpendStatus, type DailySpendStatus } from "./dailySpend.js";
 import { monthlySpendStatus, type MonthlySpendStatus } from "./monthlySpend.js";
+import { weeklySpendStatus, type WeeklySpendStatus } from "./weeklySpend.js";
 import { highCostStatus, type HighCostStatus } from "./highCost.js";
 import { slowRequestStatus, type SlowRequestStatus } from "./slowRequests.js";
 import { tokenVolumeStatus, type TokenVolumeStatus } from "./tokenVolume.js";
@@ -67,6 +68,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   tokenVolume: TokenVolumeStatus;
   dailySpend: DailySpendStatus;
   monthlySpend: MonthlySpendStatus;
+  weeklySpend: WeeklySpendStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -125,6 +127,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     tokenVolume: tokenVolumeStatus(events),
     dailySpend: dailySpendStatus(events),
     monthlySpend: monthlySpendStatus(events),
+    weeklySpend: weeklySpendStatus(events),
   };
 }
 
@@ -293,6 +296,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Daily spend</h2>
       <p class="sub" id="dailyspendmeta" style="margin:0 0 8px"></p>
       <table id="dailySpend"><thead><tr><th>Day (UTC)</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Weekly spend</h2>
+      <p class="sub" id="weeklyspendmeta" style="margin:0 0 8px"></p>
+      <table id="weeklySpend"><thead><tr><th>Week (UTC ISO)</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="card" style="margin-top:16px">
       <h2 style="margin:0 0 8px;font-size:1rem">Monthly spend</h2>
@@ -564,6 +572,16 @@ async function load() {
     dst.innerHTML = (ds.rows||[]).map(r =>
       '<tr><td>'+esc(r.day)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no daily spend</td></tr>';
+  }
+
+  const ws = s.weeklySpend || { weeks:0, totalCostUsd:0, rows:[] };
+  const wsm = document.getElementById('weeklyspendmeta');
+  if (wsm) wsm.textContent = (ws.weeks||0) + ' weeks · $' + (ws.totalCostUsd||0) + ' total';
+  const wst = document.querySelector('#weeklySpend tbody');
+  if (wst) {
+    wst.innerHTML = (ws.rows||[]).map(r =>
+      '<tr><td>'+esc(r.week)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no weekly spend</td></tr>';
   }
 
   const ms = s.monthlySpend || { months:0, totalCostUsd:0, rows:[] };
