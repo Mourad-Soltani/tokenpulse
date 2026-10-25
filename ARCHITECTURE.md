@@ -644,3 +644,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Notes and blocks excluded. Does not change metering or policy.
 - Complements Session 76 high-token ranking for richer demo recordings.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Monthly spend status (Session 80)
+
+- `monthlySpendStatus()` aggregates allowed events by UTC month (YYYY-MM from timestamp).
+- Returns the most recent N months present (default 6), ordered chronologically.
+- Admin summary exposes `monthlySpend`. Dashboard renders a Monthly spend table (month, calls, tokens, USD).
+- Prometheus: `tokenpulse_monthly_spend_months` and `tokenpulse_monthly_spend_total_usd`.
+- CLI: `--monthly-spend`.
+- Notes and blocks excluded. Does not change metering or policy.
+- Complements Session 78 daily spend and monthly burn-rate for multi-month CFO visibility.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

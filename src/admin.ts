@@ -1,6 +1,7 @@
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
 import { dailySpendStatus, type DailySpendStatus } from "./dailySpend.js";
+import { monthlySpendStatus, type MonthlySpendStatus } from "./monthlySpend.js";
 import { highCostStatus, type HighCostStatus } from "./highCost.js";
 import { slowRequestStatus, type SlowRequestStatus } from "./slowRequests.js";
 import { tokenVolumeStatus, type TokenVolumeStatus } from "./tokenVolume.js";
@@ -65,6 +66,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   slowRequests: SlowRequestStatus;
   tokenVolume: TokenVolumeStatus;
   dailySpend: DailySpendStatus;
+  monthlySpend: MonthlySpendStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -122,6 +124,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     slowRequests: slowRequestStatus(events),
     tokenVolume: tokenVolumeStatus(events),
     dailySpend: dailySpendStatus(events),
+    monthlySpend: monthlySpendStatus(events),
   };
 }
 
@@ -290,6 +293,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Daily spend</h2>
       <p class="sub" id="dailyspendmeta" style="margin:0 0 8px"></p>
       <table id="dailySpend"><thead><tr><th>Day (UTC)</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Monthly spend</h2>
+      <p class="sub" id="monthlyspendmeta" style="margin:0 0 8px"></p>
+      <table id="monthlySpend"><thead><tr><th>Month (UTC)</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
     </div>
 <div class="card">
       <h2>High-cost requests</h2>
@@ -556,6 +564,16 @@ async function load() {
     dst.innerHTML = (ds.rows||[]).map(r =>
       '<tr><td>'+esc(r.day)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no daily spend</td></tr>';
+  }
+
+  const ms = s.monthlySpend || { months:0, totalCostUsd:0, rows:[] };
+  const msm = document.getElementById('monthlyspendmeta');
+  if (msm) msm.textContent = (ms.months||0) + ' months · $' + (ms.totalCostUsd||0) + ' total';
+  const mst = document.querySelector('#monthlySpend tbody');
+  if (mst) {
+    mst.innerHTML = (ms.rows||[]).map(r =>
+      '<tr><td>'+esc(r.month)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no monthly spend</td></tr>';
   }
 
   const hc = s.highCost || { rows: [] };
