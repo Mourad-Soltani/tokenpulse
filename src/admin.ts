@@ -1,4 +1,5 @@
 import { endpointSpendStatus, type EndpointSpendStatus } from "./endpointSpend.js";
+import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
 import { dailySpendStatus, type DailySpendStatus } from "./dailySpend.js";
@@ -71,6 +72,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   monthlySpend: MonthlySpendStatus;
   weeklySpend: WeeklySpendStatus;
   endpointSpend: EndpointSpendStatus;
+  upstreamSpend: UpstreamSpendStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -131,6 +133,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     monthlySpend: monthlySpendStatus(events),
     weeklySpend: weeklySpendStatus(events),
     endpointSpend: endpointSpendStatus(events),
+    upstreamSpend: upstreamSpendStatus(events),
   };
 }
 
@@ -314,6 +317,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Endpoint spend</h2>
       <p class="sub" id="endpointspendmeta" style="margin:0 0 8px"></p>
       <table id="endpointSpend"><thead><tr><th>Endpoint</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Upstream spend</h2>
+      <p class="sub" id="upstreamspendmeta" style="margin:0 0 8px"></p>
+      <table id="upstreamSpend"><thead><tr><th>Source</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 <div class="card">
       <h2>High-cost requests</h2>
@@ -610,6 +618,16 @@ async function load() {
     est.innerHTML = (es.rows||[]).map(r =>
       '<tr><td>'+esc(r.endpoint)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.pct+'</td></tr>'
     ).join('') || '<tr><td colspan="5">no endpoint spend</td></tr>';
+  }
+
+  const us = s.upstreamSpend || { uniqueSources:0, totalCostUsd:0, rows:[] };
+  const usm = document.getElementById('upstreamspendmeta');
+  if (usm) usm.textContent = (us.uniqueSources||0) + ' sources · $' + (us.totalCostUsd||0) + ' total';
+  const ust = document.querySelector('#upstreamSpend tbody');
+  if (ust) {
+    ust.innerHTML = (us.rows||[]).map(r =>
+      '<tr><td>'+esc(r.source)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.pct+'</td></tr>'
+    ).join('') || '<tr><td colspan="5">no upstream spend</td></tr>';
   }
 
   const hc = s.highCost || { rows: [] };

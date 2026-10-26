@@ -677,3 +677,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Complements model/team/app spend for endpoint-level FinOps visibility.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+
+
+## Upstream spend status (Session 83)
+
+- `upstreamSpendStatus()` groups allowed events by upstream source (policy id `upstream:<source>`) or `mock` when `mock-allow` is present.
+- Admin summary exposes `upstreamSpend`. Dashboard renders an Upstream spend table (source, calls, tokens, USD, %).
+- Prometheus: `tokenpulse_upstream_unique_sources` and `tokenpulse_upstream_spend_total_usd`.
+- CLI: `--upstream-spend`.
+- Notes and blocks excluded. Does not change metering or policy.
+- Complements endpoint spend (Session 82) and multi-upstream routing for provider-level FinOps visibility in demos.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

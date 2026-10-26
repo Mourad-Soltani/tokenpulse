@@ -1881,3 +1881,39 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # endpoint: npx tsx src/cli.ts --endpoint-spend
 # weekly: npx tsx src/cli.ts --weekly-spend
 ```
+
+
+## Decisions (Session 83 — upstream spend ranking)
+
+- `upstreamSpendStatus()` classifies allowed events by `upstream:<source>` policy id, or `mock` when `mock-allow` is present (else `unknown`).
+- Admin summary exposes `upstreamSpend`. Dashboard renders an Upstream spend table (source, calls, tokens, USD, %).
+- Prometheus metrics: `tokenpulse_upstream_unique_sources` and `tokenpulse_upstream_spend_total_usd`.
+- CLI: `--upstream-spend`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements endpoint spend (Session 82) and multi-upstream fallback/weighted routing for provider-level cost split in demos.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 83 — 2026-10-26)
+
+Upstream spend ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 83 — upstream/provider spend ranking on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/monthly/endpoint/upstream spend, high-cost + slow + high-token requests, and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 83 adds upstream spend ranking so the demo can show cost split across providers (or mock) alongside endpoint spend. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# upstream: npx tsx src/cli.ts --upstream-spend
+# endpoint: npx tsx src/cli.ts --endpoint-spend
+```

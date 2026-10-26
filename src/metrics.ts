@@ -99,6 +99,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_endpoint_spend_total_usd Total estimated USD on allowed events by endpoint",
     "# TYPE tokenpulse_endpoint_spend_total_usd gauge",
     `tokenpulse_endpoint_spend_total_usd ${summary.endpointSpend?.totalCostUsd ?? 0}`,
+    "# HELP tokenpulse_upstream_unique_sources Unique upstream sources with allowed spend",
+    "# TYPE tokenpulse_upstream_unique_sources gauge",
+    `tokenpulse_upstream_unique_sources ${summary.upstreamSpend?.uniqueSources ?? 0}`,
+    "# HELP tokenpulse_upstream_spend_total_usd Total estimated USD on allowed events by upstream source",
+    "# TYPE tokenpulse_upstream_spend_total_usd gauge",
+    `tokenpulse_upstream_spend_total_usd ${summary.upstreamSpend?.totalCostUsd ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";
