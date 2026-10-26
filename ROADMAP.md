@@ -90,3 +90,6 @@
 - [x] Daily spend status (last N UTC days of allowed cost; admin + dashboard + CLI)
 - [x] Monthly spend status (last N UTC months of allowed cost; admin + dashboard + CLI + metrics)
 - [x] Weekly spend status (last N UTC ISO weeks of allowed cost; admin + dashboard + CLI + metrics)
+- [x] Endpoint spend status (chat vs embeddings; admin + dashboard + CLI + metrics)
+- [x] Upstream spend status (by provider/source; admin + dashboard + CLI + metrics)
+- [x] Blocked impact / estimated avoided spend (admin + dashboard + CLI + metrics)

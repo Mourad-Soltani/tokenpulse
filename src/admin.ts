@@ -1,4 +1,5 @@
 import { endpointSpendStatus, type EndpointSpendStatus } from "./endpointSpend.js";
+import { blockedImpactStatus, type BlockedImpactStatus } from "./blockedImpact.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -73,6 +74,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   weeklySpend: WeeklySpendStatus;
   endpointSpend: EndpointSpendStatus;
   upstreamSpend: UpstreamSpendStatus;
+  blockedImpact: BlockedImpactStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -134,6 +136,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     weeklySpend: weeklySpendStatus(events),
     endpointSpend: endpointSpendStatus(events),
     upstreamSpend: upstreamSpendStatus(events),
+    blockedImpact: blockedImpactStatus(events),
   };
 }
 
@@ -322,6 +325,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Upstream spend</h2>
       <p class="sub" id="upstreamspendmeta" style="margin:0 0 8px"></p>
       <table id="upstreamSpend"><thead><tr><th>Source</th><th>Calls</th><th>Tokens</th><th>USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact (est. avoided)</h2>
+      <p class="sub" id="blockedimpactmeta" style="margin:0 0 8px"></p>
+      <table id="blockedImpact"><thead><tr><th>Model</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 <div class="card">
       <h2>High-cost requests</h2>
@@ -628,6 +636,16 @@ async function load() {
     ust.innerHTML = (us.rows||[]).map(r =>
       '<tr><td>'+esc(r.source)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.pct+'</td></tr>'
     ).join('') || '<tr><td colspan="5">no upstream spend</td></tr>';
+  }
+
+  const bi = s.blockedImpact || { totalBlocks:0, uniqueModels:0, estimatedAvoidedUsd:0, assumedPromptTokens:256, rows:[] };
+  const bim = document.getElementById('blockedimpactmeta');
+  if (bim) bim.textContent = (bi.totalBlocks||0) + ' blocks · est. $' + (bi.estimatedAvoidedUsd||0) + ' avoided (assume ' + (bi.assumedPromptTokens||256) + ' tok)';
+  const bit = document.querySelector('#blockedImpact tbody');
+  if (bit) {
+    bit.innerHTML = (bi.rows||[]).map(r =>
+      '<tr><td>'+esc(r.model)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
   }
 
   const hc = s.highCost || { rows: [] };

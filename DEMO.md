@@ -146,19 +146,32 @@ Before recording against local or Railway mock URL:
 - [ ] Start gateway with `TOKENPULSE_MOCK_UPSTREAM=1` and a non-secret token
 - [ ] Generate mixed traffic (allows + at least one block) via `npm run demo` or manual curls
 - [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Weekly spend, Monthly spend
-- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Monthly spend, Endpoint spend
+- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Monthly spend, Endpoint spend, Upstream spend, Blocked impact
 - [ ] Optional: scrape `/v1/admin/metrics` and mention Prometheus/Grafana path
 - [ ] No keys, no real provider calls, no raw prompts on screen
 - [ ] Keep under ~5 minutes; focus on policy-before-egress + audit packs + operator visibility
 
 See `DEPLOY.md` / `railway.toml` for the public mock deploy steps.
 
-## 14. Endpoint spend (Session 82 — show in recording)
+## 14. Endpoint spend, Upstream spend, Blocked impact (Session 82 — show in recording)
 
-The dashboard shows an **Endpoint spend** table of allowed cost split between chat completions and embeddings:
+The dashboard shows an **Endpoint spend, Upstream spend, Blocked impact** table of allowed cost split between chat completions and embeddings:
 
 - Useful for FinOps when both `/v1/chat/completions` and `/v1/embeddings` are in use
 - Complements model / team / app spend tables
 
 CLI: `npx tsx src/cli.ts --endpoint-spend`
 
+
+
+## 15. Blocked impact (Session 84 — show in recording)
+
+The dashboard shows a **Blocked impact** table:
+
+- Top models by number of blocks
+- Estimated avoided USD using a fixed 256-token prompt assumption × model input price
+- Complements the count-based Block reasons table
+
+CLI: `npx tsx src/cli.ts --blocked-impact`
+
+Useful to illustrate policy value (“we stopped N requests, roughly $X avoided”) without claiming real ledgered cost. No raw prompts.

@@ -688,3 +688,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Notes and blocks excluded. Does not change metering or policy.
 - Complements endpoint spend (Session 82) and multi-upstream routing for provider-level FinOps visibility in demos.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Blocked impact (Session 84)
+
+- `blockedImpactStatus()` ranks block events by client model and estimates avoided USD.
+- Assumption: fixed prompt tokens (default 256, `TOKENPULSE_BLOCKED_ASSUME_TOKENS`) × model input price from the pricing catalog.
+- Admin summary exposes `blockedImpact`. Dashboard renders a Blocked impact table.
+- Prometheus: `tokenpulse_blocked_impact_total`, `tokenpulse_estimated_avoided_usd`.
+- CLI: `--blocked-impact`.
+- Blocks store zero real tokens; the figure is a demo/visibility estimate only. Does not change policy, pricing, or ledger writes.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

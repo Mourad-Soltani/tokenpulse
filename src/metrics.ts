@@ -105,6 +105,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_upstream_spend_total_usd Total estimated USD on allowed events by upstream source",
     "# TYPE tokenpulse_upstream_spend_total_usd gauge",
     `tokenpulse_upstream_spend_total_usd ${summary.upstreamSpend?.totalCostUsd ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_total Total blocked requests (from blockedImpact)",
+    "# TYPE tokenpulse_blocked_impact_total gauge",
+    `tokenpulse_blocked_impact_total ${summary.blockedImpact?.totalBlocks ?? 0}`,
+    "# HELP tokenpulse_estimated_avoided_usd Estimated USD avoided using fixed prompt-token assumption on blocks",
+    "# TYPE tokenpulse_estimated_avoided_usd gauge",
+    `tokenpulse_estimated_avoided_usd ${summary.blockedImpact?.estimatedAvoidedUsd ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";
