@@ -6,6 +6,7 @@ import { appSpendStatus } from "./appSpend.js";
 import { dailySpendStatus } from "./dailySpend.js";
 import { monthlySpendStatus } from "./monthlySpend.js";
 import { weeklySpendStatus } from "./weeklySpend.js";
+import { hourlySpendStatus } from "./hourlySpend.js";
 import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verifyChain } from "./ledger.js";
 import { enableClientKey, issueClientKey, keyStatus, revokeClientKey, rotateClientKey } from "./keys.js";
 import { isSafeRequestId } from "./correlation.js";
@@ -88,6 +89,10 @@ async function main() {
   }
   if (args.includes("--weekly-spend")) {
     console.log(JSON.stringify(weeklySpendStatus(events), null, 2));
+    return;
+  }
+  if (args.includes("--hourly-spend")) {
+    console.log(JSON.stringify(hourlySpendStatus(events), null, 2));
     return;
   }
   if (args.includes("--monthly-spend")) {
@@ -175,7 +180,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

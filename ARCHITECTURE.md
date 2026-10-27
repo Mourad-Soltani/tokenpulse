@@ -698,3 +698,15 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--blocked-impact`.
 - Blocks store zero real tokens; the figure is a demo/visibility estimate only. Does not change policy, pricing, or ledger writes.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Hourly spend status (Session 85)
+
+- `hourlySpendStatus()` groups allowed events by UTC hour (`YYYY-MM-DDTHH`) for the last N hours present (default 24).
+- Admin summary exposes `hourlySpend`. Dashboard renders an Hourly spend table (hour, calls, tokens, USD).
+- Prometheus metrics: `tokenpulse_hourly_spend_hours` and `tokenpulse_hourly_spend_total_usd`.
+- CLI: `--hourly-spend`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements daily (Session 78), weekly (Session 81), and monthly (Session 80) spend for finer-grained recent burn visibility in demos.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.

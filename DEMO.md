@@ -175,3 +175,15 @@ The dashboard shows a **Blocked impact** table:
 CLI: `npx tsx src/cli.ts --blocked-impact`
 
 Useful to illustrate policy value (“we stopped N requests, roughly $X avoided”) without claiming real ledgered cost. No raw prompts.
+
+
+## 16. Hourly spend (Session 85 — show in recording)
+
+The dashboard shows an **Hourly spend** table of the most recent UTC hours with allowed spend:
+
+- Useful for recent burn / spike visibility in the demo
+- Complements daily / weekly / monthly tables
+
+CLI: `npx tsx src/cli.ts --hourly-spend`
+
+Show this to illustrate intra-day trajectory for CFO-style visibility. No raw prompts.

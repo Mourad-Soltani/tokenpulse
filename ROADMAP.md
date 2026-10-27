@@ -93,3 +93,4 @@
 - [x] Endpoint spend status (chat vs embeddings; admin + dashboard + CLI + metrics)
 - [x] Upstream spend status (by provider/source; admin + dashboard + CLI + metrics)
 - [x] Blocked impact / estimated avoided spend (admin + dashboard + CLI + metrics)
+- [x] Hourly spend status (last N UTC hours of allowed cost; admin + dashboard + CLI + metrics)

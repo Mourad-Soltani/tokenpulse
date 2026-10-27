@@ -6,6 +6,7 @@ import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
 import { dailySpendStatus, type DailySpendStatus } from "./dailySpend.js";
 import { monthlySpendStatus, type MonthlySpendStatus } from "./monthlySpend.js";
 import { weeklySpendStatus, type WeeklySpendStatus } from "./weeklySpend.js";
+import { hourlySpendStatus, type HourlySpendStatus } from "./hourlySpend.js";
 import { highCostStatus, type HighCostStatus } from "./highCost.js";
 import { slowRequestStatus, type SlowRequestStatus } from "./slowRequests.js";
 import { tokenVolumeStatus, type TokenVolumeStatus } from "./tokenVolume.js";
@@ -72,6 +73,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   dailySpend: DailySpendStatus;
   monthlySpend: MonthlySpendStatus;
   weeklySpend: WeeklySpendStatus;
+  hourlySpend: HourlySpendStatus;
   endpointSpend: EndpointSpendStatus;
   upstreamSpend: UpstreamSpendStatus;
   blockedImpact: BlockedImpactStatus;
@@ -134,6 +136,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     dailySpend: dailySpendStatus(events),
     monthlySpend: monthlySpendStatus(events),
     weeklySpend: weeklySpendStatus(events),
+    hourlySpend: hourlySpendStatus(events),
     endpointSpend: endpointSpendStatus(events),
     upstreamSpend: upstreamSpendStatus(events),
     blockedImpact: blockedImpactStatus(events),
@@ -310,6 +313,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Weekly spend</h2>
       <p class="sub" id="weeklyspendmeta" style="margin:0 0 8px"></p>
       <table id="weeklySpend"><thead><tr><th>Week (UTC ISO)</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Hourly spend</h2>
+      <p class="sub" id="hourlyspendmeta" style="margin:0 0 8px"></p>
+      <table id="hourlySpend"><thead><tr><th>Hour (UTC)</th><th>Calls</th><th>Tokens</th><th>USD</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="card" style="margin-top:16px">
       <h2 style="margin:0 0 8px;font-size:1rem">Monthly spend</h2>
@@ -606,6 +614,16 @@ async function load() {
     wst.innerHTML = (ws.rows||[]).map(r =>
       '<tr><td>'+esc(r.week)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no weekly spend</td></tr>';
+  }
+
+  const hs = s.hourlySpend || { hours:0, totalCostUsd:0, rows:[] };
+  const hsm = document.getElementById('hourlyspendmeta');
+  if (hsm) hsm.textContent = (hs.hours||0) + ' hours · $' + (hs.totalCostUsd||0) + ' total';
+  const hst = document.querySelector('#hourlySpend tbody');
+  if (hst) {
+    hst.innerHTML = (hs.rows||[]).map(r =>
+      '<tr><td>'+esc(r.hour)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no hourly spend</td></tr>';
   }
 
   const ms = s.monthlySpend || { months:0, totalCostUsd:0, rows:[] };

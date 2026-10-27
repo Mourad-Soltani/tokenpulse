@@ -1952,3 +1952,40 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # blocked impact: npx tsx src/cli.ts --blocked-impact
 # upstream: npx tsx src/cli.ts --upstream-spend
 ```
+
+
+## Decisions (Session 85 — hourly spend ranking)
+
+- `hourlySpendStatus()` groups allowed events by UTC hour (`YYYY-MM-DDTHH`) for the last N hours present (default 24).
+- Admin summary exposes `hourlySpend`. Dashboard renders an Hourly spend table (hour, calls, tokens, USD).
+- Prometheus metrics: `tokenpulse_hourly_spend_hours` and `tokenpulse_hourly_spend_total_usd`.
+- CLI: `--hourly-spend`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements daily (Session 78), weekly (Session 81), and monthly (Session 80) spend for finer-grained recent burn visibility in demos.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 85 — 2026-10-27)
+
+Hourly spend ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 85 — hourly spend ranking on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact, high-cost + slow + high-token requests, and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 85 adds hourly spend ranking (UTC hours) for recent burn visibility alongside daily/weekly/monthly. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# hourly: npx tsx src/cli.ts --hourly-spend
+# weekly: npx tsx src/cli.ts --weekly-spend
+# daily: npx tsx src/cli.ts --daily-spend
+```
