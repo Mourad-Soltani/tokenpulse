@@ -710,3 +710,15 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change any policy, pricing, or ledger write path.
 - Complements daily (Session 78), weekly (Session 81), and monthly (Session 80) spend for finer-grained recent burn visibility in demos.
 - Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Efficiency status (Session 86)
+
+- `efficiencyStatus()` ranks models by estimated USD per 1M tokens on allowed events (lowest first).
+- Overall: calls, total tokens, total USD, overallUsdPer1MTokens, overallAvgTokensPerCall.
+- Admin summary exposes `efficiency`. Dashboard renders an Efficiency table.
+- Prometheus metrics: `tokenpulse_efficiency_overall_usd_per_1m` and `tokenpulse_efficiency_calls`.
+- CLI: `--efficiency`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements absolute spend rankings for FinOps model choice visibility.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.

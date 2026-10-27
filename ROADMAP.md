@@ -94,3 +94,4 @@
 - [x] Upstream spend status (by provider/source; admin + dashboard + CLI + metrics)
 - [x] Blocked impact / estimated avoided spend (admin + dashboard + CLI + metrics)
 - [x] Hourly spend status (last N UTC hours of allowed cost; admin + dashboard + CLI + metrics)
+- [x] Efficiency status (USD per 1M tokens by model; admin + dashboard + CLI + metrics)

@@ -1989,3 +1989,38 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # weekly: npx tsx src/cli.ts --weekly-spend
 # daily: npx tsx src/cli.ts --daily-spend
 ```
+
+## Decisions (Session 86 — efficiency ranking)
+
+- `efficiencyStatus()` ranks models by estimated USD per 1M tokens on allowed events (lowest first).
+- Admin summary exposes `efficiency`. Dashboard renders an Efficiency table (model, calls, tokens, USD, USD/1M, avg tokens/call).
+- Prometheus metrics: `tokenpulse_efficiency_overall_usd_per_1m` and `tokenpulse_efficiency_calls`.
+- CLI: `--efficiency`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements absolute spend rankings so the demo can show cost-per-token efficiency.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 86 — 2026-10-27)
+
+Efficiency ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 86 — efficiency ranking (USD per 1M tokens) on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact, high-cost + slow + high-token requests, efficiency, and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 86 adds efficiency ranking (USD per 1M tokens) for FinOps model choice visibility alongside absolute spend tables. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# efficiency: npx tsx src/cli.ts --efficiency
+# hourly: npx tsx src/cli.ts --hourly-spend
+```

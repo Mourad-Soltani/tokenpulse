@@ -145,7 +145,7 @@ Before recording against local or Railway mock URL:
 
 - [ ] Start gateway with `TOKENPULSE_MOCK_UPSTREAM=1` and a non-secret token
 - [ ] Generate mixed traffic (allows + at least one block) via `npm run demo` or manual curls
-- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Weekly spend, Monthly spend
+- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Weekly spend, Monthly spend, Efficiency
 - [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Monthly spend, Endpoint spend, Upstream spend, Blocked impact
 - [ ] Optional: scrape `/v1/admin/metrics` and mention Prometheus/Grafana path
 - [ ] No keys, no real provider calls, no raw prompts on screen
@@ -187,3 +187,16 @@ The dashboard shows an **Hourly spend** table of the most recent UTC hours with 
 CLI: `npx tsx src/cli.ts --hourly-spend`
 
 Show this to illustrate intra-day trajectory for CFO-style visibility. No raw prompts.
+
+
+## 17. Efficiency (Session 86 — show in recording)
+
+The dashboard shows an **Efficiency (USD / 1M tokens)** table:
+
+- Models ranked by lowest estimated USD per 1M tokens (allowed events)
+- Overall average shown in the meta line
+- Complements absolute spend tables for “which models are efficient”
+
+CLI: `npx tsx src/cli.ts --efficiency`
+
+Useful in the recording to illustrate cost-per-token visibility without raw prompts.
