@@ -2059,3 +2059,39 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # team efficiency: npx tsx src/cli.ts --team-efficiency
 # efficiency: npx tsx src/cli.ts --efficiency
 ```
+
+
+## Decisions (Session 88 — app efficiency ranking)
+
+- `appEfficiencyStatus()` ranks apps by estimated USD per 1M tokens on allowed events (lowest first).
+- Admin summary exposes `appEfficiency`. Dashboard renders an App efficiency table (app, calls, tokens, USD, USD/1M, avg tokens/call).
+- Prometheus metrics: `tokenpulse_app_efficiency_overall_usd_per_1m` and `tokenpulse_app_efficiency_calls`.
+- CLI: `--app-efficiency`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements team efficiency (Session 87) and model efficiency so the demo can show cost-per-token efficiency by app.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 88 — 2026-10-28)
+
+App efficiency ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 88 — app efficiency ranking (USD per 1M tokens by app) on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact, high-cost + slow + high-token requests, efficiency, team efficiency, app efficiency, and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 88 adds app efficiency ranking (USD per 1M tokens by app) for FinOps app-level model-choice visibility alongside absolute spend, model efficiency, and team efficiency tables. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# app efficiency: npx tsx src/cli.ts --app-efficiency
+# team efficiency: npx tsx src/cli.ts --team-efficiency
+```
