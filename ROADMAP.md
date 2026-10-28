@@ -95,3 +95,4 @@
 - [x] Blocked impact / estimated avoided spend (admin + dashboard + CLI + metrics)
 - [x] Hourly spend status (last N UTC hours of allowed cost; admin + dashboard + CLI + metrics)
 - [x] Efficiency status (USD per 1M tokens by model; admin + dashboard + CLI + metrics)
+- [x] Team efficiency status (USD per 1M tokens by team; admin + dashboard + CLI + metrics)

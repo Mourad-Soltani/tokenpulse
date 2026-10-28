@@ -722,3 +722,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change any policy, pricing, or ledger write path.
 - Complements absolute spend rankings for FinOps model choice visibility.
 - Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Team efficiency (Session 87)
+
+- `teamEfficiencyStatus()` ranks teams by estimated USD per 1M tokens on allowed events (lowest first).
+- Admin summary exposes `teamEfficiency`. Dashboard renders a Team efficiency table.
+- Prometheus metrics: `tokenpulse_team_efficiency_overall_usd_per_1m` and `tokenpulse_team_efficiency_calls`.
+- CLI: `--team-efficiency`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements model efficiency (Session 86) for team-level cost-per-token visibility.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
