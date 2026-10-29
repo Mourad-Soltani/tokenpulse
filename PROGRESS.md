@@ -2131,3 +2131,40 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # upstream efficiency: npx tsx src/cli.ts --upstream-efficiency
 # app efficiency: npx tsx src/cli.ts --app-efficiency
 ```
+
+
+## Decisions (Session 90 — key efficiency ranking)
+
+- `keyEfficiencyStatus()` ranks client keys by estimated USD per 1M tokens on allowed events (lowest first).
+- Key resolution uses `key:<id>` policy id; events without it are bucketed as `gateway`.
+- Admin summary exposes `keyEfficiency`. Dashboard renders a Key efficiency table (key, calls, tokens, USD, USD/1M, avg tokens/call).
+- Prometheus metrics: `tokenpulse_key_efficiency_overall_usd_per_1m` and `tokenpulse_key_efficiency_calls`.
+- CLI: `--key-efficiency`.
+- Notes and blocks excluded. No raw prompts or digests.
+- Does not change any policy, pricing, or ledger write path.
+- Complements app/team/model/upstream efficiency so the demo can show cost-per-token efficiency by issued client key.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Current Status (Session 90 — 2026-10-29)
+
+Key efficiency ranking shipped. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 90 — key efficiency ranking (USD per 1M tokens by client key) on admin summary, dashboard, CLI, and Prometheus metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact, high-cost + slow + high-token requests, efficiency, team efficiency, app efficiency, upstream efficiency, key efficiency, and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 90 adds key efficiency ranking (USD per 1M tokens by client key or gateway) for FinOps key-level model-choice visibility alongside absolute spend and other efficiency tables. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# key efficiency: npx tsx src/cli.ts --key-efficiency
+# upstream efficiency: npx tsx src/cli.ts --upstream-efficiency
+```

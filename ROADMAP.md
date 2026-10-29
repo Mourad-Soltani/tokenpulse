@@ -97,3 +97,4 @@
 - [x] Efficiency status (USD per 1M tokens by model; admin + dashboard + CLI + metrics)
 - [x] Team efficiency status (USD per 1M tokens by team; admin + dashboard + CLI + metrics)
 - [x] Upstream efficiency status (USD per 1M tokens by upstream source; admin + dashboard + CLI + metrics)
+- [x] Key efficiency status (USD per 1M tokens by client key; admin + dashboard + CLI + metrics)

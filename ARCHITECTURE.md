@@ -756,3 +756,15 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change any policy, pricing, or ledger write path.
 - Complements app/team/model efficiency for provider-level cost-per-token visibility in demos.
 - Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+
+## Key efficiency status (Session 90)
+
+- `keyEfficiencyStatus()` ranks client keys by estimated USD per 1M tokens on allowed events (lowest first).
+- Key id comes from ledger policy id `key:<id>`; unbound or gateway-token events bucket as `gateway`.
+- Admin summary exposes `keyEfficiency`. Dashboard renders a Key efficiency table.
+- Prometheus metrics: overall USD/1M and call count.
+- CLI: `--key-efficiency`.
+- Notes and blocks excluded. Digests never shown.
+- Does not change key binding, policy, or metering.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

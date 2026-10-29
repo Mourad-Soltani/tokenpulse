@@ -111,6 +111,8 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_upstream_efficiency_overall_usd_per_1m Overall USD per 1M tokens by upstream source",
     "# TYPE tokenpulse_upstream_efficiency_overall_usd_per_1m gauge",
     `tokenpulse_upstream_efficiency_overall_usd_per_1m ${summary.upstreamEfficiency?.overallUsdPer1MTokens ?? 0}`,
+    `tokenpulse_key_efficiency_overall_usd_per_1m ${summary.keyEfficiency?.overallUsdPer1MTokens ?? 0}`,
+    `tokenpulse_key_efficiency_calls ${summary.keyEfficiency?.calls ?? 0}`,
     "# HELP tokenpulse_upstream_efficiency_calls Number of allowed calls used for upstream efficiency",
     "# TYPE tokenpulse_upstream_efficiency_calls gauge",
     `tokenpulse_upstream_efficiency_calls ${summary.upstreamEfficiency?.calls ?? 0}`,

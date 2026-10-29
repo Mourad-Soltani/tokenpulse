@@ -11,6 +11,7 @@ import { efficiencyStatus } from "./efficiency.js";
 import { teamEfficiencyStatus } from "./teamEfficiency.js";
 import { appEfficiencyStatus } from "./appEfficiency.js";
 import { upstreamEfficiencyStatus } from "./upstreamEfficiency.js";
+import { keyEfficiencyStatus } from "./keyEfficiency.js";
 import { appendOperatorNote, findEventsByRequestId, readEvents, summarize, verifyChain } from "./ledger.js";
 import { enableClientKey, issueClientKey, keyStatus, revokeClientKey, rotateClientKey } from "./keys.js";
 import { isSafeRequestId } from "./correlation.js";
@@ -112,8 +113,12 @@ async function main() {
     console.log(JSON.stringify(appEfficiencyStatus(events), null, 2));
     return;
   }
-  if (args.includes("--upstream-efficiency")) {
+  if (args.includes("--upstream-efficiency|--key-efficiency")) {
     console.log(JSON.stringify(upstreamEfficiencyStatus(events), null, 2));
+    return;
+  }
+  if (args.includes("--key-efficiency")) {
+    console.log(JSON.stringify(keyEfficiencyStatus(events), null, 2));
     return;
   }
   if (args.includes("--monthly-spend")) {
