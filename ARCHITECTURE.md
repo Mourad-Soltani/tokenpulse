@@ -744,3 +744,15 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change any policy, pricing, or ledger write path.
 - Complements team efficiency (Session 87) and model efficiency for app-level cost-per-token visibility.
 - Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.
+
+## Upstream efficiency (Session 89)
+
+- `upstreamEfficiencyStatus()` ranks upstream sources by estimated USD per 1M tokens on allowed events (lowest first).
+- Source is taken from policy id `upstream:<source>` or `mock` when `mock-allow` is present (same as upstream spend).
+- Admin summary exposes `upstreamEfficiency`. Dashboard renders an Upstream efficiency table.
+- Prometheus metrics: `tokenpulse_upstream_efficiency_overall_usd_per_1m` and `tokenpulse_upstream_efficiency_calls`.
+- CLI: `--upstream-efficiency`.
+- Notes and blocks excluded. No raw prompts.
+- Does not change any policy, pricing, or ledger write path.
+- Complements app/team/model efficiency for provider-level cost-per-token visibility in demos.
+- Railway public URL and live-upstream recording remain operator gates. No keys in git or chat.

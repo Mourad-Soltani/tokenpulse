@@ -96,3 +96,4 @@
 - [x] Hourly spend status (last N UTC hours of allowed cost; admin + dashboard + CLI + metrics)
 - [x] Efficiency status (USD per 1M tokens by model; admin + dashboard + CLI + metrics)
 - [x] Team efficiency status (USD per 1M tokens by team; admin + dashboard + CLI + metrics)
+- [x] Upstream efficiency status (USD per 1M tokens by upstream source; admin + dashboard + CLI + metrics)

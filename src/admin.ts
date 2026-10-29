@@ -10,6 +10,7 @@ import { hourlySpendStatus, type HourlySpendStatus } from "./hourlySpend.js";
 import { efficiencyStatus, type EfficiencyStatus } from "./efficiency.js";
 import { teamEfficiencyStatus, type TeamEfficiencyStatus } from "./teamEfficiency.js";
 import { appEfficiencyStatus, type AppEfficiencyStatus } from "./appEfficiency.js";
+import { upstreamEfficiencyStatus, type UpstreamEfficiencyStatus } from "./upstreamEfficiency.js";
 import { highCostStatus, type HighCostStatus } from "./highCost.js";
 import { slowRequestStatus, type SlowRequestStatus } from "./slowRequests.js";
 import { tokenVolumeStatus, type TokenVolumeStatus } from "./tokenVolume.js";
@@ -80,6 +81,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   efficiency: EfficiencyStatus;
   teamEfficiency: TeamEfficiencyStatus;
   appEfficiency: AppEfficiencyStatus;
+  upstreamEfficiency: UpstreamEfficiencyStatus;
   endpointSpend: EndpointSpendStatus;
   upstreamSpend: UpstreamSpendStatus;
   blockedImpact: BlockedImpactStatus;
@@ -146,6 +148,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     efficiency: efficiencyStatus(events),
     teamEfficiency: teamEfficiencyStatus(events),
     appEfficiency: appEfficiencyStatus(events),
+    upstreamEfficiency: upstreamEfficiencyStatus(events),
     endpointSpend: endpointSpendStatus(events),
     upstreamSpend: upstreamSpendStatus(events),
     blockedImpact: blockedImpactStatus(events),
@@ -338,6 +341,9 @@ export function dashboardHtml(): string {
       <h2>App efficiency</h2>
       <p class="sub" id="appefficiencymeta" style="margin:0 0 8px"></p>
       <table id="appefficiency"><thead><tr><th>App</th><th>Calls</th><th>Tokens</th><th>USD</th><th>USD / 1M</th><th>Avg tok/call</th></tr></thead><tbody></tbody></table>
+      <h2>Upstream efficiency</h2>
+      <p class="sub" id="upstreamefficiencymeta" style="margin:0 0 8px"></p>
+      <table id="upstreamefficiency"><thead><tr><th>Source</th><th>Calls</th><th>Tokens</th><th>USD</th><th>USD / 1M</th><th>Avg tok/call</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="card" style="margin-top:16px">
       <h2 style="margin:0 0 8px;font-size:1rem">Monthly spend</h2>
@@ -670,6 +676,14 @@ async function load() {
   if (aet) aet.innerHTML = (ae.rows||[]).map(r =>
     '<tr><td>'+esc(r.appId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
   ).join('') || '<tr><td colspan="6">no app efficiency data</td></tr>';
+
+  const ue = s.upstreamEfficiency || { calls:0, totalCostUsd:0, overallUsdPer1MTokens:0, rows:[] };
+  const uem = document.getElementById('upstreamefficiencymeta');
+  if (uem) uem.textContent = ue.calls + ' calls · $' + (ue.totalCostUsd||0).toFixed(4) + ' · overall $' + (ue.overallUsdPer1MTokens||0).toFixed(4) + '/1M';
+  const uet = document.querySelector('#upstreamefficiency tbody');
+  if (uet) uet.innerHTML = (ue.rows||[]).map(r =>
+    '<tr><td>'+esc(r.source)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
+  ).join('') || '<tr><td colspan="6">no upstream efficiency data</td></tr>';
 
   const ms = s.monthlySpend || { months:0, totalCostUsd:0, rows:[] };
   const msm = document.getElementById('monthlyspendmeta');
