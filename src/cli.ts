@@ -113,7 +113,7 @@ async function main() {
     console.log(JSON.stringify(appEfficiencyStatus(events), null, 2));
     return;
   }
-  if (args.includes("--upstream-efficiency|--key-efficiency")) {
+  if (args.includes("--upstream-efficiency")) {
     console.log(JSON.stringify(upstreamEfficiencyStatus(events), null, 2));
     return;
   }
@@ -206,7 +206,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--upstream-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

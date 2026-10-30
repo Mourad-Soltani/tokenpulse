@@ -145,8 +145,7 @@ Before recording against local or Railway mock URL:
 
 - [ ] Start gateway with `TOKENPULSE_MOCK_UPSTREAM=1` and a non-secret token
 - [ ] Generate mixed traffic (allows + at least one block) via `npm run demo` or manual curls
-- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Weekly spend, Monthly spend, Efficiency
-- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily spend, Monthly spend, Endpoint spend, Upstream spend, Blocked impact
+- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily/Weekly/Hourly/Monthly spend, Endpoint/Upstream spend, Blocked impact, Efficiency (model/team/app/upstream/key)
 - [ ] Optional: scrape `/v1/admin/metrics` and mention Prometheus/Grafana path
 - [ ] No keys, no real provider calls, no raw prompts on screen
 - [ ] Keep under ~5 minutes; focus on policy-before-egress + audit packs + operator visibility
@@ -200,3 +199,34 @@ The dashboard shows an **Efficiency (USD / 1M tokens)** table:
 CLI: `npx tsx src/cli.ts --efficiency`
 
 Useful in the recording to illustrate cost-per-token visibility without raw prompts.
+
+
+## 18. Team efficiency (Session 87 — show in recording)
+
+The dashboard shows a **Team efficiency** table (USD per 1M tokens by team, lowest first):
+
+- Complements model efficiency for team-level model-choice visibility
+- CLI: `npx tsx src/cli.ts --team-efficiency`
+
+No raw prompts.
+
+## 19. App efficiency (Session 88 — show in recording)
+
+The dashboard shows an **App efficiency** table (USD per 1M tokens by app):
+
+- CLI: `npx tsx src/cli.ts --app-efficiency`
+
+## 20. Upstream efficiency (Session 89 — show in recording)
+
+The dashboard shows an **Upstream efficiency** table (USD per 1M tokens by upstream source / mock):
+
+- CLI: `npx tsx src/cli.ts --upstream-efficiency`
+
+## 21. Key efficiency (Session 90 — show in recording)
+
+The dashboard shows a **Key efficiency** table (USD per 1M tokens by client key id or gateway):
+
+- CLI: `npx tsx src/cli.ts --key-efficiency`
+- Digests never shown
+
+Useful to show cost-per-token by issued client key in the recording. No raw prompts.

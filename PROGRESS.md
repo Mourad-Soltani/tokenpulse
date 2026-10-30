@@ -2168,3 +2168,37 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 # key efficiency: npx tsx src/cli.ts --key-efficiency
 # upstream efficiency: npx tsx src/cli.ts --upstream-efficiency
 ```
+
+
+## Decisions (Session 91 — CLI flag fix + DEMO completeness)
+
+- Fixed broken CLI check for `--upstream-efficiency` (was incorrectly combined with `|` so never matched).
+- Separated `--upstream-efficiency` and `--key-efficiency` handlers.
+- Updated usage string to list both.
+- DEMO.md checklist cleaned (removed duplicate bullets) and expanded to list all efficiency tables.
+- Added recording sections 18–21 for team / app / upstream / key efficiency.
+- Does not change policy, metering, or dashboard code.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 91 — 2026-10-30)
+
+CLI efficiency flags fixed. DEMO.md recording script now complete for all shipped visibility tables. Sale materials unchanged. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 91 — fix `--upstream-efficiency` / `--key-efficiency` CLI + DEMO.md checklist completeness
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact, high-cost + slow + high-token requests, efficiency (model/team/app/upstream/key), and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 91 fixes the broken upstream-efficiency CLI flag and completes the DEMO.md recording script for all efficiency tables. Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# efficiencies: npx tsx src/cli.ts --efficiency --team-efficiency --app-efficiency --upstream-efficiency --key-efficiency
+```
