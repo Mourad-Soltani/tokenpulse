@@ -768,3 +768,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Notes and blocks excluded. Digests never shown.
 - Does not change key binding, policy, or metering.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Endpoint efficiency (Session 92)
+
+- `endpointEfficiencyStatus()` ranks chat vs embeddings by USD per 1M tokens on allowed events.
+- Admin summary exposes `endpointEfficiency`. Dashboard renders an Endpoint efficiency table.
+- CLI: `--endpoint-efficiency`. Metrics gauges for overall and call count.
+- Does not change policy, metering, or endpoint classification (`endpoint:embeddings` policy id).
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

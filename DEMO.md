@@ -145,7 +145,7 @@ Before recording against local or Railway mock URL:
 
 - [ ] Start gateway with `TOKENPULSE_MOCK_UPSTREAM=1` and a non-secret token
 - [ ] Generate mixed traffic (allows + at least one block) via `npm run demo` or manual curls
-- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily/Weekly/Hourly/Monthly spend, Endpoint/Upstream spend, Blocked impact, Efficiency (model/team/app/upstream/key)
+- [ ] Show dashboard tables: By team, By app, Budgets, Rate limits, Latency, Upstream health, Daily + Monthly burn-rate, Alerts, Block reasons, Model/Team/App spend, High-cost, Slow, High-token, Daily/Weekly/Hourly/Monthly spend, Endpoint/Upstream spend, Blocked impact, Efficiency (model/team/app/endpoint/upstream/key)
 - [ ] Optional: scrape `/v1/admin/metrics` and mention Prometheus/Grafana path
 - [ ] No keys, no real provider calls, no raw prompts on screen
 - [ ] Keep under ~5 minutes; focus on policy-before-egress + audit packs + operator visibility
@@ -230,3 +230,12 @@ The dashboard shows a **Key efficiency** table (USD per 1M tokens by client key 
 - Digests never shown
 
 Useful to show cost-per-token by issued client key in the recording. No raw prompts.
+
+
+## 22. Endpoint efficiency (Session 92 — show in recording)
+
+The dashboard shows an **Endpoint efficiency** table (USD per 1M tokens by chat vs embeddings, lowest first):
+
+- Complements endpoint spend for cost-per-token visibility
+- CLI: `npx tsx src/cli.ts --endpoint-efficiency`
+

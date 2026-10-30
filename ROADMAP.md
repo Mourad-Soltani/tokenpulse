@@ -100,3 +100,5 @@
 - [x] Key efficiency status (USD per 1M tokens by client key; admin + dashboard + CLI + metrics)
 
 - [x] CLI efficiency flag fix + DEMO.md completeness (Session 91)
+
+- [x] Endpoint efficiency status (USD per 1M tokens by chat vs embeddings; admin + dashboard + CLI + metrics)

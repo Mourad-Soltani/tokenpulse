@@ -12,6 +12,7 @@ import { teamEfficiencyStatus, type TeamEfficiencyStatus } from "./teamEfficienc
 import { appEfficiencyStatus, type AppEfficiencyStatus } from "./appEfficiency.js";
 import { upstreamEfficiencyStatus, type UpstreamEfficiencyStatus } from "./upstreamEfficiency.js";
 import { keyEfficiencyStatus, type KeyEfficiencyStatus } from "./keyEfficiency.js";
+import { endpointEfficiencyStatus, type EndpointEfficiencyStatus } from "./endpointEfficiency.js";
 import { highCostStatus, type HighCostStatus } from "./highCost.js";
 import { slowRequestStatus, type SlowRequestStatus } from "./slowRequests.js";
 import { tokenVolumeStatus, type TokenVolumeStatus } from "./tokenVolume.js";
@@ -84,6 +85,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   appEfficiency: AppEfficiencyStatus;
   upstreamEfficiency: UpstreamEfficiencyStatus;
   keyEfficiency: KeyEfficiencyStatus;
+  endpointEfficiency: EndpointEfficiencyStatus;
   endpointSpend: EndpointSpendStatus;
   upstreamSpend: UpstreamSpendStatus;
   blockedImpact: BlockedImpactStatus;
@@ -152,6 +154,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     appEfficiency: appEfficiencyStatus(events),
     upstreamEfficiency: upstreamEfficiencyStatus(events),
     keyEfficiency: keyEfficiencyStatus(events),
+    endpointEfficiency: endpointEfficiencyStatus(events),
     endpointSpend: endpointSpendStatus(events),
     upstreamSpend: upstreamSpendStatus(events),
     blockedImpact: blockedImpactStatus(events),
@@ -350,6 +353,9 @@ export function dashboardHtml(): string {
       <h2>Key efficiency</h2>
       <p class="sub" id="keyefficiencymeta" style="margin:0 0 8px"></p>
       <table id="keyefficiency"><thead><tr><th>Key</th><th>Calls</th><th>Tokens</th><th>USD</th><th>USD / 1M</th><th>Avg tok/call</th></tr></thead><tbody></tbody></table>
+      <h2>Endpoint efficiency</h2>
+      <p class="sub" id="endpointefficiencymeta" style="margin:0 0 8px"></p>
+      <table id="endpointefficiency"><thead><tr><th>Endpoint</th><th>Calls</th><th>Tokens</th><th>USD</th><th>USD / 1M</th><th>Avg tok/call</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="card" style="margin-top:16px">
       <h2 style="margin:0 0 8px;font-size:1rem">Monthly spend</h2>
@@ -722,6 +728,14 @@ async function load() {
   if (ket) ket.innerHTML = (ke.rows||[]).map(r =>
     '<tr><td>'+esc(r.keyId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
   ).join('') || '<tr><td colspan="6">no key efficiency data</td></tr>';
+
+  const ee = s.endpointEfficiency || { calls:0, totalCostUsd:0, overallUsdPer1MTokens:0, rows:[] };
+  const eem = document.getElementById('endpointefficiencymeta');
+  if (eem) eem.textContent = ee.calls + ' calls · $' + (ee.totalCostUsd||0).toFixed(4) + ' · overall $' + (ee.overallUsdPer1MTokens||0).toFixed(4) + '/1M';
+  const eet = document.querySelector('#endpointefficiency tbody');
+  if (eet) eet.innerHTML = (ee.rows||[]).map(r =>
+    '<tr><td>'+esc(r.endpoint)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
+  ).join('') || '<tr><td colspan="6">no endpoint efficiency data</td></tr>';
 
   const ms = s.monthlySpend || { months:0, totalCostUsd:0, rows:[] };
   const msm = document.getElementById('monthlyspendmeta');
