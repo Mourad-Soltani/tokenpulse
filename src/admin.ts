@@ -1,5 +1,6 @@
 import { endpointSpendStatus, type EndpointSpendStatus } from "./endpointSpend.js";
 import { blockedImpactStatus, type BlockedImpactStatus } from "./blockedImpact.js";
+import { blockedImpactByTeamStatus, type BlockedImpactByTeamStatus } from "./blockedImpactByTeam.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -89,6 +90,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   endpointSpend: EndpointSpendStatus;
   upstreamSpend: UpstreamSpendStatus;
   blockedImpact: BlockedImpactStatus;
+  blockedImpactByTeam: BlockedImpactByTeamStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -158,6 +160,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     endpointSpend: endpointSpendStatus(events),
     upstreamSpend: upstreamSpendStatus(events),
     blockedImpact: blockedImpactStatus(events),
+    blockedImpactByTeam: blockedImpactByTeamStatus(events),
   };
 }
 
@@ -376,6 +379,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact (est. avoided)</h2>
       <p class="sub" id="blockedimpactmeta" style="margin:0 0 8px"></p>
       <table id="blockedImpact"><thead><tr><th>Model</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by team</h2>
+      <p class="sub" id="blockedimpactteammeta" style="margin:0 0 8px"></p>
+      <table id="blockedImpactByTeam"><thead><tr><th>Team</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 <div class="card">
       <h2>High-cost requests</h2>
@@ -774,6 +782,16 @@ async function load() {
   if (bit) {
     bit.innerHTML = (bi.rows||[]).map(r =>
       '<tr><td>'+esc(r.model)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
+  }
+
+  const bitm = s.blockedImpactByTeam || { totalBlocks:0, uniqueTeams:0, estimatedAvoidedUsd:0, assumedPromptTokens:256, rows:[] };
+  const bitmm = document.getElementById('blockedimpactteammeta');
+  if (bitmm) bitmm.textContent = (bitm.totalBlocks||0) + ' blocks · est. $' + (bitm.estimatedAvoidedUsd||0) + ' avoided across ' + (bitm.uniqueTeams||0) + ' teams';
+  const bitt = document.querySelector('#blockedImpactByTeam tbody');
+  if (bitt) {
+    bitt.innerHTML = (bitm.rows||[]).map(r =>
+      '<tr><td>'+esc(r.teamId)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
   }
 

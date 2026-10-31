@@ -149,6 +149,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_estimated_avoided_usd Estimated USD avoided using fixed prompt-token assumption on blocks",
     "# TYPE tokenpulse_estimated_avoided_usd gauge",
     `tokenpulse_estimated_avoided_usd ${summary.blockedImpact?.estimatedAvoidedUsd ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_by_team_teams Unique teams with blocked requests",
+    "# TYPE tokenpulse_blocked_impact_by_team_teams gauge",
+    `tokenpulse_blocked_impact_by_team_teams ${summary.blockedImpactByTeam?.uniqueTeams ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_by_team_avoided_usd Estimated avoided USD summed across teams",
+    "# TYPE tokenpulse_blocked_impact_by_team_avoided_usd gauge",
+    `tokenpulse_blocked_impact_by_team_avoided_usd ${summary.blockedImpactByTeam?.estimatedAvoidedUsd ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";

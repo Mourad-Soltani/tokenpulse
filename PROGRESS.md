@@ -2234,3 +2234,34 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # efficiencies: npx tsx src/cli.ts --efficiency --team-efficiency --app-efficiency --endpoint-efficiency --upstream-efficiency --key-efficiency
 ```
+
+## Decisions (Session 93 — blocked impact by team)
+
+- Added `blockedImpactByTeamStatus()` ranking teams by estimated avoided USD on block events (same fixed-token assumption as blockedImpact).
+- Exposed on admin summary, dashboard table, CLI `--blocked-impact-by-team`, and Prometheus metrics.
+- Does not change policy, metering, or block behavior. Blocks still store zero real tokens.
+- Complements model-level blocked impact for team attribution of policy value.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 93 — 2026-10-31)
+
+Blocked impact by team shipped. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 93 — blocked impact by team (estimated avoided USD ranked by team) on admin, dashboard, CLI, and metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact (by model and by team), high-cost + slow + high-token requests, efficiency (model/team/app/endpoint/upstream/key), and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 93 adds blocked impact by team (estimated avoided USD ranked by team). Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# efficiencies + impact: npx tsx src/cli.ts --blocked-impact --blocked-impact-by-team --efficiency
+```

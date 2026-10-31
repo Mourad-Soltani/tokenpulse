@@ -777,3 +777,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--endpoint-efficiency`. Metrics gauges for overall and call count.
 - Does not change policy, metering, or endpoint classification (`endpoint:embeddings` policy id).
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Blocked impact by team (Session 93)
+
+- `blockedImpactByTeamStatus()` ranks teams by estimated avoided USD on block events (fixed prompt-token assumption × model input price).
+- Admin summary exposes `blockedImpactByTeam`. Dashboard renders a Blocked impact by team table.
+- Prometheus: unique teams and total avoided USD gauges.
+- CLI: `--blocked-impact-by-team`.
+- Notes and allows excluded. Does not change policy, metering, or ledger.
+- Complements Session blockedImpact (by model) for team-level CISO/CFO visibility on policy enforcement value.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
