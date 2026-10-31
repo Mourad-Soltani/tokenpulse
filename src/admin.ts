@@ -1,6 +1,7 @@
 import { endpointSpendStatus, type EndpointSpendStatus } from "./endpointSpend.js";
 import { blockedImpactStatus, type BlockedImpactStatus } from "./blockedImpact.js";
 import { blockedImpactByTeamStatus, type BlockedImpactByTeamStatus } from "./blockedImpactByTeam.js";
+import { blockedImpactByAppStatus, type BlockedImpactByAppStatus } from "./blockedImpactByApp.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -91,6 +92,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   upstreamSpend: UpstreamSpendStatus;
   blockedImpact: BlockedImpactStatus;
   blockedImpactByTeam: BlockedImpactByTeamStatus;
+  blockedImpactByApp: BlockedImpactByAppStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -161,6 +163,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     upstreamSpend: upstreamSpendStatus(events),
     blockedImpact: blockedImpactStatus(events),
     blockedImpactByTeam: blockedImpactByTeamStatus(events),
+    blockedImpactByApp: blockedImpactByAppStatus(events),
   };
 }
 
@@ -384,6 +387,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by team</h2>
       <p class="sub" id="blockedimpactteammeta" style="margin:0 0 8px"></p>
       <table id="blockedImpactByTeam"><thead><tr><th>Team</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by app</h2>
+      <p class="sub" id="blockedimpactappmeta" style="margin:0 0 8px"></p>
+      <table id="blockedImpactByApp"><thead><tr><th>App</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 <div class="card">
       <h2>High-cost requests</h2>
@@ -792,6 +800,16 @@ async function load() {
   if (bitt) {
     bitt.innerHTML = (bitm.rows||[]).map(r =>
       '<tr><td>'+esc(r.teamId)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
+  }
+
+  const biam = s.blockedImpactByApp || { totalBlocks:0, uniqueApps:0, estimatedAvoidedUsd:0, assumedPromptTokens:256, rows:[] };
+  const biamm = document.getElementById('blockedimpactappmeta');
+  if (biamm) biamm.textContent = (biam.totalBlocks||0) + ' blocks · est. $' + (biam.estimatedAvoidedUsd||0) + ' avoided across ' + (biam.uniqueApps||0) + ' apps';
+  const biat = document.querySelector('#blockedImpactByApp tbody');
+  if (biat) {
+    biat.innerHTML = (biam.rows||[]).map(r =>
+      '<tr><td>'+esc(r.appId)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
   }
 

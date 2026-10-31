@@ -787,3 +787,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Notes and allows excluded. Does not change policy, metering, or ledger.
 - Complements Session blockedImpact (by model) for team-level CISO/CFO visibility on policy enforcement value.
 - Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Blocked impact by app (Session 94)
+
+- `blockedImpactByAppStatus()` ranks apps by estimated avoided USD on block events (fixed prompt-token assumption × model input price).
+- Admin summary exposes `blockedImpactByApp`. Dashboard renders a Blocked impact by app table.
+- Prometheus: unique apps and total avoided USD gauges.
+- CLI: `--blocked-impact-by-app`.
+- Notes and allows excluded. Does not change policy, metering, or ledger.
+- Complements Session 93 (by team) and model-level blocked impact for app-level CISO/CFO visibility on policy enforcement value.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.

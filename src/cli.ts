@@ -1,6 +1,7 @@
 import { endpointSpendStatus } from "./endpointSpend.js";
 import { blockedImpactStatus } from "./blockedImpact.js";
 import { blockedImpactByTeamStatus } from "./blockedImpactByTeam.js";
+import { blockedImpactByAppStatus } from "./blockedImpactByApp.js";
 import { upstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus } from "./appSpend.js";
@@ -145,6 +146,10 @@ async function main() {
   }
   if (args.includes("--blocked-impact-by-team")) {
     console.log(JSON.stringify(blockedImpactByTeamStatus(events), null, 2));
+    return;
+  }
+  if (args.includes("--blocked-impact-by-app")) {
+    console.log(JSON.stringify(blockedImpactByAppStatus(events), null, 2));
     return;
   }
   if (args.includes("--alerts")) {
