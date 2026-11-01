@@ -2328,3 +2328,35 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # efficiencies + impact: npx tsx src/cli.ts --blocked-impact --blocked-impact-by-team --blocked-impact-by-app --blocked-impact-by-endpoint --efficiency
 ```
+
+## Decisions (Session 96 — blocked impact by upstream)
+
+- Added `blockedImpactByUpstreamStatus()` ranking upstream sources by estimated avoided USD on block events (same fixed-token assumption as other blockedImpact variants).
+- Source detection reuses the same policy id check (`upstream:<source>` or `mock` via `mock-allow`) used by upstream spend / efficiency.
+- Exposed on admin summary, dashboard table, CLI `--blocked-impact-by-upstream`, and Prometheus metrics.
+- Does not change policy, metering, or block behavior. Blocks still store zero real tokens.
+- Complements model-, team-, app-, and endpoint-level blocked impact for upstream attribution of policy value.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 96 — 2026-11-01)
+
+Blocked impact by upstream shipped. Operator still must deploy the mock demo and record `DEMO.md`.
+
+- [x] Session 96 — blocked impact by upstream (estimated avoided USD ranked by upstream source) on admin, dashboard, CLI, and metrics
+
+## Next Up (highest priority)
+
+1. **Operator:** Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact (by model, by team, by app, by endpoint, and by upstream), high-cost + slow + high-token requests, efficiency (model/team/app/endpoint/upstream/key), and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 96 adds blocked impact by upstream (estimated avoided USD ranked by upstream source). Automation cannot log into Railway. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
+# efficiencies + impact: npx tsx src/cli.ts --blocked-impact --blocked-impact-by-team --blocked-impact-by-app --blocked-impact-by-endpoint --blocked-impact-by-upstream --efficiency
+```

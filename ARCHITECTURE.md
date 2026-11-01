@@ -807,3 +807,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Complements existing blocked impact rankings (model / team / app).
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+
+
+## Blocked impact by upstream (Session 96)
+
+- `blockedImpactByUpstreamStatus()` ranks upstream sources by estimated avoided USD on block events (fixed prompt-token assumption × model input price).
+- Source is taken from policy id `upstream:<source>` or `mock` when `mock-allow` is present (same as upstream spend / efficiency).
+- Admin summary exposes `blockedImpactByUpstream`. Dashboard renders a Blocked impact by upstream table.
+- Prometheus metrics and CLI `--blocked-impact-by-upstream` expose the same ranking.
+- Does not change policy, metering, or block behavior. Blocks store zero real tokens.
+- Complements existing blocked impact rankings (model / team / app / endpoint).
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

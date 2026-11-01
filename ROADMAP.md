@@ -105,3 +105,5 @@
 
 - [x] Blocked impact by team (estimated avoided USD ranked by team; admin + dashboard + CLI + metrics)
 - [x] Blocked impact by app (estimated avoided USD ranked by app; admin + dashboard + CLI + metrics)
+- [x] Blocked impact by endpoint (estimated avoided USD ranked by chat vs embeddings; admin + dashboard + CLI + metrics)
+- [x] Blocked impact by upstream (estimated avoided USD ranked by upstream source; admin + dashboard + CLI + metrics)
