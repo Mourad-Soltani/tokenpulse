@@ -161,6 +161,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_blocked_impact_by_app_avoided_usd Estimated avoided USD summed across apps",
     "# TYPE tokenpulse_blocked_impact_by_app_avoided_usd gauge",
     `tokenpulse_blocked_impact_by_app_avoided_usd ${summary.blockedImpactByApp?.estimatedAvoidedUsd ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_by_endpoint_endpoints Unique endpoints with blocked requests",
+    "# TYPE tokenpulse_blocked_impact_by_endpoint_endpoints gauge",
+    `tokenpulse_blocked_impact_by_endpoint_endpoints ${summary.blockedImpactByEndpoint?.uniqueEndpoints ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_by_endpoint_avoided_usd Estimated avoided USD summed across endpoints",
+    "# TYPE tokenpulse_blocked_impact_by_endpoint_avoided_usd gauge",
+    `tokenpulse_blocked_impact_by_endpoint_avoided_usd ${summary.blockedImpactByEndpoint?.estimatedAvoidedUsd ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";

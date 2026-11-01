@@ -2,6 +2,7 @@ import { endpointSpendStatus, type EndpointSpendStatus } from "./endpointSpend.j
 import { blockedImpactStatus, type BlockedImpactStatus } from "./blockedImpact.js";
 import { blockedImpactByTeamStatus, type BlockedImpactByTeamStatus } from "./blockedImpactByTeam.js";
 import { blockedImpactByAppStatus, type BlockedImpactByAppStatus } from "./blockedImpactByApp.js";
+import { blockedImpactByEndpointStatus, type BlockedImpactByEndpointStatus } from "./blockedImpactByEndpoint.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -93,6 +94,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpact: BlockedImpactStatus;
   blockedImpactByTeam: BlockedImpactByTeamStatus;
   blockedImpactByApp: BlockedImpactByAppStatus;
+  blockedImpactByEndpoint: BlockedImpactByEndpointStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -164,6 +166,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpact: blockedImpactStatus(events),
     blockedImpactByTeam: blockedImpactByTeamStatus(events),
     blockedImpactByApp: blockedImpactByAppStatus(events),
+    blockedImpactByEndpoint: blockedImpactByEndpointStatus(events),
   };
 }
 
@@ -392,6 +395,11 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by app</h2>
       <p class="sub" id="blockedimpactappmeta" style="margin:0 0 8px"></p>
       <table id="blockedImpactByApp"><thead><tr><th>App</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by endpoint</h2>
+      <p class="sub" id="blockedimpactendpointmeta" style="margin:0 0 8px"></p>
+      <table id="blockedImpactByEndpoint"><thead><tr><th>Endpoint</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
 <div class="card">
       <h2>High-cost requests</h2>
@@ -810,6 +818,16 @@ async function load() {
   if (biat) {
     biat.innerHTML = (biam.rows||[]).map(r =>
       '<tr><td>'+esc(r.appId)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
+  }
+
+  const biem = s.blockedImpactByEndpoint || { totalBlocks:0, uniqueEndpoints:0, estimatedAvoidedUsd:0, assumedPromptTokens:256, rows:[] };
+  const biemm = document.getElementById('blockedimpactendpointmeta');
+  if (biemm) biemm.textContent = (biem.totalBlocks||0) + ' blocks · est. $' + (biem.estimatedAvoidedUsd||0) + ' avoided across ' + (biem.uniqueEndpoints||0) + ' endpoints';
+  const biet = document.querySelector('#blockedImpactByEndpoint tbody');
+  if (biet) {
+    biet.innerHTML = (biem.rows||[]).map(r =>
+      '<tr><td>'+esc(r.endpoint)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
   }
 
