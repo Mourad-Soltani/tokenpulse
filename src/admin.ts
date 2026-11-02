@@ -99,6 +99,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByEndpoint: BlockedImpactByEndpointStatus;
   blockedImpactByUpstream: BlockedImpactByUpstreamStatus;
   blockedImpactByKey: BlockedImpactByKeyStatus;
+  blockedImpactByReason: BlockedImpactByReasonStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -173,6 +174,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByEndpoint: blockedImpactByEndpointStatus(events),
     blockedImpactByUpstream: blockedImpactByUpstreamStatus(events),
     blockedImpactByKey: blockedImpactByKeyStatus(events),
+    blockedImpactByReason: blockedImpactByReasonStatus(events),
   };
 }
 
@@ -416,6 +418,12 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by key</h2>
       <p class="sub" id="blockedimpactkeymeta" style="margin:0 0 8px"></p>
       <table id="blockedImpactByKey"><thead><tr><th>Key</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by reason</h2>
+      <p class="sub" id="blockedimpactreasonmeta" style="margin:0 0 8px"></p>
+      <table id="blockedImpactByReason"><thead><tr><th>Policy</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
     </div>
 <div class="card">
       <h2>High-cost requests</h2>
@@ -864,6 +872,16 @@ async function load() {
   if (bikt) {
     bikt.innerHTML = (bikm.rows||[]).map(r =>
       '<tr><td>'+esc(r.keyId)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
+  }
+
+  const birm = s.blockedImpactByReason || { rows: [], uniquePolicies: 0, estimatedAvoidedUsd: 0, totalBlocks: 0 };
+  const birmmeta = document.querySelector('#blockedimpactreasonmeta');
+  if (birmmeta) birmmeta.textContent = (birm.estimatedAvoidedUsd||0) + ' USD avoided across ' + (birm.uniquePolicies||0) + ' policies';
+  const birt = document.querySelector('#blockedImpactByReason tbody');
+  if (birt) {
+    birt.innerHTML = (birm.rows||[]).map(r =>
+      '<tr><td>'+esc(r.policyId)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
   }
 

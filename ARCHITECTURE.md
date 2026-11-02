@@ -829,3 +829,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change policy, metering, or block behavior. Blocks store zero real tokens. No digests or raw prompts.
 - Complements existing blocked impact rankings (model / team / app / endpoint / upstream) and key efficiency.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Blocked impact by reason (Session 98)
+
+- `blockedImpactByReasonStatus()` ranks primary policy reasons by estimated avoided USD on block events (fixed prompt-token assumption × model input price).
+- Primary reason is the first non-empty `policyIds` entry (or `(none)`).
+- Admin summary exposes `blockedImpactByReason`. Dashboard renders a Blocked impact by reason table.
+- Prometheus metrics and CLI `--blocked-impact-by-reason` expose the same ranking.
+- Does not change policy, metering, or block behavior. Blocks store zero real tokens. No raw prompts.
+- Complements existing blocked impact rankings (model / team / app / endpoint / upstream / key) and block reasons counts.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
