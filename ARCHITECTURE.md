@@ -818,3 +818,14 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change policy, metering, or block behavior. Blocks store zero real tokens.
 - Complements existing blocked impact rankings (model / team / app / endpoint).
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Blocked impact by key (Session 97)
+
+- `blockedImpactByKeyStatus()` ranks client keys by estimated avoided USD on block events (fixed prompt-token assumption × model input price).
+- Key is taken from policy id `key:<id>` or `gateway` when unbound (same as key efficiency).
+- Admin summary exposes `blockedImpactByKey`. Dashboard renders a Blocked impact by key table.
+- Prometheus metrics and CLI `--blocked-impact-by-key` expose the same ranking.
+- Does not change policy, metering, or block behavior. Blocks store zero real tokens. No digests or raw prompts.
+- Complements existing blocked impact rankings (model / team / app / endpoint / upstream) and key efficiency.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

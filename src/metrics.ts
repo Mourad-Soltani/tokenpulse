@@ -173,6 +173,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_blocked_impact_by_upstream_avoided_usd Estimated avoided USD summed across upstream sources",
     "# TYPE tokenpulse_blocked_impact_by_upstream_avoided_usd gauge",
     `tokenpulse_blocked_impact_by_upstream_avoided_usd ${summary.blockedImpactByUpstream?.estimatedAvoidedUsd ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_by_key_keys Unique client keys with blocked requests",
+    "# TYPE tokenpulse_blocked_impact_by_key_keys gauge",
+    `tokenpulse_blocked_impact_by_key_keys ${summary.blockedImpactByKey?.uniqueKeys ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_by_key_avoided_usd Estimated avoided USD summed across client keys",
+    "# TYPE tokenpulse_blocked_impact_by_key_avoided_usd gauge",
+    `tokenpulse_blocked_impact_by_key_avoided_usd ${summary.blockedImpactByKey?.estimatedAvoidedUsd ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";
