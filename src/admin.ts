@@ -7,6 +7,7 @@ import { blockedImpactByUpstreamStatus, type BlockedImpactByUpstreamStatus } fro
 import { blockedImpactByKeyStatus, type BlockedImpactByKeyStatus } from "./blockedImpactByKey.js";
 import { blockedImpactByReasonStatus, type BlockedImpactByReasonStatus } from "./blockedImpactByReason.js";
 import { blockedImpactByDayStatus, type BlockedImpactByDayStatus } from "./blockedImpactByDay.js";
+import { blockedImpactByHourStatus, type BlockedImpactByHourStatus } from "./blockedImpactByHour.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -103,6 +104,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByKey: BlockedImpactByKeyStatus;
   blockedImpactByReason: BlockedImpactByReasonStatus;
   blockedImpactByDay: BlockedImpactByDayStatus;
+  blockedImpactByHour: BlockedImpactByHourStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -179,6 +181,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByKey: blockedImpactByKeyStatus(events),
     blockedImpactByReason: blockedImpactByReasonStatus(events),
     blockedImpactByDay: blockedImpactByDayStatus(events),
+    blockedImpactByHour: blockedImpactByHourStatus(events),
   };
 }
 
@@ -429,6 +432,11 @@ export function dashboardHtml(): string {
       <table id="blockedImpactByReason"><thead><tr><th>Policy</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
       <p id="blockedimpactdaymeta"></p>
       <table id="blockedImpactByDay"><thead><tr><th>Day</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by hour</h2>
+      <p class="sub" id="blockedimpacthourmeta" style="margin:0 0 8px"></p>
+      <table id="blockedImpactByHour"><thead><tr><th>Hour</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
     </div>
 <div class="card">
@@ -898,6 +906,16 @@ async function load() {
   if (bidt) {
     bidt.innerHTML = (bidm.rows||[]).map(r =>
       '<tr><td>'+esc(r.day)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
+    ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
+  }
+
+  const bihm = s.blockedImpactByHour || { rows: [], uniqueHours: 0, estimatedAvoidedUsd: 0, totalBlocks: 0 };
+  const bihmmeta = document.querySelector('#blockedimpacthourmeta');
+  if (bihmmeta) bihmmeta.textContent = (bihm.estimatedAvoidedUsd||0) + ' USD avoided across ' + (bihm.uniqueHours||0) + ' hours';
+  const biht = document.querySelector('#blockedImpactByHour tbody');
+  if (biht) {
+    biht.innerHTML = (bihm.rows||[]).map(r =>
+      '<tr><td>'+esc(r.hour)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
   }
 

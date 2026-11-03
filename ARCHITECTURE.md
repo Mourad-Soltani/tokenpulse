@@ -849,3 +849,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change policy, metering, or block behavior. Blocks store zero real tokens. No raw prompts.
 - Complements daily spend and other blocked-impact dimensions for time-based policy-value visibility.
 - Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Blocked impact by hour (Session 100)
+
+- `blockedImpactByHourStatus()` ranks UTC hours (YYYY-MM-DDTHH) by estimated avoided USD on block events.
+- Same fixed-token assumption (`TOKENPULSE_BLOCKED_ASSUME_TOKENS`, default 256) × model input price as other blocked-impact views.
+- Admin summary, dashboard table, CLI `--blocked-impact-by-hour`, and Prometheus gauges.
+- Visibility only. Does not change policy, metering, or ledger. Blocks store zero real tokens. No raw prompts.
