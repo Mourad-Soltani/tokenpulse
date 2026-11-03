@@ -839,3 +839,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change policy, metering, or block behavior. Blocks store zero real tokens. No raw prompts.
 - Complements existing blocked impact rankings (model / team / app / endpoint / upstream / key) and block reasons counts.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Blocked impact by day (Session 99)
+
+- `blockedImpactByDayStatus()` ranks UTC days by estimated avoided USD on block events (fixed prompt-token assumption × model input price).
+- Admin summary exposes `blockedImpactByDay`. Dashboard renders a Blocked impact by day table.
+- CLI: `--blocked-impact-by-day`. Prometheus gauges for unique days and total avoided USD.
+- Day from event `timestamp` prefix (YYYY-MM-DD). Invalid timestamps skipped.
+- Does not change policy, metering, or block behavior. Blocks store zero real tokens. No raw prompts.
+- Complements daily spend and other blocked-impact dimensions for time-based policy-value visibility.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
