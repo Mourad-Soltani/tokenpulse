@@ -197,6 +197,12 @@ export function metricsText(summary: AdminSummary): string {
     "# HELP tokenpulse_blocked_impact_by_hour_avoided_usd Estimated avoided USD summed across UTC hours",
     "# TYPE tokenpulse_blocked_impact_by_hour_avoided_usd gauge",
     `tokenpulse_blocked_impact_by_hour_avoided_usd ${summary.blockedImpactByHour?.estimatedAvoidedUsd ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_by_week_weeks Unique UTC ISO weeks with blocked requests",
+    "# TYPE tokenpulse_blocked_impact_by_week_weeks gauge",
+    `tokenpulse_blocked_impact_by_week_weeks ${summary.blockedImpactByWeek?.uniqueWeeks ?? 0}`,
+    "# HELP tokenpulse_blocked_impact_by_week_avoided_usd Estimated avoided USD summed across UTC ISO weeks",
+    "# TYPE tokenpulse_blocked_impact_by_week_avoided_usd gauge",
+    `tokenpulse_blocked_impact_by_week_avoided_usd ${summary.blockedImpactByWeek?.estimatedAvoidedUsd ?? 0}`,
 
   ];
   return lines.join("\n") + "\n";

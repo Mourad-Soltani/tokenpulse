@@ -8,6 +8,7 @@ import { blockedImpactByKeyStatus, type BlockedImpactByKeyStatus } from "./block
 import { blockedImpactByReasonStatus, type BlockedImpactByReasonStatus } from "./blockedImpactByReason.js";
 import { blockedImpactByDayStatus, type BlockedImpactByDayStatus } from "./blockedImpactByDay.js";
 import { blockedImpactByHourStatus, type BlockedImpactByHourStatus } from "./blockedImpactByHour.js";
+import { blockedImpactByWeekStatus, type BlockedImpactByWeekStatus } from "./blockedImpactByWeek.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -105,6 +106,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByReason: BlockedImpactByReasonStatus;
   blockedImpactByDay: BlockedImpactByDayStatus;
   blockedImpactByHour: BlockedImpactByHourStatus;
+  blockedImpactByWeek: BlockedImpactByWeekStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -182,6 +184,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByReason: blockedImpactByReasonStatus(events),
     blockedImpactByDay: blockedImpactByDayStatus(events),
     blockedImpactByHour: blockedImpactByHourStatus(events),
+    blockedImpactByWeek: blockedImpactByWeekStatus(events),
   };
 }
 
@@ -437,6 +440,9 @@ export function dashboardHtml(): string {
       <h2 style="margin:0 0 8px;font-size:1rem">Blocked impact by hour</h2>
       <p class="sub" id="blockedimpacthourmeta" style="margin:0 0 8px"></p>
       <table id="blockedImpactByHour"><thead><tr><th>Hour</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
+      <h3>Blocked impact by week</h3>
+      <p class="sub" id="biweekmeta" style="margin:0 0 8px"></p>
+      <table id="blockedImpactByWeek"><thead><tr><th>Week (UTC ISO)</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
     </div>
 <div class="card">
@@ -918,6 +924,14 @@ async function load() {
       '<tr><td>'+esc(r.hour)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no blocks</td></tr>';
   }
+  const biwm = s.blockedImpactByWeek || { rows: [], uniqueWeeks: 0, estimatedAvoidedUsd: 0, totalBlocks: 0 };
+  const biwmeta = document.getElementById('biweekmeta');
+  if (biwmeta) biwmeta.textContent = (biwm.uniqueWeeks||0) + ' weeks · $' + (biwm.estimatedAvoidedUsd||0) + ' avoided · ' + (biwm.totalBlocks||0) + ' blocks';
+  const biwt = document.querySelector('#blockedImpactByWeek tbody');
+  if (biwt) biwt.innerHTML = (biwm.rows||[]).map(r =>
+    '<tr><td>'+esc(r.week)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
+  ).join('') || '<tr><td colspan="4">no blocked impact by week</td></tr>';
+
 
   const hc = s.highCost || { rows: [] };
   const sr = s.slowRequests || { rows: [] };
