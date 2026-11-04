@@ -9,6 +9,7 @@ import { blockedImpactByReasonStatus } from "./blockedImpactByReason.js";
 import { blockedImpactByDayStatus } from "./blockedImpactByDay.js";
 import { blockedImpactByHourStatus } from "./blockedImpactByHour.js";
 import { blockedImpactByWeekStatus } from "./blockedImpactByWeek.js";
+import { blockedImpactByMonthStatus } from "./blockedImpactByMonth.js";
 import { upstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus } from "./appSpend.js";
@@ -181,6 +182,9 @@ async function main() {
   }
   if (args.includes("--blocked-impact-by-week")) {
     console.log(JSON.stringify(blockedImpactByWeekStatus(events), null, 2));
+  }
+  if (args.includes("--blocked-impact-by-month")) {
+    console.log(JSON.stringify(blockedImpactByMonthStatus(events), null, 2));
     return;
   }
   if (args.includes("--blocked-impact-by-reason")) {
@@ -256,7 +260,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

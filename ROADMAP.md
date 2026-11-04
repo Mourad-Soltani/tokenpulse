@@ -113,3 +113,4 @@
 - [x] Blocked impact by reason (estimated avoided USD ranked by primary policy id; admin + dashboard + CLI + metrics)
 
 - [x] Blocked impact by week (estimated avoided USD ranked by UTC ISO week; admin + dashboard + CLI + metrics)
+- [x] Blocked impact by month (estimated avoided USD ranked by UTC month; admin + dashboard + CLI + metrics)

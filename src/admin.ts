@@ -9,6 +9,7 @@ import { blockedImpactByReasonStatus, type BlockedImpactByReasonStatus } from ".
 import { blockedImpactByDayStatus, type BlockedImpactByDayStatus } from "./blockedImpactByDay.js";
 import { blockedImpactByHourStatus, type BlockedImpactByHourStatus } from "./blockedImpactByHour.js";
 import { blockedImpactByWeekStatus, type BlockedImpactByWeekStatus } from "./blockedImpactByWeek.js";
+import { blockedImpactByMonthStatus, type BlockedImpactByMonthStatus } from "./blockedImpactByMonth.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -107,6 +108,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByDay: BlockedImpactByDayStatus;
   blockedImpactByHour: BlockedImpactByHourStatus;
   blockedImpactByWeek: BlockedImpactByWeekStatus;
+  blockedImpactByMonth: BlockedImpactByMonthStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -185,6 +187,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByDay: blockedImpactByDayStatus(events),
     blockedImpactByHour: blockedImpactByHourStatus(events),
     blockedImpactByWeek: blockedImpactByWeekStatus(events),
+    blockedImpactByMonth: blockedImpactByMonthStatus(events),
   };
 }
 
@@ -443,6 +446,9 @@ export function dashboardHtml(): string {
       <h3>Blocked impact by week</h3>
       <p class="sub" id="biweekmeta" style="margin:0 0 8px"></p>
       <table id="blockedImpactByWeek"><thead><tr><th>Week (UTC ISO)</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
+      <h3>Blocked impact by month</h3>
+      <p class="sub" id="bimonthmeta" style="margin:0 0 8px"></p>
+      <table id="blockedImpactByMonth"><thead><tr><th>Month (UTC)</th><th>Blocks</th><th>Est. avoided USD</th><th>%</th></tr></thead><tbody></tbody></table>
     </div>
     </div>
 <div class="card">
@@ -931,6 +937,14 @@ async function load() {
   if (biwt) biwt.innerHTML = (biwm.rows||[]).map(r =>
     '<tr><td>'+esc(r.week)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
   ).join('') || '<tr><td colspan="4">no blocked impact by week</td></tr>';
+
+  const bimm = s.blockedImpactByMonth || { rows: [], uniqueMonths: 0, estimatedAvoidedUsd: 0, totalBlocks: 0 };
+  const bimmeta = document.getElementById('bimonthmeta');
+  if (bimmeta) bimmeta.textContent = (bimm.uniqueMonths||0) + ' months · $' + (bimm.estimatedAvoidedUsd||0) + ' avoided · ' + (bimm.totalBlocks||0) + ' blocks';
+  const bimt = document.querySelector('#blockedImpactByMonth tbody');
+  if (bimt) bimt.innerHTML = (bimm.rows||[]).map(r =>
+    '<tr><td>'+esc(r.month)+'</td><td>'+r.blocks+'</td><td>'+r.estimatedAvoidedUsd+'</td><td>'+r.pct+'</td></tr>'
+  ).join('') || '<tr><td colspan="4">no blocked impact by month</td></tr>';
 
 
   const hc = s.highCost || { rows: [] };
