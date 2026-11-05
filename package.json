@@ -17,7 +17,9 @@
     "enable-key": "tsx src/cli.ts --enable-key",
     "rotate-key": "tsx src/cli.ts --rotate-key",
     "list-keys": "tsx src/cli.ts --list-keys",
-    "alerts": "tsx src/cli.ts --alerts"
+    "alerts": "tsx src/cli.ts --alerts",
+    "recording-prep": "tsx src/cli.ts --recording-prep",
+    "demo:seeded": "TOKENPULSE_LEDGER_DIR=data/ledger-seed tsx src/cli.ts --seed-demo && TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed tsx src/gateway.ts"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

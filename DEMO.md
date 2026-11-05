@@ -30,6 +30,15 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --days=14 
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
 
+
+After seeding, print a short voiceover cheat sheet:
+
+```bash
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-prep
+```
+
+Mention the top team, top model, total allowed USD, and blocked-impact estimate while showing the matching dashboard tables.
+
 Then open `http://127.0.0.1:8788/`. Paste `dev-local-token`. All visibility tables will have realistic multi-team / multi-app / multi-day data. No provider keys required.
 
 Without seed (empty or demo.sh ledger):

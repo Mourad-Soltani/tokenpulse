@@ -884,3 +884,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change policy, metering, or gateway. No raw prompts stored.
 - Live-upstream / Railway recording remains the operator gate.
 
+
+
+## Recording prep (Session 104)
+
+- `recordingPrep()` / CLI `--recording-prep` returns top team/model/app spend, total allowed USD, blocked-impact estimate, and counts.
+- For operator use while recording `DEMO.md`. Does not change policy or storage.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
