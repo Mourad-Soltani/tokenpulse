@@ -35,9 +35,17 @@ import { slowRequestStatus } from "./slowRequests.js";
 import { tokenVolumeStatus } from "./tokenVolume.js";
 import { adminSummary } from "./admin.js";
 import { postAlerts, webhookStatus } from "./notify.js";
+import { seedDemoLedger } from "./seedDemo.js";
 
 async function main() {
   const args = process.argv.slice(2);
+  if (args.includes("--seed-demo")) {
+    const days = Number(args.find((a) => a.startsWith("--days="))?.slice("--days=".length) ?? "14");
+    const perDay = Number(args.find((a) => a.startsWith("--per-day="))?.slice("--per-day=".length) ?? "28");
+    const result = await seedDemoLedger(Number.isFinite(days) && days > 0 ? days : 14, Number.isFinite(perDay) && perDay > 0 ? perDay : 28);
+    console.log(JSON.stringify({ ok: true, ...result, note: "Synthetic events appended. Dashboard and summary will show rich tables. No real provider calls." }, null, 2));
+    return;
+  }
   const dayArg = args.find((a) => a.startsWith("--day="))?.slice("--day=".length);
   const events = await readEvents({ day: dayArg });
   const format = args.includes("--csv") ? "csv" : "json";
@@ -260,7 +268,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text|--seed-demo [--days=N] [--per-day=N]] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

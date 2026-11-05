@@ -876,3 +876,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change policy, metering, or block behavior. Blocks still store zero real tokens. No raw prompts.
 - Complements day/hour/week blocked impact and monthly spend for longer-horizon policy-value visibility.
 - Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Demo ledger seed (Session 103)
+
+- `npx tsx src/cli.ts --seed-demo [--days=N] [--per-day=N]` appends synthetic UsageEvents (multi-day, multi-team/app/model, allows + blocks + one note) via normal `appendEvent` so the hash chain remains valid.
+- Purpose: populate dashboard and visibility tables for DEMO.md recording without real provider traffic or keys.
+- Does not change policy, metering, or gateway. No raw prompts stored.
+- Live-upstream / Railway recording remains the operator gate.
+

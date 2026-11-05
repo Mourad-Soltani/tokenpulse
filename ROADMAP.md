@@ -114,3 +114,6 @@
 
 - [x] Blocked impact by week (estimated avoided USD ranked by UTC ISO week; admin + dashboard + CLI + metrics)
 - [x] Blocked impact by month (estimated avoided USD ranked by UTC month; admin + dashboard + CLI + metrics)
+
+- [x] Demo ledger seed (`--seed-demo`) for rich recording tables (Session 103)
+

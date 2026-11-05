@@ -2556,3 +2556,37 @@ npm install && npm test && npm run demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 # efficiencies + impact: npx tsx src/cli.ts --blocked-impact --blocked-impact-by-team --blocked-impact-by-app --blocked-impact-by-endpoint --blocked-impact-by-upstream --blocked-impact-by-key --blocked-impact-by-reason --blocked-impact-by-day --blocked-impact-by-hour --blocked-impact-by-week --blocked-impact-by-month --efficiency
 ```
+
+## Decisions (Session 103 — demo ledger seed)
+
+- Added `seedDemoLedger()` that appends synthetic multi-day, multi-team, multi-app, multi-model UsageEvents (allows + blocks + one operator note) via the normal `appendEvent` path so the hash chain stays valid.
+- CLI: `--seed-demo [--days=N] [--per-day=N]` (defaults 14 / 28).
+- Events are purely synthetic. No provider calls, no keys, no raw prompts.
+- Purpose: make the dashboard and all visibility tables (spend, efficiency, blocked-impact-by-*, burn rate, etc.) look populated for the operator recording of DEMO.md.
+- Does not change policy, metering, gateway behavior, or admin APIs.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 103 — 2026-11-05)
+
+Demo ledger seed shipped. Operator still must deploy the mock demo (preferably after seeding) and record `DEMO.md`.
+
+- [x] Session 103 — synthetic demo ledger seed (`--seed-demo`) so recording shows rich tables
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Or start locally with the seeded ledger. Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact (by model, by team, by app, by endpoint, by upstream, by key, by reason, by day, by hour, by week, and by month), high-cost + slow + high-token requests, efficiency (model/team/app/endpoint/upstream/key), and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 103 adds a synthetic demo ledger seed so the recording can show a full, interesting dashboard without real traffic. Automation cannot log into Railway or record video. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+# rich recording data:
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# efficiencies + impact: npx tsx src/cli.ts --blocked-impact --blocked-impact-by-team --blocked-impact-by-app --blocked-impact-by-endpoint --blocked-impact-by-upstream --blocked-impact-by-key --blocked-impact-by-reason --blocked-impact-by-day --blocked-impact-by-hour --blocked-impact-by-week --blocked-impact-by-month --efficiency
+```

@@ -23,6 +23,17 @@ Expected: mock chat + embeddings + budget/rate/model/sensitive blocks + FinOps/C
 
 ## 3. Dashboard (optional, two steps)
 
+For a richer recording (populated spend, efficiency, blocked-impact, daily/weekly/monthly tables), first seed synthetic data:
+
+```bash
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --days=14 --per-day=24
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```
+
+Then open `http://127.0.0.1:8788/`. Paste `dev-local-token`. All visibility tables will have realistic multi-team / multi-app / multi-day data. No provider keys required.
+
+Without seed (empty or demo.sh ledger):
+
 ```bash
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run start:gateway
 ```
