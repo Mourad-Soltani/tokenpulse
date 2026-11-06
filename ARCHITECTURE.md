@@ -898,3 +898,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Dashboard renders a "Recording cheat sheet" card so the operator can read voiceover numbers while showing the tables.
 - Same data as CLI `--recording-prep`. Does not change policy, metering, or storage. No raw prompts.
 - Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+
+## Demo readiness (Session 106)
+
+- `demoReadyStatus()` scores ledger richness for the operator recording (allow/block counts, unique teams/models/apps, day span).
+- Admin summary exposes `demoReady`. Dashboard renders a Demo readiness card.
+- CLI: `--demo-ready`.
+- Does not change policy or metering.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+

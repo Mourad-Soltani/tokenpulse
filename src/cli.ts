@@ -46,10 +46,18 @@ async function main() {
     console.log(JSON.stringify({ ok: true, ...result, note: "Synthetic events appended. Dashboard and summary will show rich tables. No real provider calls." }, null, 2));
     return;
   }
-  if (args.includes("--recording-prep")) {
-    const { recordingPrep } = await import("./recordingPrep.js");
-    const prep = recordingPrep(events);
-    console.log(JSON.stringify({ ok: true, ...prep, hint: "Mention these numbers while recording DEMO.md. Dashboard tables match." }, null, 2));
+  if (args.includes("--recording-prep") || args.includes("--demo-ready")) {
+    const events = await readEvents();
+    if (args.includes("--recording-prep")) {
+      const { recordingPrep } = await import("./recordingPrep.js");
+      const prep = recordingPrep(events);
+      console.log(JSON.stringify({ ok: true, ...prep, hint: "Mention these numbers while recording DEMO.md. Dashboard tables match." }, null, 2));
+    }
+    if (args.includes("--demo-ready")) {
+      const { demoReadyStatus } = await import("./demoReady.js");
+      const ready = demoReadyStatus(events);
+      console.log(JSON.stringify({ ok: true, ...ready }, null, 2));
+    }
     return;
   }
   const dayArg = args.find((a) => a.startsWith("--day="))?.slice("--day=".length);
@@ -274,7 +282,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text|--seed-demo [--days=N] [--per-day=N]|--recording-prep] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text|--seed-demo [--days=N] [--per-day=N]|--recording-prep|--demo-ready] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

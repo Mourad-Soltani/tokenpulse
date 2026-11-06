@@ -11,6 +11,7 @@ import { blockedImpactByHourStatus, type BlockedImpactByHourStatus } from "./blo
 import { blockedImpactByWeekStatus, type BlockedImpactByWeekStatus } from "./blockedImpactByWeek.js";
 import { blockedImpactByMonthStatus, type BlockedImpactByMonthStatus } from "./blockedImpactByMonth.js";
 import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
+import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -111,6 +112,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByWeek: BlockedImpactByWeekStatus;
   blockedImpactByMonth: BlockedImpactByMonthStatus;
   recordingPrep: ReturnType<typeof recordingPrep>;
+  demoReady: DemoReadyStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -191,6 +193,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByWeek: blockedImpactByWeekStatus(events),
     blockedImpactByMonth: blockedImpactByMonthStatus(events),
     recordingPrep: recordingPrep(events),
+    demoReady: demoReadyStatus(events),
   };
 }
 
@@ -232,7 +235,10 @@ export function dashboardHtml(): string {
   </div>
   <div class="grid" id="kpis"></div>
   <section class="card">
-    <h2>Recording cheat sheet</h2>
+    
+    <h2>Demo readiness</h2>
+    <p id="demo-ready">Loading…</p>
+<h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
   <div class="card" style="margin-top:16px">
@@ -565,6 +571,14 @@ async function load() {
       '<br>Top team: ' + (prep.topTeam ? esc(prep.topTeam.id) + ' $' + prep.topTeam.usd : 'n/a') +
       ' · Top model: ' + (prep.topModel ? esc(prep.topModel.id) + ' $' + prep.topModel.usd : 'n/a') +
       ' · Top app: ' + (prep.topApp ? esc(prep.topApp.id) + ' $' + prep.topApp.usd : 'n/a');
+  }
+  const ready = s.demoReady || {};
+  const readyEl = document.getElementById('demo-ready');
+  if (readyEl) {
+    readyEl.innerHTML = (ready.ready ? '<span class="ok">READY</span>' : '<span class="bad">needs more data</span>') +
+      ' · allows ' + (ready.allowCount || 0) + ' · blocks ' + (ready.blockCount || 0) +
+      ' · teams ' + (ready.uniqueTeams || 0) + ' · models ' + (ready.uniqueModels || 0) +
+      ' · days ' + (ready.daySpan || 0) + '<br>' + (ready.notes || []).map(esc).join('<br>');
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };

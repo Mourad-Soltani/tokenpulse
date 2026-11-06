@@ -118,3 +118,6 @@
 - [x] Demo ledger seed (`--seed-demo`) for rich recording tables (Session 103)
 
 - [x] Recording prep cheat sheet (`--recording-prep` / `npm run recording-prep`) (Session 104)
+
+- [x] Demo readiness check (`--demo-ready` / admin / dashboard) (Session 106)
+

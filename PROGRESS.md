@@ -2658,3 +2658,37 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open http://127.0.0.1:8788/ — cheat sheet card appears after Refresh
 ```
+
+## Decisions (Session 106 — demo readiness check)
+
+- Added `demoReadyStatus()` that scores whether the current ledger is rich enough for a convincing DEMO.md recording (allow/block counts, unique teams/models/apps, day span).
+- Exposed on admin summary, dashboard card, and CLI `--demo-ready`.
+- Fixed CLI `--recording-prep` so it no longer references `events` before it is defined.
+- Does not change policy, metering, or ledger. No raw prompts.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 106 — 2026-11-06)
+
+Demo readiness check shipped. Operator still must deploy the mock demo (preferably after seeding) and record `DEMO.md`.
+
+- [x] Session 106 — demo readiness check on admin summary + dashboard + CLI
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Or start locally with the seeded ledger. Dashboard now shows both the cheat sheet and a Demo readiness card. Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact (by model, by team, by app, by endpoint, by upstream, by key, by reason, by day, by hour, by week, and by month), high-cost + slow + high-token requests, efficiency (model/team/app/endpoint/upstream/key), and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 106 adds a demo readiness check so the operator can confirm the ledger is rich enough before recording, and fixes the CLI `--recording-prep` bug. Automation cannot log into Railway or record video. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+# rich recording data + dashboard cheat sheet + readiness:
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --demo-ready
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open http://127.0.0.1:8788/ — cheat sheet + Demo readiness cards appear after Refresh
+```
