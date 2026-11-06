@@ -891,3 +891,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `recordingPrep()` / CLI `--recording-prep` returns top team/model/app spend, total allowed USD, blocked-impact estimate, and counts.
 - For operator use while recording `DEMO.md`. Does not change policy or storage.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Recording prep on dashboard (Session 105)
+
+- `adminSummary` now includes `recordingPrep` (top team/model/app, total allowed USD, blocked-impact estimate, counts, note).
+- Dashboard renders a "Recording cheat sheet" card so the operator can read voiceover numbers while showing the tables.
+- Same data as CLI `--recording-prep`. Does not change policy, metering, or storage. No raw prompts.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.

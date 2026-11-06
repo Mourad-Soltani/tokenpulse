@@ -38,6 +38,7 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-prep
 ```
 
 Mention the top team, top model, total allowed USD, and blocked-impact estimate while showing the matching dashboard tables.
+The dashboard itself now shows a **Recording cheat sheet** card with the same numbers after you load the summary. No need to switch windows.
 
 Then open `http://127.0.0.1:8788/`. Paste `dev-local-token`. All visibility tables will have realistic multi-team / multi-app / multi-day data. No provider keys required.
 

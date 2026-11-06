@@ -2625,3 +2625,36 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-prep
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+## Decisions (Session 105 — recording prep on dashboard)
+
+- Admin summary now includes the `recordingPrep` object (same shape as CLI `--recording-prep`).
+- Dashboard shows a "Recording cheat sheet" card with total allowed USD, blocked-impact estimate, and top team/model/app.
+- Operator can stay on the dashboard page while recording; no separate terminal window required for the numbers.
+- Does not change policy, metering, or ledger. No raw prompts.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 105 — 2026-11-06)
+
+Recording cheat sheet now visible on the dashboard itself.
+
+- [x] Session 105 — recording prep numbers on admin summary + dashboard card
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Or start locally with the seeded ledger. The dashboard now shows the cheat sheet card. Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact (by model, by team, by app, by endpoint, by upstream, by key, by reason, by day, by hour, by week, and by month), high-cost + slow + high-token requests, efficiency (model/team/app/endpoint/upstream/key), and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 105 surfaces the recording prep cheat sheet directly on the dashboard so the operator can mention consistent numbers without switching to the CLI. Automation cannot log into Railway or record video. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+# rich recording data + dashboard cheat sheet:
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open http://127.0.0.1:8788/ — cheat sheet card appears after Refresh
+```

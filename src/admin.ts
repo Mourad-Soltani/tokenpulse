@@ -10,6 +10,7 @@ import { blockedImpactByDayStatus, type BlockedImpactByDayStatus } from "./block
 import { blockedImpactByHourStatus, type BlockedImpactByHourStatus } from "./blockedImpactByHour.js";
 import { blockedImpactByWeekStatus, type BlockedImpactByWeekStatus } from "./blockedImpactByWeek.js";
 import { blockedImpactByMonthStatus, type BlockedImpactByMonthStatus } from "./blockedImpactByMonth.js";
+import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -109,6 +110,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByHour: BlockedImpactByHourStatus;
   blockedImpactByWeek: BlockedImpactByWeekStatus;
   blockedImpactByMonth: BlockedImpactByMonthStatus;
+  recordingPrep: ReturnType<typeof recordingPrep>;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -188,6 +190,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByHour: blockedImpactByHourStatus(events),
     blockedImpactByWeek: blockedImpactByWeekStatus(events),
     blockedImpactByMonth: blockedImpactByMonthStatus(events),
+    recordingPrep: recordingPrep(events),
   };
 }
 
@@ -228,6 +231,10 @@ export function dashboardHtml(): string {
     <button id="savenote" type="button">Add note</button>
   </div>
   <div class="grid" id="kpis"></div>
+  <section class="card">
+    <h2>Recording cheat sheet</h2>
+    <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
+  </section>
   <div class="card" style="margin-top:16px">
     <h2 style="margin:0 0 8px;font-size:1rem">Gateway</h2>
     <p class="sub" id="gwmeta"></p>
@@ -549,6 +556,17 @@ async function load() {
     ['Upstream %', (s.upstreamHealth && typeof s.upstreamHealth.successRate === 'number') ? s.upstreamHealth.successRate : 100, !!(s.upstreamHealth && s.upstreamHealth.samples > 0 && s.upstreamHealth.successRate < 95)],
     ['Burn warns', ((s.burnRate && s.burnRate.exhaustWarnCount) || 0) + ((s.burnRate && s.burnRate.monthlyExhaustWarnCount) || 0), !!((s.burnRate && (s.burnRate.exhaustWarnCount || s.burnRate.monthlyExhaustWarnCount)))]
   ].map(([k,v,bad]) => '<div class="card">'+k+'<b class="'+(bad?'bad':'')+'">'+v+'</b></div>').join('');
+  const prep = s.recordingPrep || {};
+  const prepEl = document.getElementById('recording-prep');
+  if (prepEl) {
+    prepEl.innerHTML = (prep.note || '') + '<br>' +
+      'Total allowed: $' + (prep.totalAllowedUsd || 0) +
+      ' · Blocked impact est: $' + (prep.totalBlockedImpactUsd || 0) +
+      '<br>Top team: ' + (prep.topTeam ? esc(prep.topTeam.id) + ' $' + prep.topTeam.usd : 'n/a') +
+      ' · Top model: ' + (prep.topModel ? esc(prep.topModel.id) + ' $' + prep.topModel.usd : 'n/a') +
+      ' · Top app: ' + (prep.topApp ? esc(prep.topApp.id) + ' $' + prep.topApp.usd : 'n/a');
+  }
+
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
   document.getElementById('gwmeta').textContent = (gw.loopback ? 'loopback' : 'non-loopback') + ' · ' + (gw.mockUpstream ? 'mock' : 'live-capable') + ' · ' + (gw.authRequired ? 'auth on' : 'auth off');
   const gwt = document.querySelector('#gateway tbody');
