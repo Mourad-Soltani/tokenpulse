@@ -7,7 +7,7 @@ Do **not** send bulk email. Wait until live demo proof exists (`SALE.md`).
 
 | Account | Why they care | Angle | Note |
 |---------|---------------|-------|------|
-| **Palo Alto Networks** (Prisma AIRS) | Bought Portkey (~$117M cash, closed May 2026) as AI Gateway core; still consolidating AI control plane | Self-hosted / air-gap FinOps+policy complement; spend attribution + CISO packs; not competing as global SaaS gateway | They already own a gateway — pitch **adjacent** (sovereign deploy, FinOps-hard blocks) or talent+code acceleration, not “replace Portkey” |
+| **Palo Alto Networks** (Prisma AIRS) | Bought Portkey ($120–140M, closed May 2026) as AI Gateway core; still consolidating AI control plane | Self-hosted / air-gap FinOps+policy complement; spend attribution + CISO packs; not competing as global SaaS gateway | They already own a gateway — pitch **adjacent** (sovereign deploy, FinOps-hard blocks) or talent+code acceleration, not “replace Portkey” |
 | **Cisco / Splunk** | Galileo → agent observability; Astrix / WideField → agent identity & telemetry; building agent trust layer | Request-path **meter + budget block + audit chain** for model API traffic; FinOps gap next to eval/guardrails | Emphasize cost control + append-only audit, not eval scores |
 | **CrowdStrike** | Public push into agentic AI security; AI gateway for model/MCP traffic called out as coming | Lightweight self-hosted gateway with policy-before-egress and hash-chained ledger for Falcon-adjacent runtime story | Keep technical, SOC/CISO language |
 
@@ -35,15 +35,15 @@ Do **not** send bulk email. Wait until live demo proof exists (`SALE.md`).
 - “Another Langfuse clone” VCs without enterprise distribution  
 - Bulk LinkedIn sequences to random SDRs  
 
-## Public comps (diligence context)
+## Public comps (diligence context — Session 108, Nov 2026)
 
 | Deal | Approx | Relevance |
 |------|--------|-----------|
-| Portkey → Palo Alto (2026) | ~$117M purchase consideration (SEC) | AI gateway is board-level; scale commanded the price |
-| Helicone → Mintlify | Est. low tens $M | Obs/proxy without platform gravity clears less |
-| Langfuse → ClickHouse | Est. $100–200M band (reported) | Traction + OSS distribution matter |
+| Portkey → Palo Alto Networks (closed May 2026) | **$120–140M** (SEC / press) | Closest peer AI gateway + control plane; ~$18M raised; scale + customers commanded the price |
+| Helicone → Mintlify (early 2026) | Low / mid tens $M band | Observability/proxy without platform gravity clears less |
+| Langfuse → ClickHouse (Jan 2026) | Raised ~$4–4.5M pre-deal | OSS traction + distribution matter |
 
-Tokenpulse today is **earlier than Portkey-at-exit**. Outreach should invite a **technical look + pilot**, not an auction narrative.
+Tokenpulse today is **earlier than Portkey-at-exit** (pre-revenue, pre-demo recording). Outreach should invite a **technical look + pilot**, not an auction narrative. Internal valuation bands live in `SALE.md` (Session 108).
 
 ## Diligence packet (when asked)
 
