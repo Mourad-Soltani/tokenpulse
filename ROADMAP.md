@@ -121,3 +121,5 @@
 
 - [x] Demo readiness check (`--demo-ready` / admin / dashboard) (Session 106)
 
+
+- [x] Policy ROI status (allowed vs estimated avoided %; admin + dashboard + CLI) (Session 107)

@@ -2692,3 +2692,38 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --demo-ready
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open http://127.0.0.1:8788/ — cheat sheet + Demo readiness cards appear after Refresh
 ```
+
+
+## Decisions (Session 107 — policy ROI status)
+
+- Added `policyRoiStatus()` that surfaces a single CFO-friendly number: estimated avoided spend as a percentage of potential (allowed + avoided).
+- Exposed on admin summary, dashboard card, and CLI `--policy-roi`.
+- Uses the same fixed-token assumption as existing blocked impact. Demo/visibility only.
+- Does not change policy, metering, or ledger. No raw prompts.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 107 — 2026-11-07)
+
+Policy ROI status shipped. Operator still must deploy the mock demo (preferably after seeding) and record `DEMO.md`.
+
+- [x] Session 107 — policy ROI (allowed vs estimated avoided %) on admin, dashboard, and CLI
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` in the dashboard → Generate domain → record DEMO.md against that URL (no keys on camera). Or start locally with the seeded ledger. Dashboard now shows cheat sheet, Demo readiness, and Policy ROI. Show latency, upstream health, daily + monthly burn-rate, alerts, block reasons, model/team/app/daily/weekly/hourly/monthly/endpoint/upstream spend, blocked impact (by model, by team, by app, by endpoint, by upstream, by key, by reason, by day, by hour, by week, and by month), high-cost + slow + high-token requests, efficiency (model/team/app/endpoint/upstream/key), Policy ROI, and optionally the metrics endpoint. Use the checklist in `DEMO.md`.
+2. After recording exists: personalize names in `OUTREACH_DRAFTS.md` (≤10 total) and send first wave. Follow `OUTREACH.md` sequence.
+3. After first pilot quote: fill References.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 107 adds a Policy ROI card so the operator can open the recording with a single “policy blocked X% of potential spend” number. Automation cannot log into Railway or record video. Do not paste secrets into chat. Do not send outreach until the recording exists.
+
+```bash
+npm install && npm test && npm run demo
+# rich recording data + dashboard cheat sheet + readiness + ROI:
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --demo-ready --policy-roi
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open http://127.0.0.1:8788/ — cheat sheet + Demo readiness + Policy ROI cards appear after Refresh
+```

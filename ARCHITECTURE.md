@@ -908,3 +908,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change policy or metering.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
 
+
+
+## Policy ROI status (Session 107)
+
+- `policyRoiStatus()` computes allowed estimated cost vs estimated avoided USD (same fixed-token assumption as blocked impact).
+- Exposes `allowedCostUsd`, `estimatedAvoidedUsd`, `totalPotentialUsd`, `avoidedPct`.
+- Admin summary includes `policyRoi`. Dashboard renders a Policy ROI card.
+- CLI: `--policy-roi`.
+- Visibility only. Does not change policy, metering, or ledger. No raw prompts.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
