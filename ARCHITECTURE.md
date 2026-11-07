@@ -918,3 +918,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--policy-roi`.
 - Visibility only. Does not change policy, metering, or ledger. No raw prompts.
 - Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Policy ROI in FinOps pack (Session 109)
+
+- `buildFinopsPack` now includes `policyRoi` from `policyRoiStatus()`.
+- Same numbers as the admin/dashboard Policy ROI card (allowed vs estimated avoided).
+- CSV remains event rows only. Security pack unchanged.
+- Visibility only. Does not change policy, metering, or ledger. No raw prompts.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.

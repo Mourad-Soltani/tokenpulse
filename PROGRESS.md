@@ -2759,3 +2759,35 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --demo-ready --policy-roi
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+## Decisions (Session 109 — policy ROI in FinOps pack)
+
+- FinOps pack `tokenpulse-finops-v1` now includes `policyRoi` (same object as admin `policyRoiStatus`).
+- Allowed cost, estimated avoided USD, total potential, and avoided percentage travel with the CFO export.
+- Does not change event rows, CSV, or security pack. Visibility only. No raw prompts.
+- Complements Session 107 dashboard card so downloaded packs match the demo narrative.
+- Operator demo recording remains the hard gate before outreach. No keys in git or chat.
+
+## Current Status (Session 109 — 2026-11-07)
+
+Policy ROI now ships inside the FinOps export pack. Product otherwise unchanged from Session 107/108.
+
+- [x] Session 109 — FinOps pack includes policy ROI summary
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` → Generate domain → record DEMO.md (no keys on camera). Or start locally with seeded ledger. Dashboard shows cheat sheet, Demo readiness, and Policy ROI. FinOps export now includes the same ROI numbers.
+2. After recording exists: personalize ≤10 emails from `OUTREACH_DRAFTS.md` and send first wave. Follow `OUTREACH.md`.
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 109 adds policy ROI to the downloadable FinOps pack so CFO packs match the dashboard card. Automation cannot record the demo or send outreach. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --demo-ready --policy-roi --export-finops
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

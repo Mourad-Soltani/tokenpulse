@@ -43,13 +43,17 @@ const block: UsageEvent = {
 };
 
 describe("export packs", () => {
-  it("builds a finops pack without raw prompts", () => {
+  it("builds a finops pack without raw prompts and includes policy ROI", () => {
     const pack = buildFinopsPack([allow, block], { day: "2026-09-16", now: "2026-09-16T12:00:00.000Z" });
     assert.equal(pack.version, FINOPS_PACK_VERSION);
     assert.equal(pack.summary.calls, 2);
     assert.equal(pack.summary.blocked, 1);
     assert.equal(pack.events.length, 2);
     assert.equal("latencyMs" in pack.events[0], false);
+    assert.ok(pack.policyRoi);
+    assert.equal(typeof pack.policyRoi.allowedCostUsd, "number");
+    assert.equal(typeof pack.policyRoi.estimatedAvoidedUsd, "number");
+    assert.equal(typeof pack.policyRoi.avoidedPct, "number");
     const raw = JSON.stringify(pack);
     assert.doesNotMatch(raw, /"messages"|user content|rawPrompt/);
   });

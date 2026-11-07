@@ -1,4 +1,5 @@
 import { summarize, verifyChain } from "./ledger.js";
+import { policyRoiStatus } from "./policyRoi.js";
 import type { UsageEvent } from "./types.js";
 
 export const FINOPS_PACK_VERSION = "tokenpulse-finops-v1";
@@ -23,12 +24,12 @@ export function exportStatus(): ExportStatus {
   };
 }
 
-
 export type FinopsPack = {
   version: typeof FINOPS_PACK_VERSION;
   generatedAt: string;
   day?: string;
   summary: ReturnType<typeof summarize>;
+  policyRoi: ReturnType<typeof policyRoiStatus>;
   events: Array<{
     id: string;
     timestamp: string;
@@ -72,6 +73,7 @@ export function buildFinopsPack(events: UsageEvent[], opts?: { day?: string; now
     generatedAt: opts?.now ?? new Date().toISOString(),
     day: opts?.day,
     summary: summarize(events),
+    policyRoi: policyRoiStatus(events),
     events: events.filter((e) => e.decision !== "note").map((e) => ({
       id: e.id,
       timestamp: e.timestamp,

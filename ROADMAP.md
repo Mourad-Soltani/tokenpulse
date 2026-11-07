@@ -123,3 +123,5 @@
 
 
 - [x] Policy ROI status (allowed vs estimated avoided %; admin + dashboard + CLI) (Session 107)
+
+- [x] Policy ROI in FinOps export pack (Session 109)
