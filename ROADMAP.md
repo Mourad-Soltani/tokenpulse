@@ -125,3 +125,5 @@
 - [x] Policy ROI status (allowed vs estimated avoided %; admin + dashboard + CLI) (Session 107)
 
 - [x] Policy ROI in FinOps export pack (Session 109)
+
+- [x] Outreach snippet generator (`--outreach-snippet` / `npm run outreach-snippet`) (Session 110)

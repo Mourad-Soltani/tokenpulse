@@ -63,3 +63,15 @@ Mourad Soltani
 - Attach or link the DEMO recording only after it exists.
 - Follow the nudge / breakup timing in `OUTREACH.md` if no reply.
 - Never include secrets. Never claim production scale or $1B outcomes.
+
+
+## Operator helper (Session 110)
+
+After seeding or running traffic, generate a paste-ready paragraph with current numbers:
+
+```bash
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --outreach-snippet
+# or: npm run outreach-snippet
+```
+
+Copy the `body` field into the personalized drafts above. Still do not send until the DEMO.md recording exists.

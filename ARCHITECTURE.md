@@ -926,3 +926,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CSV remains event rows only. Security pack unchanged.
 - Visibility only. Does not change policy, metering, or ledger. No raw prompts.
 - Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+
+## Outreach snippet (Session 110)
+
+- `outreachSnippet()` produces a short paragraph using `policyRoiStatus` numbers and the top team from `summarize().byTeam`.
+- CLI `--outreach-snippet` / `npm run outreach-snippet`. Output is JSON (`body` + `numbers`).
+- Intended for the operator to paste into personalized drafts in `OUTREACH_DRAFTS.md` after the DEMO.md recording exists.
+- Does not send email, store prompts, or change policy. No secrets.
