@@ -11,6 +11,17 @@ Do **not** send bulk email. Wait until live demo proof exists (`SALE.md`).
 | **Cisco / Splunk** | Galileo → agent observability; Astrix / WideField → agent identity & telemetry; building agent trust layer | Request-path **meter + budget block + audit chain** for model API traffic; FinOps gap next to eval/guardrails | Emphasize cost control + append-only audit, not eval scores |
 | **CrowdStrike** | Public push into agentic AI security; AI gateway for model/MCP traffic called out as coming | Lightweight self-hosted gateway with policy-before-egress and hash-chained ledger for Falcon-adjacent runtime story | Keep technical, SOC/CISO language |
 
+## Recent market signals (Session 112 — Nov 2026)
+
+Public announcements used to tighten outreach angles. No product change.
+
+- **Palo Alto Networks / Prisma AIRS**: Portkey closed May 29, 2026. Prisma AIRS AI Gateway GA announced July 16, 2026 (sub-ms routing, 68T+ tokens/month claim). Nov 2026 docs show continued runtime, skill-security, and K8s IP-tag work. Pitch remains **adjacent** (sovereign / air-gap FinOps-hard blocks + CISO packs), not a managed-gateway replacement.
+- **Cisco / Splunk**: Galileo (May 2026), Astrix, WideField acquired. .conf26 (Sep 2026) theme “tokens are the new currency / control is the new moat”; Tokenomics + agent observability + on-prem AI POD messaging. Strong fit for request-path meter + budget block + hash-chained audit next to eval/guardrails.
+- **CrowdStrike**: Falcon Guardian AI Gateway + AI Kill Switch announced Nov 3, 2026 (routes AI traffic, inspects prompts/responses, monitors usage, enforces policy; endpoint + gateway). Pitch lightweight self-hosted complement for customers who want hard budget/sensitive blocks and append-only ledger without the full Falcon agent surface.
+
+Use these public product names in the first sentence of personalized emails. Still wait for DEMO.md recording before any send.
+
+
 ## Tier B — strong adjacent (observability / cloud / identity)
 
 | Account | Why they care | Angle |

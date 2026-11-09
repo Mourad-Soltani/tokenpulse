@@ -8,13 +8,13 @@ Fill `{{Name}}` from LinkedIn / company site. Prefer corp-dev, product, or AI-se
 
 ## Palo Alto Networks (Prisma AIRS / Portkey adjacency)
 
-**Subject:** Self-hosted FinOps + policy complement for AI gateway traffic
+**Subject:** Sovereign FinOps-hard complement for Prisma AIRS AI Gateway
 
 Hi {{Name}},
 
 Tokenpulse is a self-hosted OpenAI-compatible gateway that meters tokens, attributes spend to team/app, and hard-blocks requests that violate budget, model, rate, or sensitive-payload policy before they leave the network. Decisions go into a hash-chained ledger with FinOps and CISO export packs.
 
-It is deliberately narrow (not multi-tenant SaaS, not an agent orchestrator). Given Palo Alto’s Portkey acquisition and Prisma AIRS work, a sovereign / air-gapped FinOps-hard slice may be useful alongside the managed gateway — for customers who cannot send traffic to a third-party control plane or who need strict budget blocks + audit packs.
+It is deliberately narrow (not multi-tenant SaaS, not an agent orchestrator). Given the Portkey close (May 2026) and Prisma AIRS AI Gateway GA (July 2026), a sovereign / air-gapped FinOps-hard slice may be useful alongside the managed gateway — for customers who cannot send traffic to a third-party control plane or who need strict budget blocks + audit packs that travel with the data.
 
 I can send a 3-minute mock demo recording (no keys) or jump on a short technical call. Repo: https://github.com/Mourad-Soltani/tokenpulse
 
@@ -25,13 +25,13 @@ Mourad Soltani
 
 ## Cisco / Splunk (agent observability adjacency)
 
-**Subject:** Request-path meter + budget block + hash-chained audit for model APIs
+**Subject:** Request-path meter + budget block next to Splunk Tokenomics / Galileo
 
 Hi {{Name}},
 
 Tokenpulse sits on the request path of OpenAI-compatible LLM traffic: it meters tokens, attributes spend to team/app, and blocks (budget / model / rate / sensitive) before egress. The ledger is hash-chained and exports FinOps + security packs.
 
-Cisco’s Galileo / agent trust work covers observability and identity; this fills the hard cost-control and append-only audit gap for the actual model API calls. Self-hosted, mock-first demo, no raw prompts stored by default.
+Splunk .conf26 messaging (“tokens are the new currency”) plus Galileo agent observability covers quality and guardrails; this fills the hard cost-control and append-only audit gap for the actual model API calls. Self-hosted, mock-first demo, no raw prompts stored by default.
 
 Happy to share a short recording or architecture walkthrough if a FinOps-hard control plane is on the 2026 roadmap.
 
@@ -42,13 +42,13 @@ https://github.com/Mourad-Soltani/tokenpulse
 
 ## CrowdStrike (AI gateway / agentic security)
 
-**Subject:** Lightweight self-hosted AI gateway with policy-before-egress and audit chain
+**Subject:** Lightweight self-hosted complement for Falcon Guardian AI Gateway
 
 Hi {{Name}},
 
 Tokenpulse is a small self-hosted OpenAI-compatible proxy that enforces budget, model allow/deny, rate, and sensitive-payload policy before any call reaches the provider, then writes a hash-chained usage event. Export packs go to CFO (FinOps) and CISO (blocked events + policy hits).
 
-Given CrowdStrike’s public direction on agentic AI security and model/MCP gateways, this could be a lightweight runtime control for customers who want hard blocks and audit without a heavy managed plane. Demo runs with zero provider keys.
+Falcon Guardian’s AI Gateway + Kill Switch (Nov 2026) covers endpoint + centralized inspect/enforce. This can be a lightweight sovereign complement for customers who want hard budget/sensitive blocks and an append-only ledger that stays inside their network. Demo runs with zero provider keys.
 
 I can send the recording or a technical overview. Repo: https://github.com/Mourad-Soltani/tokenpulse
 
@@ -75,3 +75,7 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --outreach-snippet
 ```
 
 Copy the `body` field into the personalized drafts above. Still do not send until the DEMO.md recording exists.
+
+## Session 112 personalization hooks
+
+Use the public product names above (Prisma AIRS AI Gateway, Splunk Tokenomics / Galileo, Falcon Guardian AI Gateway) in the opening sentence. Still do not send until a DEMO.md recording exists. Numbers can be filled from `--outreach-snippet` / `--buyer-brief` after seeding.
