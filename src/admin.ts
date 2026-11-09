@@ -13,6 +13,7 @@ import { blockedImpactByMonthStatus, type BlockedImpactByMonthStatus } from "./b
 import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
 import { policyRoiStatus, type PolicyRoiStatus } from "./policyRoi.js";
+import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -196,6 +197,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     recordingPrep: recordingPrep(events),
     demoReady: demoReadyStatus(events),
     policyRoi: policyRoiStatus(events),
+    buyerBrief: buyerBrief(events),
   };
 }
 
@@ -242,6 +244,8 @@ export function dashboardHtml(): string {
     <p id="demo-ready">Loading…</p>
     <h2>Policy ROI (est.)</h2>
     <p id="policy-roi">Loading…</p>
+<h2>Buyer brief</h2>
+    <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;margin:0;background:#f8f8f8;padding:10px;border-radius:6px">Loading…</pre>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -589,6 +593,16 @@ async function load() {
   if (roiEl) {
     roiEl.innerHTML = 'Allowed $' + (roi.allowedCostUsd || 0) + ' · Avoided $' + (roi.estimatedAvoidedUsd || 0) +
       ' (' + (roi.avoidedPct || 0) + '%) · Potential $' + (roi.totalPotentialUsd || 0) + '<br>' + esc(roi.note || '');
+  }
+
+  const brief = s.buyerBrief || {};
+  const briefEl = document.getElementById('buyer-brief-text');
+  if (briefEl && brief.headline) {
+    briefEl.textContent = brief.headline + '\n\n' +
+      (brief.bullets || []).map(function(b){ return '• ' + b; }).join('\n') +
+      '\n\n' + (brief.positioning || '') +
+      '\n\nNext: ' + (brief.nextStep || '') +
+      '\n\n' + (brief.note || '');
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };

@@ -934,3 +934,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI `--outreach-snippet` / `npm run outreach-snippet`. Output is JSON (`body` + `numbers`).
 - Intended for the operator to paste into personalized drafts in `OUTREACH_DRAFTS.md` after the DEMO.md recording exists.
 - Does not send email, store prompts, or change policy. No secrets.
+
+## Buyer brief (Session 111)
+
+- `buyerBrief()` builds a short executive summary from current ledger numbers (policy ROI, counts, uniqueness).
+- Admin summary exposes `buyerBrief`. Dashboard renders a Buyer brief card (headline + bullets + positioning + next step).
+- CLI: `--buyer-brief` / `npm run buyer-brief`. Output is JSON.
+- Visibility only. Does not change policy, metering, or storage. No raw prompts or secrets.
+- Intended for operator use on buyer calls after the DEMO.md recording exists.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.

@@ -2824,3 +2824,35 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --outreach-snippet --demo-ready --policy-roi
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+## Decisions (Session 111 — buyer brief)
+
+- Added `buyerBrief()` that produces a concise executive summary (headline, bullets, positioning, next step) from the current ledger.
+- CLI: `--buyer-brief` (also `npm run buyer-brief`).
+- Admin summary includes `buyerBrief`. Dashboard renders a Buyer brief card.
+- Visibility only. No secrets, no raw prompts, no automatic send.
+- Operator demo recording remains the hard gate before any email is sent.
+
+## Current Status (Session 111 — 2026-11-09)
+
+Buyer brief generator shipped. Sale materials otherwise unchanged. Operator still must record `DEMO.md` before sending outreach.
+
+- [x] Session 111 — buyer brief from ledger numbers (`--buyer-brief` / admin / dashboard)
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` → Generate domain → record DEMO.md (no keys on camera). Or start locally with seeded ledger. Use `--recording-prep`, `--demo-ready`, `--policy-roi`, `--outreach-snippet`, and now `--buyer-brief` for numbers.
+2. After recording exists: personalize ≤10 emails from `OUTREACH_DRAFTS.md` (paste snippet body) and send first wave. Follow `OUTREACH.md`.
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 111 adds a buyer-brief generator so the operator has a ready executive summary for calls. Automation cannot record the demo or send email. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

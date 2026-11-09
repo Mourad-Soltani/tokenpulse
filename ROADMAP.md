@@ -127,3 +127,5 @@
 - [x] Policy ROI in FinOps export pack (Session 109)
 
 - [x] Outreach snippet generator (`--outreach-snippet` / `npm run outreach-snippet`) (Session 110)
+
+- [x] Buyer brief (`--buyer-brief` / admin / dashboard) (Session 111)
