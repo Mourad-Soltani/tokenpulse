@@ -129,3 +129,5 @@
 - [x] Outreach snippet generator (`--outreach-snippet` / `npm run outreach-snippet`) (Session 110)
 
 - [x] Buyer brief (`--buyer-brief` / admin / dashboard) (Session 111)
+
+- [x] Annual cost projection (admin summary + dashboard + CLI) (Session 113/114)

@@ -14,6 +14,7 @@ import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
 import { policyRoiStatus, type PolicyRoiStatus } from "./policyRoi.js";
 import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
+import { annualProjectionStatus, type AnnualProjectionStatus } from "./annualProjection.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -115,6 +116,9 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByMonth: BlockedImpactByMonthStatus;
   recordingPrep: ReturnType<typeof recordingPrep>;
   demoReady: DemoReadyStatus;
+  policyRoi: PolicyRoiStatus;
+  buyerBrief: BuyerBrief;
+  annual: AnnualProjectionStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -198,6 +202,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     demoReady: demoReadyStatus(events),
     policyRoi: policyRoiStatus(events),
     buyerBrief: buyerBrief(events),
+    annual: annualProjectionStatus(events),
   };
 }
 
@@ -244,6 +249,8 @@ export function dashboardHtml(): string {
     <p id="demo-ready">Loading…</p>
     <h2>Policy ROI (est.)</h2>
     <p id="policy-roi">Loading…</p>
+    <h2>Annual projection (est.)</h2>
+    <p id="annual-projection">Loading…</p>
 <h2>Buyer brief</h2>
     <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;margin:0;background:#f8f8f8;padding:10px;border-radius:6px">Loading…</pre>
 <h2>Recording cheat sheet</h2>
@@ -593,6 +600,14 @@ async function load() {
   if (roiEl) {
     roiEl.innerHTML = 'Allowed $' + (roi.allowedCostUsd || 0) + ' · Avoided $' + (roi.estimatedAvoidedUsd || 0) +
       ' (' + (roi.avoidedPct || 0) + '%) · Potential $' + (roi.totalPotentialUsd || 0) + '<br>' + esc(roi.note || '');
+  }
+
+  const ann = s.annual || {};
+  const annEl = document.getElementById('annual-projection');
+  if (annEl) {
+    annEl.innerHTML = 'Total allowed $' + (ann.totalAllowedUsd || 0) + ' over ' + (ann.daysWithData || 0) +
+      ' days · Avg daily $' + (ann.avgDailyUsd || 0) + ' · Projected annual $' + (ann.projectedAnnualUsd || 0) +
+      '<br>' + esc(ann.notes || '');
   }
 
   const brief = s.buyerBrief || {};

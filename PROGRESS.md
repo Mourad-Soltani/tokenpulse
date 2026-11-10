@@ -2920,3 +2920,37 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 114 — annual projection on dashboard)
+
+- Exposed `annualProjectionStatus()` on admin summary as `annual`.
+- Dashboard renders an Annual projection card next to Policy ROI (total allowed, days, avg daily, projected annual).
+- Visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Complements CLI `--annual`. Operator can show the yearly number during the DEMO.md recording.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 114 — 2026-11-10)
+
+Annual projection now on admin and dashboard. Sale materials otherwise unchanged. Operator still must record `DEMO.md` before sending outreach.
+
+- [x] Session 114 — annual cost projection on admin summary and dashboard
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` → Generate domain → record DEMO.md (no keys on camera). Or start locally with seeded ledger. Dashboard now shows Annual projection alongside Policy ROI, Buyer brief, and Demo readiness. Use `--recording-prep`, `--demo-ready`, `--policy-roi`, `--outreach-snippet`, `--buyer-brief`, and `--annual` for numbers.
+2. After recording exists: personalize ≤10 emails from `OUTREACH_DRAFTS.md` (paste snippet body; use the Session 112 product-name hooks) and send first wave. Follow `OUTREACH.md`.
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 114 surfaces the simple annual spend projection on the dashboard so the operator can mention a yearly number without switching to the CLI during the recording. Automation cannot record the demo or send email. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open http://127.0.0.1:8788/ — Annual projection card appears after Refresh
+```
