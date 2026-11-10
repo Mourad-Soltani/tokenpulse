@@ -943,3 +943,9 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Visibility only. Does not change policy, metering, or storage. No raw prompts or secrets.
 - Intended for operator use on buyer calls after the DEMO.md recording exists.
 - Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Annual projection (Session 113)
+
+- `annualProjectionStatus()` computes avg daily allowed USD × 365.
+- CLI `--annual`. Does not change policy.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
