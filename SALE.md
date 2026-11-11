@@ -1,6 +1,6 @@
 # Tokenpulse — Sale readiness pack
 
-**Status:** Product MVP complete (Session 23+). Sale materials prepared (Session 24). Market comps refreshed (Session 108 — Nov 2026).  
+**Status:** Product MVP complete (Session 23+). Sale materials prepared (Session 24). Market comps refreshed (Session 108 / 116 — Nov 2026).  
 **Gates:** Machine proof closed (`PROOF.md` + `proof/`). Operator screen recording still required before outbound. First commercial reference via `PILOT.md` (not fabricated).
 
 ## One-liner
@@ -17,8 +17,8 @@ Buyers who only see GitHub will lowball. The asset is a **running vertical produ
 | Spend control | Team + app daily/monthly USD caps; block + ledger |
 | Policy before egress | Model allow/deny, RPM, sensitive heuristics, size caps |
 | Audit integrity | SHA-256 hash-chained usage events; `--verify-ledger` |
-| Executive artifacts | `tokenpulse-finops-v1` + `tokenpulse-security-v1` packs |
-| Operator UI | Loopback dashboard: spend, blocks, budget/rate/limit status, Policy ROI |
+| Executive artifacts | `tokenpulse-finops-v1` + `tokenpulse-security-v1` packs (include policy ROI + annual projection) |
+| Operator UI | Loopback dashboard: spend, blocks, budget/rate/limit status, Policy ROI, annual projection |
 | Safe demo | Secret-free `npm run demo`; live keys env-only |
 
 Internal rebuild estimate for the same surface: **multiple engineering quarters** plus security review. Purchase is time-to-control-plane, not line count.
@@ -62,7 +62,7 @@ Internal rebuild estimate for the same surface: **multiple engineering quarters*
 - [ ] Personalize 5–10 emails from `OUTREACH.md` / `OUTREACH_DRAFTS.md` (no bulk blasts)
 - [ ] Attach or link demo recording only after NDA / serious reply if preferred
 
-## Valuation posture (Session 108 — real market, Nov 2026)
+## Valuation posture (Session 108 / 116 — real market, Nov 2026)
 
 **Category signal (external):**
 - 98% of FinOps teams now manage AI spend (was 31% in 2024). 73% of AI projects still overrun budget.
@@ -73,8 +73,8 @@ Internal rebuild estimate for the same surface: **multiple engineering quarters*
 
 | Deal | Approx | Relevance |
 |------|--------|-----------|
-| Portkey → Palo Alto Networks (closed May 2026) | **$120–140M** (SEC / press) | Closest peer: AI gateway + control plane. Raised ~$18M; scale + customers commanded the price. |
-| Helicone → Mintlify (early 2026) | Low / mid tens $M band | Observability/proxy without platform gravity clears less. |
+| Portkey → Palo Alto Networks (closed May 29, 2026) | **$117M** (SEC filing) | Closest peer: AI gateway + control plane. Raised ~$18M; scale + customers commanded the price. |
+| Helicone → Mintlify (March 2026) | Low / mid tens $M band | Observability/proxy; now maintenance mode — lower strategic gravity. |
 | Langfuse → ClickHouse (Jan 2026) | Raised ~$4–4.5M pre-deal | OSS traction + distribution matter. |
 
 **Tokenpulse internal bands (pre-revenue, pre-demo recording):**

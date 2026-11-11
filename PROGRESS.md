@@ -2986,3 +2986,35 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --export-finops
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 116 — buyer map refresh with precise comps)
+
+- Confirmed Portkey → Palo Alto Networks closed May 29, 2026 for **$117 million** (SEC filing). Range previously listed as $120–140M; use $117M for diligence.
+- Helicone acquired by Mintlify March 3, 2026; product remains in maintenance mode (security/bug/new-model fixes only). Some late-2026 reports note ownership ambiguity; treat as non-strategic for new feature velocity.
+- No product code change. Sale materials only. Operator demo recording remains the hard gate before any outreach send.
+- Pitch stays adjacent to Prisma AIRS / Falcon Guardian: sovereign self-host, hard FinOps blocks, hash-chained CISO packs.
+
+## Current Status (Session 116 — 2026-11-11)
+
+Buyer map and sale comps refreshed with exact Portkey consideration and Helicone maintenance status. Product unchanged from Session 115.
+
+- [x] Session 116 — precise $117M Portkey comp + Helicone maintenance signals in BUYERS.md / SALE.md
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` → Generate domain → record DEMO.md (no keys on camera). Or start locally with seeded ledger. Dashboard shows Annual projection, Policy ROI, Buyer brief, and Demo readiness. FinOps export includes ROI + annual.
+2. After recording exists: personalize ≤10 emails from `OUTREACH_DRAFTS.md` and send first wave. Follow `OUTREACH.md`.
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 116 refreshes strategic buyer comps with the SEC-confirmed $117M Portkey figure and Helicone maintenance-mode status. Automation cannot record the demo or send outreach. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --export-finops
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```
