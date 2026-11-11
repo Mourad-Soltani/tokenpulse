@@ -43,7 +43,7 @@ const block: UsageEvent = {
 };
 
 describe("export packs", () => {
-  it("builds a finops pack without raw prompts and includes policy ROI", () => {
+  it("builds a finops pack without raw prompts and includes policy ROI and annual projection", () => {
     const pack = buildFinopsPack([allow, block], { day: "2026-09-16", now: "2026-09-16T12:00:00.000Z" });
     assert.equal(pack.version, FINOPS_PACK_VERSION);
     assert.equal(pack.summary.calls, 2);
@@ -54,6 +54,9 @@ describe("export packs", () => {
     assert.equal(typeof pack.policyRoi.allowedCostUsd, "number");
     assert.equal(typeof pack.policyRoi.estimatedAvoidedUsd, "number");
     assert.equal(typeof pack.policyRoi.avoidedPct, "number");
+    assert.ok(pack.annual);
+    assert.equal(typeof pack.annual.projectedAnnualUsd, "number");
+    assert.equal(typeof pack.annual.avgDailyUsd, "number");
     const raw = JSON.stringify(pack);
     assert.doesNotMatch(raw, /"messages"|user content|rawPrompt/);
   });

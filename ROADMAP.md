@@ -131,3 +131,5 @@
 - [x] Buyer brief (`--buyer-brief` / admin / dashboard) (Session 111)
 
 - [x] Annual cost projection (admin summary + dashboard + CLI) (Session 113/114)
+
+- [x] Annual cost projection in FinOps export pack (Session 115)

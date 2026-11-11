@@ -949,3 +949,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `annualProjectionStatus()` computes avg daily allowed USD × 365.
 - CLI `--annual`. Does not change policy.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Annual projection in FinOps pack (Session 115)
+
+- `buildFinopsPack` now includes `annual` from `annualProjectionStatus()`.
+- Same numbers as the admin/dashboard Annual projection card (avg daily × 365).
+- CSV remains event rows only. Security pack unchanged.
+- Visibility only. Does not change policy, metering, or ledger. No raw prompts.
+- Complements Session 109 (policy ROI in pack) so CFO downloads match the demo narrative.
+- Operator demo recording remains the hard gate before outreach. No keys in git or chat.
