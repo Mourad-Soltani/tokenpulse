@@ -3115,3 +3115,27 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --export-finops
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+## Decisions (Session 119 — fix Railway npm ci lockfile)
+
+- `package-lock.json` had been generated against a private HTTP mirror (`http://35.245.43.102/...`). Railway `npm ci` could not reach it and failed after ~8 minutes.
+- Regenerated lockfile with `npm install --registry=https://registry.npmjs.org/`. All `resolved` URLs are now `https://registry.npmjs.org/...`. Mirror IP count = 0.
+- No package.json or Dockerfile change. Product code unchanged.
+- Pre-existing keys idle-warn test flake remains; not introduced by this fix.
+
+## Current Status (Session 119 — 2026-11-12)
+
+Railway build blocker fixed. Redeploy should succeed on next push to main.
+
+- [x] Session 119 — regenerate package-lock.json against public npm registry
+
+## Next Up (highest priority)
+
+1. Confirm Railway deploy green (health on public domain).
+2. **Operator:** seed + record DEMO.md against the live mock URL (no keys on camera).
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 119 unblocks Docker/Railway `npm ci`. Automation cannot record the demo. Do not paste secrets into chat.
