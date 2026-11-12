@@ -3018,3 +3018,35 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --export-finops
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+## Decisions (Session 117 — annual avoided projection)
+
+- Added `annualAvoidedStatus()` that projects estimated avoided USD (blocked-impact fixed-token assumption) × 365.
+- Admin summary exposes `annualAvoided`. Dashboard shows an Annual avoided paragraph under the allowed annual projection.
+- FinOps pack includes `annualAvoided`. CLI: `--annual-avoided` (also `npm run annual-avoided`).
+- Visibility only. Does not change policy, ledger writes, or pricing. No raw prompts.
+- Operator demo recording remains the hard gate before any outreach send.
+
+## Current Status (Session 117 — 2026-11-12)
+
+Annual avoided (cost-of-inaction) projection shipped. Sale materials otherwise unchanged. Operator still must record `DEMO.md` before sending.
+
+- [x] Session 117 — annual avoided projection on admin / dashboard / CLI / FinOps pack
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` → Generate domain → record DEMO.md (no keys on camera). Or start locally with seeded ledger. Dashboard shows Annual projection, Annual avoided, Policy ROI, Buyer brief, and Demo readiness. FinOps export includes ROI + annual + annualAvoided.
+2. After recording exists: personalize ≤10 emails from `OUTREACH_DRAFTS.md` and send first wave. Follow `OUTREACH.md`.
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 117 adds a year-scale estimated avoided (cost of inaction) number next to the allowed annual projection so CFO packs and the dashboard can cite both. Automation cannot record the demo or send outreach. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --export-finops
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

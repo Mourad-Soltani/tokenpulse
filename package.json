@@ -21,6 +21,7 @@
     "recording-prep": "tsx src/cli.ts --recording-prep",
     "outreach-snippet": "tsx src/cli.ts --outreach-snippet",
     "buyer-brief": "tsx src/cli.ts --buyer-brief",
+    "annual-avoided": "tsx src/cli.ts --annual-avoided",
     "demo:seeded": "TOKENPULSE_LEDGER_DIR=data/ledger-seed tsx src/cli.ts --seed-demo && TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed tsx src/gateway.ts"
   },
   "devDependencies": {

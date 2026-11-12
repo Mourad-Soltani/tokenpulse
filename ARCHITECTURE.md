@@ -958,3 +958,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Visibility only. Does not change policy, metering, or ledger. No raw prompts.
 - Complements Session 109 (policy ROI in pack) so CFO downloads match the demo narrative.
 - Operator demo recording remains the hard gate before outreach. No keys in git or chat.
+
+## Annual avoided projection (Session 117)
+
+- `annualAvoidedStatus()` projects estimated avoided USD (from blocked-impact fixed-token assumption) to 365 days.
+- Admin summary exposes `annualAvoided`. Dashboard renders an Annual avoided paragraph.
+- FinOps pack includes `annualAvoided` next to `annual` (allowed projection).
+- CLI: `--annual-avoided` / `npm run annual-avoided`.
+- Visibility only. Does not change policy, ledger, or pricing.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
