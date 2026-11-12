@@ -46,15 +46,18 @@ Use these public product names in the first sentence of personalized emails. Sti
 - “Another Langfuse clone” VCs without enterprise distribution  
 - Bulk LinkedIn sequences to random SDRs  
 
-## Public comps (diligence context — Session 116, Nov 2026)
+## Public comps (diligence context — Session 118, Nov 12 2026)
 
 | Deal | Approx | Relevance |
 |------|--------|-----------|
-| Portkey → Palo Alto Networks (closed May 29, 2026) | **$117M** (SEC filing) | Closest peer AI gateway + control plane; ~$18M raised; scale + customers commanded the price |
-| Helicone → Mintlify (March 2026) | Low / mid tens $M band | Observability/proxy; now maintenance mode — lower strategic gravity |
-| Langfuse → ClickHouse (Jan 2026) | Raised ~$4–4.5M pre-deal | OSS traction + distribution matter |
+| Portkey → Palo Alto Networks (closed May 29, 2026) | **$120–140M** (most sources ~$140M) | Closest peer AI gateway + control plane; ~$18M raised; scale + customers commanded the price |
+| Helicone → Mintlify (March 2026) | Low / mid tens $M band (undisclosed) | Observability/proxy; maintenance mode — lower strategic gravity |
+| Langfuse → ClickHouse (Jan 2026) | Undisclosed (ClickHouse $15B Series D context) | OSS traction + distribution matter |
+| OpenRouter → Stripe (closed Nov 2026) | **~$7.5–8B** | Outlier volume/revenue; not a stage-comparable |
 
-Tokenpulse today is **earlier than Portkey-at-exit** (pre-revenue, pre-demo recording). Outreach should invite a **technical look + pilot**, not an auction narrative. Internal valuation bands live in `SALE.md` (Session 108 / 116).
+Tokenpulse today is **earlier than Portkey-at-exit** (pre-revenue, pre-demo recording). Outreach should invite a **technical look + pilot**, not an auction narrative.
+
+**Internal valuation bands (Session 118):** Floor **$3–8M** · Base **$15–40M** · Strategic **$60–150M**. Full rationale in `SALE.md`.
 
 ## Diligence packet (when asked)
 

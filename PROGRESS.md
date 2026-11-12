@@ -3050,3 +3050,36 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --export-finops
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+## Decisions (Session 118 — market valuation bands)
+
+- Independent public-comp read (Portkey, Helicone, Langfuse, OpenRouter, LiteLLM, Gartner AI FinOps, LLM gateway market).
+- Updated internal bands in `SALE.md` and comps note in `BUYERS.md`.
+- **Floor $3–8M** · **Base $15–40M** · **Strategic $60–150M**.
+- Current honest mark: base-band midpoint (~$20–30M). Floor = asset-only walk-away. Strategic upper end requires pilot/revenue proof.
+- Portkey exit remains the realistic ceiling for a pure gateway + FinOps control-plane story at current scale. OpenRouter is not stage-comparable.
+- No product code change. Operator demo recording remains the hard gate before outreach.
+
+## Current Status (Session 118 — 2026-11-12)
+
+Valuation posture refreshed from live market comps. Product unchanged from Session 117.
+
+- [x] Session 118 — floor / base / strategic valuation bands + comps update in SALE.md / BUYERS.md
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` → Generate domain → record DEMO.md (no keys on camera). Or start locally with seeded ledger. Dashboard shows Annual projection, Annual avoided, Policy ROI, Buyer brief, and Demo readiness. FinOps export includes ROI + annual + annualAvoided.
+2. After recording exists: personalize ≤10 emails from `OUTREACH_DRAFTS.md` and send first wave. Follow `OUTREACH.md`. Valuation narrative: control-plane gap + time-to-deploy; do not lead with $1B.
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 118 locks floor / base / strategic bands from public comps into sale docs. Automation cannot record the demo or send outreach. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --export-finops
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

@@ -1,6 +1,6 @@
 # Tokenpulse — Sale readiness pack
 
-**Status:** Product MVP complete (Session 23+). Sale materials prepared (Session 24). Market comps refreshed (Session 108 / 116 — Nov 2026).  
+**Status:** Product MVP complete (Session 23+). Sale materials prepared (Session 24). Market comps + valuation bands refreshed (Session 118 — Nov 12 2026).  
 **Gates:** Machine proof closed (`PROOF.md` + `proof/`). Operator screen recording still required before outbound. First commercial reference via `PILOT.md` (not fabricated).
 
 ## One-liner
@@ -62,31 +62,37 @@ Internal rebuild estimate for the same surface: **multiple engineering quarters*
 - [ ] Personalize 5–10 emails from `OUTREACH.md` / `OUTREACH_DRAFTS.md` (no bulk blasts)
 - [ ] Attach or link demo recording only after NDA / serious reply if preferred
 
-## Valuation posture (Session 108 / 116 — real market, Nov 2026)
+## Valuation posture (Session 118 — public comps, Nov 12 2026)
 
-**Category signal (external):**
-- 98% of FinOps teams now manage AI spend (was 31% in 2024). 73% of AI projects still overrun budget.
-- Cloud FinOps software ~$15–17B (2025/26) → $27–33B by 2030–31.
-- Narrow AI FinOps / inference cost optimization: ~$0.7B (2026) → $22.5B by 2036 (high-40s CAGR).
+Independent market read (bypassed internal prior bands). Sources: Portkey SEC/press, Helicone–Mintlify, Langfuse–ClickHouse, OpenRouter–Stripe (outlier), LiteLLM scale signals, Gartner AI FinOps EMQ, LLM gateway market reports.
+
+**Category signal:**
+- AI FinOps tools: ~$3.7B (2026) → $10B by 2030 (~31% CAGR, Gartner).
+- LLM gateway market: ~$820M (2025) → $7.3B by 2034 (~27.5% CAGR).
+- AI observability: ~$1.25–1.78B (2025–26) → ~$13.9B by 2036 (~23% CAGR).
+- Buyers actively consolidating control-plane and spend-visibility assets (cyber, data platforms, cloud).
 
 **Public comps:**
 
 | Deal | Approx | Relevance |
 |------|--------|-----------|
-| Portkey → Palo Alto Networks (closed May 29, 2026) | **$117M** (SEC filing) | Closest peer: AI gateway + control plane. Raised ~$18M; scale + customers commanded the price. |
-| Helicone → Mintlify (March 2026) | Low / mid tens $M band | Observability/proxy; now maintenance mode — lower strategic gravity. |
-| Langfuse → ClickHouse (Jan 2026) | Raised ~$4–4.5M pre-deal | OSS traction + distribution matter. |
+| Portkey → Palo Alto Networks (closed May 29, 2026) | **$120–140M** (most sources ~$140M; prior internal note used $117M SEC figure) | Closest peer: AI gateway + control plane. ~$18M raised; scale + customers commanded the price. |
+| Helicone → Mintlify (March 2026) | Low / mid tens $M band (undisclosed) | Observability/proxy; maintenance mode — lower strategic gravity. |
+| Langfuse → ClickHouse (Jan 2026) | Undisclosed (inside ClickHouse $15B Series D context) | OSS traction + distribution matter. |
+| OpenRouter → Stripe (closed Nov 2026) | **~$7.5–8B** | Outlier: massive token volume + revenue scale. Not a fair multiple for early product. |
+| LiteLLM (BerriAI) | Seed-stage; reported ~$7M ARR (unverified), ~$1.6–2.1M raised | High adoption open-source gateway; still early. |
 
-**Tokenpulse internal bands (pre-revenue, pre-demo recording):**
+**Tokenpulse bands (pre-revenue, pre-demo recording — Session 118):**
 
-| Scenario | Range | Condition |
-|----------|-------|-----------|
-| Floor (tech / asset sale today) | **$1–4M** | Code + architecture + self-host story only |
-| Base (demo + 2–3 pilot LOIs) | **$8–25M** | Proves private FinOps + policy works |
-| Upside ($0.5–2M ARR + traction) | **$40–100M+** | Default self-host / regulated alternative |
-| Strategic stretch | **$80–150M** | Large platform treats it as missing private control plane |
+| Band | Range | Condition |
+|------|-------|-----------|
+| **Floor** | **$3–8M** | Zero traction. Pure code/IP/asset value to a strategic. |
+| **Base** | **$15–40M** | Complete MVP, demo-ready, early or no revenue. Fair market for category timing. |
+| **Strategic** | **$60–150M** | Motivated buyer (cyber / data / cloud platform) + pilot signal or early logos. Portkey-like fit. Upper end needs commercial proof. |
 
-**Current mark (Nov 2026):** low single-digit $M. Do **not** lead with a $1B story. Lead with **control plane gap**, **time-to-deploy**, and **adjacent value to Portkey/Prisma**. Traction (pilots + recording) moves price far more than more features.
+**Current mark (Nov 12 2026):** base band midpoint is the honest working number (~$20–30M). Floor is the walk-away / asset-only floor. Strategic upper band is only reachable with demo recording + pilots/revenue.
+
+Do **not** lead with a $1B story. Lead with **control plane gap**, **time-to-deploy**, **self-host / audit integrity**, and **adjacent value to Portkey/Prisma**. Traction moves price far more than more features. OpenRouter is not a comparable for this stage.
 
 ## What we are not selling
 
