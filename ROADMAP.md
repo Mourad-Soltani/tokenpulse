@@ -135,3 +135,4 @@
 - [x] Annual cost projection in FinOps export pack (Session 115)
 
 - [x] Annual avoided projection (admin + dashboard + CLI + FinOps pack) (Session 117)
+- [x] Valuation bands in buyer brief (Session 119)

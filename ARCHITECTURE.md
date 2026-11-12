@@ -937,6 +937,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 
 ## Buyer brief (Session 111)
 
+## Buyer brief valuation (Session 119)
+
+- `buyerBrief()` now includes a `valuation` object (floor / base / strategic / currentMark) from the Session 118 public-comp bands.
+- One extra bullet surfaces the posture. Visibility only — does not change policy or ledger.
+- DEMO.md recording checklist mentions the Annual / Policy ROI / Buyer brief cards.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
 - `buyerBrief()` builds a short executive summary from current ledger numbers (policy ROI, counts, uniqueness).
 - Admin summary exposes `buyerBrief`. Dashboard renders a Buyer brief card (headline + bullets + positioning + next step).
 - CLI: `--buyer-brief` / `npm run buyer-brief`. Output is JSON.

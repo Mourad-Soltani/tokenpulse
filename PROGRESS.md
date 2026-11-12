@@ -3083,3 +3083,35 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --export-finops
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+## Decisions (Session 119 — valuation bands in buyer brief)
+
+- `buyerBrief()` now includes a `valuation` object with floor / base / strategic bands and current mark from Session 118.
+- One extra bullet surfaces the posture in the brief text.
+- DEMO.md recording checklist mentions Annual projection, Annual avoided, Policy ROI, and Buyer brief cards.
+- Visibility / sale materials only. No policy, metering, or storage changes.
+- Operator demo recording remains the hard gate before outreach. No keys in git or chat.
+
+## Current Status (Session 119 — 2026-11-12)
+
+Buyer brief now carries the valuation posture for operator calls. Product otherwise unchanged from Session 118.
+
+- [x] Session 119 — valuation bands surfaced in `--buyer-brief` + DEMO.md checklist update
+
+## Next Up (highest priority)
+
+1. **Operator:** (optional) `npx tsx src/cli.ts --seed-demo` then Railway → New Project → GitHub `tokenpulse` → set `TOKENPULSE_MOCK_UPSTREAM=1` and `TOKENPULSE_GATEWAY_TOKEN` → Generate domain → record DEMO.md (no keys on camera). Or start locally with seeded ledger. Dashboard shows Annual projection, Annual avoided, Policy ROI, Buyer brief (now with valuation bands), and Demo readiness. FinOps export includes ROI + annual + annualAvoided.
+2. After recording exists: personalize ≤10 emails from `OUTREACH_DRAFTS.md` and send first wave. Follow `OUTREACH.md`. Valuation narrative: control-plane gap + time-to-deploy; do not lead with $1B.
+3. After first pilot quote: fill References in `PILOT.md`.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 119 makes the Session 118 bands available directly in the buyer brief CLI/dashboard path. Automation cannot record the demo or send outreach. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --export-finops
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

@@ -16,6 +16,13 @@ export type BuyerBrief = {
     uniqueTeams: number;
     uniqueModels: number;
   };
+  valuation: {
+    floor: string;
+    base: string;
+    strategic: string;
+    currentMark: string;
+    source: string;
+  };
   positioning: string;
   nextStep: string;
   note: string;
@@ -42,6 +49,7 @@ export function buyerBrief(events: UsageEvent[]): BuyerBrief {
     ready.ready
       ? `Demo ledger is rich enough for recording (${allowCount} allows, ${blockCount} blocks).`
       : `Seed the demo ledger for richer numbers before the call.`,
+    `Valuation posture (public comps): floor $3–8M · base $15–40M · strategic $60–150M. Current honest mark ~$20–30M. Do not lead with $1B.`,
   ];
 
   return {
@@ -57,9 +65,16 @@ export function buyerBrief(events: UsageEvent[]): BuyerBrief {
       uniqueTeams,
       uniqueModels,
     },
+    valuation: {
+      floor: "$3–8M (asset-only walk-away)",
+      base: "$15–40M (MVP + demo-ready, early/no revenue)",
+      strategic: "$60–150M (motivated buyer + pilot/revenue proof)",
+      currentMark: "base-band midpoint ~$20–30M",
+      source: "SALE.md Session 118 public comps (Portkey $120–140M ceiling peer; OpenRouter not stage-comparable)",
+    },
     positioning:
       "Private AI FinOps + shadow-AI control plane. Meter, attribute, enforce, export. Adjacent to Portkey/TRiSM; self-host first. Not a workflow orchestrator.",
-    nextStep: "Record 3-min mock DEMO.md (no keys on camera). Then personalize ≤10 emails from OUTREACH_DRAFTS.md.",
-    note: "Generated from current ledger (seed or real). Numbers are estimates for demo. No secrets. Not a commitment.",
+    nextStep: "Record 3-min mock DEMO.md (no keys on camera). Then personalize ≤10 emails from OUTREACH_DRAFTS.md. Lead with control-plane gap + time-to-deploy.",
+    note: "Generated from current ledger (seed or real). Numbers are estimates for demo. Valuation bands are internal posture, not an offer. No secrets. Not a commitment.",
   };
 }
