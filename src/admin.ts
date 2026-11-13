@@ -16,6 +16,7 @@ import { policyRoiStatus, type PolicyRoiStatus } from "./policyRoi.js";
 import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
 import { annualProjectionStatus, type AnnualProjectionStatus } from "./annualProjection.js";
 import { annualAvoidedStatus, type AnnualAvoidedStatus } from "./annualAvoided.js";
+import { requestVolumeStatus, type RequestVolumeStatus } from "./requestVolume.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -121,6 +122,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   buyerBrief: BuyerBrief;
   annual: AnnualProjectionStatus;
   annualAvoided: AnnualAvoidedStatus;
+  requestVolume: RequestVolumeStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -206,6 +208,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     buyerBrief: buyerBrief(events),
     annual: annualProjectionStatus(events),
     annualAvoided: annualAvoidedStatus(events),
+    requestVolume: requestVolumeStatus(events),
   };
 }
 
@@ -256,6 +259,8 @@ export function dashboardHtml(): string {
     <p id="annual-projection">Loading…</p>
     <h2>Annual avoided (est.)</h2>
     <p id="annual-avoided">Loading…</p>
+    <h2>Request volume</h2>
+    <p id="request-volume">Loading…</p>
 <h2>Buyer brief</h2>
     <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;margin:0;background:#f8f8f8;padding:10px;border-radius:6px">Loading…</pre>
 <h2>Recording cheat sheet</h2>
@@ -621,6 +626,16 @@ async function load() {
     annEl.innerHTML = 'Total allowed $' + (ann.totalAllowedUsd || 0) + ' over ' + (ann.daysWithData || 0) +
       ' days · Avg daily $' + (ann.avgDailyUsd || 0) + ' · Projected annual $' + (ann.projectedAnnualUsd || 0) +
       '<br>' + esc(ann.notes || '');
+  }
+
+  const rv = s.requestVolume || {};
+  const rvEl = document.getElementById('request-volume');
+  if (rvEl) {
+    rvEl.innerHTML = (rv.totalRequests || 0) + ' requests (' + (rv.allowedCount || 0) + ' allow / ' +
+      (rv.blockedCount || 0) + ' block / ' + (rv.noteCount || 0) + ' note) · ' +
+      (rv.requestsPerDay || 0) + '/day over ' + (rv.daysWithData || 0) + ' day(s) · ' +
+      'avg $' + (rv.avgCostPerAllowedUsd || 0) + ' and ' + (rv.avgTokensPerAllowed || 0) + ' tokens per allow' +
+      '<br>' + esc(rv.notes || '');
   }
 
   const brief = s.buyerBrief || {};

@@ -3139,3 +3139,36 @@ Railway build blocker fixed. Redeploy should succeed on next push to main.
 
 **Active project:** Tokenpulse only.
 Session 119 unblocks Docker/Railway `npm ci`. Automation cannot record the demo. Do not paste secrets into chat.
+
+## Decisions (Session 120 — request volume status)
+
+- Added `requestVolumeStatus()`: total / allow / block / note counts, avg cost and tokens per allowed request, requests per day.
+- Admin summary exposes `requestVolume`. Dashboard renders a Request volume paragraph next to Annual avoided.
+- CLI: `--request-volume` / `npm run request-volume`.
+- Visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Complements annual projection so the operator can cite volume during the DEMO.md recording.
+- Live-upstream / Railway recording remains the operator gate. No keys in git or chat.
+
+## Current Status (Session 120 — 2026-11-13)
+
+Request volume status shipped on admin, dashboard, and CLI. Sale materials unchanged. Operator still must record `DEMO.md` before sending outreach.
+
+- [x] Session 120 — request volume status (counts, avg cost/tokens, requests/day)
+
+## Next Up (highest priority)
+
+1. Confirm Railway deploy green (health on public domain) if not already.
+2. **Operator:** seed + record DEMO.md against the live mock URL (no keys on camera). Dashboard now includes Request volume.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 120 adds request volume visibility so the operator can mention total requests, allow/block split, and average cost during the demo recording. Automation cannot record the demo or send email. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --request-volume
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

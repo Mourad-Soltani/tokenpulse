@@ -40,6 +40,7 @@ import { outreachSnippet } from "./outreachSnippet.js";
 import { buyerBrief } from "./buyerBrief.js";
 import { annualProjectionStatus } from "./annualProjection.js";
 import { annualAvoidedStatus } from "./annualAvoided.js";
+import { requestVolumeStatus } from "./requestVolume.js";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -50,7 +51,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, ...result, note: "Synthetic events appended. Dashboard and summary will show rich tables. No real provider calls." }, null, 2));
     return;
   }
-  if (args.includes("--recording-prep") || args.includes("--demo-ready") || args.includes("--policy-roi") || args.includes("--outreach-snippet") || args.includes("--buyer-brief") || args.includes("--annual") || args.includes("--annual-avoided")) {
+  if (args.includes("--recording-prep") || args.includes("--demo-ready") || args.includes("--policy-roi") || args.includes("--outreach-snippet") || args.includes("--buyer-brief") || args.includes("--annual") || args.includes("--annual-avoided") || args.includes("--request-volume")) {
     const events = await readEvents();
     if (args.includes("--recording-prep")) {
       const { recordingPrep } = await import("./recordingPrep.js");
@@ -82,6 +83,10 @@ async function main() {
     if (args.includes("--annual-avoided")) {
       const avoided = annualAvoidedStatus(events);
       console.log(JSON.stringify({ ok: true, ...avoided }, null, 2));
+    }
+    if (args.includes("--request-volume")) {
+      const vol = requestVolumeStatus(events);
+      console.log(JSON.stringify({ ok: true, ...vol }, null, 2));
     }
     return;
   }
@@ -307,7 +312,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text|--seed-demo [--days=N] [--per-day=N]|--recording-prep|--demo-ready|--policy-roi|--outreach-snippet|--buyer-brief|--annual|--annual-avoided] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text|--seed-demo [--days=N] [--per-day=N]|--recording-prep|--demo-ready|--policy-roi|--outreach-snippet|--buyer-brief|--annual|--annual-avoided|--request-volume] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

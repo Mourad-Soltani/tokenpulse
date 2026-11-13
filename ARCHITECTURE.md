@@ -974,3 +974,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--annual-avoided` / `npm run annual-avoided`.
 - Visibility only. Does not change policy, ledger, or pricing.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Request volume status (Session 120)
+
+- `requestVolumeStatus()` reports totalRequests, allowedCount, blockedCount, noteCount, avgCostPerAllowedUsd, avgTokensPerAllowed, daysWithData, requestsPerDay.
+- Admin summary exposes `requestVolume`. Dashboard renders a Request volume paragraph.
+- CLI: `--request-volume`.
+- Visibility only. Does not change policy or metering.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
