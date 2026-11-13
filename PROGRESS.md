@@ -3172,3 +3172,27 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --request-volume
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+## Decisions (Session 121 — dashboard public entry)
+
+- Root `/` and `/dashboard` now served **before** the authorize check.
+- Reason: when `TOKENPULSE_GATEWAY_TOKEN` is set, browser navigation previously received `401 unauthorized` JSON instead of the HTML that collects the token client-side.
+- Health remains open. All other routes (admin, models, chat, embeddings, exports, metrics) still require auth.
+- No change to policy, metering, keys, or upstream behaviour.
+
+## Current Status (Session 121 — 2026-11-13)
+
+Dashboard loads without a pre-supplied token. Operator can open the public Railway/local URL, paste the gateway token in the form, and use the dashboard.
+
+- [x] Session 121 — move dashboard route before auth gate
+
+## Next Up (highest priority)
+
+1. Confirm Railway deploy green (health on public domain) after this push.
+2. **Operator:** seed + record DEMO.md against the live mock URL (no keys on camera).
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 121 fixes the "401 when opening URL" that appeared once the gateway token was set on Railway/local. Push to main, wait for Railway rebuild, then open the public domain — the HTML form should appear. Automation cannot record the demo. Do not paste secrets into chat.

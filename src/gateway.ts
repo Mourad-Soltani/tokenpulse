@@ -109,6 +109,17 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     return;
   }
 
+  // Dashboard is the public entry point; token is collected client-side.
+  if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/dashboard")) {
+    const html = dashboardHtml();
+    res.writeHead(200, {
+      "content-type": "text/html; charset=utf-8",
+      "content-length": Buffer.byteLength(html),
+    });
+    res.end(html);
+    return;
+  }
+
   const auth = await authorize(req);
   if (!auth.ok) {
     json(res, 401, { error: { message: "unauthorized", type: "auth_error" } });
@@ -734,16 +745,6 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
       });
       return;
     }
-  }
-
-  if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/dashboard")) {
-    const html = dashboardHtml();
-    res.writeHead(200, {
-      "content-type": "text/html; charset=utf-8",
-      "content-length": Buffer.byteLength(html),
-    });
-    res.end(html);
-    return;
   }
 
   if (req.method === "POST" && url.pathname === "/v1/admin/note") {
