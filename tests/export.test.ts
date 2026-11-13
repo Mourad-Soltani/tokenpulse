@@ -57,6 +57,10 @@ describe("export packs", () => {
     assert.ok(pack.annual);
     assert.equal(typeof pack.annual.projectedAnnualUsd, "number");
     assert.equal(typeof pack.annual.avgDailyUsd, "number");
+    assert.ok(pack.requestVolume);
+    assert.equal(typeof pack.requestVolume.totalRequests, "number");
+    assert.equal(typeof pack.requestVolume.allowedCount, "number");
+    assert.equal(typeof pack.requestVolume.avgCostPerAllowedUsd, "number");
     const raw = JSON.stringify(pack);
     assert.doesNotMatch(raw, /"messages"|user content|rawPrompt/);
   });

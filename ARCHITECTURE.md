@@ -982,3 +982,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--request-volume`.
 - Visibility only. Does not change policy or metering.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Request volume in FinOps pack (Session 122)
+
+- FinOps pack includes `requestVolume` (totalRequests, allowedCount, blockedCount, noteCount, avgCostPerAllowedUsd, avgTokensPerAllowed, requestsPerDay).
+- Complements admin summary / dashboard / CLI. Visibility only.
+- Does not change policy evaluation or ledger contents.
+- No raw prompts.
+

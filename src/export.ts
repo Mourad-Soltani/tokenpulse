@@ -2,6 +2,7 @@ import { summarize, verifyChain } from "./ledger.js";
 import { policyRoiStatus } from "./policyRoi.js";
 import { annualProjectionStatus } from "./annualProjection.js";
 import { annualAvoidedStatus } from "./annualAvoided.js";
+import { requestVolumeStatus } from "./requestVolume.js";
 import type { UsageEvent } from "./types.js";
 
 export const FINOPS_PACK_VERSION = "tokenpulse-finops-v1";
@@ -34,6 +35,7 @@ export type FinopsPack = {
   policyRoi: ReturnType<typeof policyRoiStatus>;
   annual: ReturnType<typeof annualProjectionStatus>;
   annualAvoided: ReturnType<typeof annualAvoidedStatus>;
+  requestVolume: ReturnType<typeof requestVolumeStatus>;
   events: Array<{
     id: string;
     timestamp: string;
@@ -80,6 +82,7 @@ export function buildFinopsPack(events: UsageEvent[], opts?: { day?: string; now
     policyRoi: policyRoiStatus(events),
     annual: annualProjectionStatus(events),
     annualAvoided: annualAvoidedStatus(events),
+    requestVolume: requestVolumeStatus(events),
     events: events.filter((e) => e.decision !== "note").map((e) => ({
       id: e.id,
       timestamp: e.timestamp,
