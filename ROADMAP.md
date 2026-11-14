@@ -140,3 +140,4 @@
 - [x] Request volume in FinOps export pack (Session 122)
 - [x] Request volume in Security export pack (Session 123)
 - [x] Live dashboard demo seed via admin API (Session 124)
+- [x] Model block rate status (admin + dashboard + CLI) (Session 125)

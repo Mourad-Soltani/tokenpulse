@@ -3294,3 +3294,35 @@ curl -sS -X POST https://tokenpulse-production-456c7fd1.up.railway.app/v1/admin/
   -H "content-type: application/json" \
   -d '{"days":14,"perDay":28}'
 ```
+
+## Decisions (Session 125 — model block rate status)
+
+- `modelBlockRateStatus()` ranks client models by block rate (blocked / total allow+block attempts).
+- Admin summary exposes `modelBlockRate`. Dashboard renders a Model block rates table.
+- CLI: `--model-block-rate`.
+- Visibility only. Does not change policy, metering, or ledger. Notes excluded. No raw prompts.
+- Complements request volume and block reasons for per-model policy enforcement visibility during buyer demos.
+
+## Current Status (Session 125 — 2026-11-14)
+
+Model block rate ranking shipped on admin, dashboard, and CLI. Operator live demo recording remains the hard gate.
+
+- [x] Session 125 — model block rate status (admin + dashboard + CLI)
+
+## Next Up (highest priority)
+
+1. After Railway rebuild: open the public URL, paste gateway token, click **Seed demo data**, confirm tables (including Model block rates) fill.
+2. **Operator:** record DEMO.md against the seeded Railway URL (no provider keys on camera). Mention per-model block rates.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 125 adds per-model block rate ranking so the operator can highlight which models are denied most during the demo. Automation cannot hold the Railway token or record the demo. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --model-block-rate --request-volume
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

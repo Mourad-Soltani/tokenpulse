@@ -17,6 +17,7 @@ import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
 import { annualProjectionStatus, type AnnualProjectionStatus } from "./annualProjection.js";
 import { annualAvoidedStatus, type AnnualAvoidedStatus } from "./annualAvoided.js";
 import { requestVolumeStatus, type RequestVolumeStatus } from "./requestVolume.js";
+import { modelBlockRateStatus, type ModelBlockRateStatus } from "./modelBlockRate.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -123,6 +124,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   annual: AnnualProjectionStatus;
   annualAvoided: AnnualAvoidedStatus;
   requestVolume: RequestVolumeStatus;
+  modelBlockRate: ModelBlockRateStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -209,6 +211,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     annual: annualProjectionStatus(events),
     annualAvoided: annualAvoidedStatus(events),
     requestVolume: requestVolumeStatus(events),
+    modelBlockRate: modelBlockRateStatus(events),
   };
 }
 
@@ -264,6 +267,9 @@ export function dashboardHtml(): string {
     <p id="annual-avoided">Loading…</p>
     <h2>Request volume</h2>
     <p id="request-volume">Loading…</p>
+    <h2>Model block rates</h2>
+    <p class="sub" id="mbrmeta">Loading…</p>
+    <table id="model-block-rate"><thead><tr><th>Model</th><th>Total</th><th>Allowed</th><th>Blocked</th><th>Block rate</th></tr></thead><tbody></tbody></table>
 <h2>Buyer brief</h2>
     <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;margin:0;background:#f8f8f8;padding:10px;border-radius:6px">Loading…</pre>
 <h2>Recording cheat sheet</h2>
@@ -696,6 +702,20 @@ async function load() {
       (rv.requestsPerDay || 0) + '/day over ' + (rv.daysWithData || 0) + ' day(s) · ' +
       'avg $' + (rv.avgCostPerAllowedUsd || 0) + ' and ' + (rv.avgTokensPerAllowed || 0) + ' tokens per allow' +
       '<br>' + esc(rv.notes || '');
+  }
+
+  const mbr = s.modelBlockRate || {};
+  const mbrMeta = document.getElementById('mbrmeta');
+  if (mbrMeta) {
+    mbrMeta.textContent = (mbr.uniqueModels || 0) + ' models · ' + (mbr.totalAttempts || 0) +
+      ' attempts · overall block rate ' + ((mbr.overallBlockRate || 0) * 100).toFixed(1) + '%';
+  }
+  const mbrBody = document.querySelector('#model-block-rate tbody');
+  if (mbrBody) {
+    mbrBody.innerHTML = (mbr.rows || []).map(r =>
+      '<tr><td>' + esc(r.model) + '</td><td>' + r.total + '</td><td>' + r.allowed +
+      '</td><td>' + r.blocked + '</td><td>' + ((r.blockRate || 0) * 100).toFixed(1) + '%</td></tr>'
+    ).join('') || '<tr><td colspan="5">No data</td></tr>';
   }
 
   const brief = s.buyerBrief || {};

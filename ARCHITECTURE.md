@@ -1008,3 +1008,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Events are synthetic (teams/apps/models, allow+block mix, one operator note). No raw prompts.
 - Does not change policy evaluation. Ledger hash chain still applies to seeded events.
 - Ephemeral Railway disks lose data on rebuild — re-seed after deploy when needed.
+
+## Model block rate status (Session 125)
+
+- `modelBlockRateStatus()` ranks client models by block rate (blocked attempts / total allow+block attempts).
+- Admin summary exposes `modelBlockRate`. Dashboard renders a Model block rates table.
+- CLI: `--model-block-rate`.
+- Visibility only. Does not change policy evaluation or ledger. Notes excluded. No raw prompts.
+- Complements request volume and block reasons for per-model enforcement visibility.
