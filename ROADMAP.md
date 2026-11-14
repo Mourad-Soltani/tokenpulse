@@ -138,3 +138,4 @@
 - [x] Valuation bands in buyer brief (Session 119)
 - [x] Request volume status (admin + dashboard + CLI) (Session 120)
 - [x] Request volume in FinOps export pack (Session 122)
+- [x] Request volume in Security export pack (Session 123)

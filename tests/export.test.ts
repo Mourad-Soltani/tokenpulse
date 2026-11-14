@@ -70,6 +70,9 @@ describe("export packs", () => {
     assert.equal(pack.version, SECURITY_PACK_VERSION);
     assert.equal(pack.blocked, 1);
     assert.equal(pack.allowed, 1);
+    assert.ok(pack.requestVolume);
+    assert.equal(pack.requestVolume.totalRequests, 2);
+    assert.equal(pack.requestVolume.blockedCount, 1);
     assert.equal(pack.policyHits["model-denied"], 1);
     assert.equal(pack.blockedByTeam.ops, 1);
     assert.equal(pack.events.length, 1);

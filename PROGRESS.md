@@ -3227,3 +3227,35 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --request-volume --export-finops
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 123 — request volume in Security pack)
+
+- Security pack `tokenpulse-security-v1` now includes `requestVolume` (total / allow / block / note counts, avg cost and tokens per allowed request, requests/day).
+- Complements the Session 122 FinOps pack inclusion and Session 120 admin / dashboard / CLI visibility.
+- Export is visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Operator can attach either pack (or quote the numbers) in buyer conversations after the demo recording.
+
+## Current Status (Session 123 — 2026-11-14)
+
+Request volume is now in both FinOps and CISO export packs. Sale materials unchanged. Operator still must record `DEMO.md` before sending outreach.
+
+- [x] Session 123 — request volume status in Security export pack
+
+## Next Up (highest priority)
+
+1. Confirm Railway deploy green (health on public domain) after this push.
+2. **Operator:** seed + record DEMO.md against the live mock URL (no keys on camera). Both FinOps and CISO packs now include request volume numbers.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 123 adds request volume to the Security (CISO) pack so audit packs carry the same volume stats shown on the dashboard and in the FinOps pack. Automation cannot record the demo or send email. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --request-volume --export-finops --export-security
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

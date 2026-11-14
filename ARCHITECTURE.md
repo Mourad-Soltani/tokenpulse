@@ -990,3 +990,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Does not change policy evaluation or ledger contents.
 - No raw prompts.
 
+
+
+## Security pack request volume (Session 123)
+
+- Security pack `tokenpulse-security-v1` now includes `requestVolume` (same shape as FinOps / admin).
+- Gives CISO packs the allow/block/note counts and rates alongside blocked event detail.
+- Visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Complements Session 122 FinOps inclusion.

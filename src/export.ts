@@ -58,6 +58,7 @@ export type SecurityPack = {
   chainChecked: number;
   blocked: number;
   allowed: number;
+  requestVolume: ReturnType<typeof requestVolumeStatus>;
   policyHits: Record<string, number>;
   blockedByTeam: Record<string, number>;
   events: Array<{
@@ -117,6 +118,7 @@ export function buildSecurityPack(events: UsageEvent[], opts?: { day?: string; n
     chainChecked: chain.checked,
     blocked: blocked.length,
     allowed: events.filter((e) => e.decision === "allow").length,
+    requestVolume: requestVolumeStatus(events),
     policyHits,
     blockedByTeam,
     events: blocked.map((e) => ({
