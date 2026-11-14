@@ -250,6 +250,7 @@ export function dashboardHtml(): string {
     <button id="seeddemo" type="button" title="Append synthetic multi-day ledger for buyer demos">Seed demo data</button>
     <span id="seedstatus" style="margin-left:8px;opacity:.85;font-size:13px"></span>
   </div>
+  <p id="authstatus" class="sub" style="margin:8px 0 12px">Enter the Railway <code>TOKENPULSE_GATEWAY_TOKEN</code>, then tap <b>Refresh</b>.</p>
   <div class="grid" id="kpis"></div>
   <section class="card">
     
@@ -521,6 +522,8 @@ export function dashboardHtml(): string {
 <script>
 const tokenEl = document.getElementById('token');
 tokenEl.value = localStorage.getItem('tokenpulse.token') || '';
+tokenEl.addEventListener('change', load);
+tokenEl.addEventListener('blur', () => { if (tokenEl.value.trim()) load(); });
 document.getElementById('load').onclick = load;
 document.getElementById('lookup').onclick = lookupRequest;
 document.getElementById('finops').onclick = () => download('/v1/admin/export/finops');
@@ -538,7 +541,7 @@ document.getElementById('seeddemo').onclick = async () => {
   const res = await fetch('/v1/admin/seed-demo', {
     method: 'POST',
     headers: { ...headers(), 'content-type': 'application/json' },
-    body: JSON.stringify({ days: 14, perDay: 28 }),
+    body: JSON.stringify({ days: 7, perDay: 12 }),
   });
   if (!res.ok) {
     if (st) st.textContent = 'seed failed ' + res.status;
@@ -551,7 +554,26 @@ document.getElementById('seeddemo').onclick = async () => {
 };
 function headers() {
   const token = tokenEl.value.trim();
-  return token ? { 'X-Tokenpulse-Token': token } : {};
+  if (!token) return {};
+  return {
+    'X-Tokenpulse-Token': token,
+    'Authorization': 'Bearer ' + token,
+  };
+}
+function setAuthStatus(msg, bad) {
+  const el = document.getElementById('authstatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = bad ? '#f87171' : '#9ca3af';
+}
+function markLoadingFailed(msg) {
+  setAuthStatus(msg, true);
+  ['demo-ready','policy-roi','annual-projection','annual-avoided','request-volume'].forEach(id => {
+    const n = document.getElementById(id);
+    if (n) n.textContent = msg;
+  });
+  const bb = document.getElementById('buyer-brief-text');
+  if (bb) bb.textContent = msg;
 }
 async function download(path) {
   const res = await fetch(path, { headers: headers() });
@@ -576,8 +598,27 @@ function esc(v) { return String(v ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<
 async function load() {
   const token = tokenEl.value.trim();
   localStorage.setItem('tokenpulse.token', token);
-  const res = await fetch('/v1/admin/summary', { headers: headers() });
-  if (!res.ok) { alert('summary ' + res.status); return; }
+  if (!token) {
+    markLoadingFailed('No token — paste TOKENPULSE_GATEWAY_TOKEN from Railway, then Refresh.');
+    return;
+  }
+  setAuthStatus('Loading summary…', false);
+  let res;
+  try {
+    res = await fetch('/v1/admin/summary', { headers: headers() });
+  } catch (err) {
+    markLoadingFailed('Network error loading summary');
+    return;
+  }
+  if (!res.ok) {
+    const msg = res.status === 401
+      ? 'Unauthorized (401) — token does not match Railway TOKENPULSE_GATEWAY_TOKEN. Copy it again from Variables, Refresh.'
+      : ('summary failed HTTP ' + res.status);
+    markLoadingFailed(msg);
+    try { alert(msg); } catch (_) {}
+    return;
+  }
+  setAuthStatus('Authenticated — summary loaded.', false);
   const s = await res.json();
   document.getElementById('kpis').innerHTML = [
     ['Calls', s.calls],
