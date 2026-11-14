@@ -247,6 +247,8 @@ export function dashboardHtml(): string {
     <button id="security" type="button">CISO pack</button>
     <input id="note" placeholder="Operator note (append-only)" />
     <button id="savenote" type="button">Add note</button>
+    <button id="seeddemo" type="button" title="Append synthetic multi-day ledger for buyer demos">Seed demo data</button>
+    <span id="seedstatus" style="margin-left:8px;opacity:.85;font-size:13px"></span>
   </div>
   <div class="grid" id="kpis"></div>
   <section class="card">
@@ -532,19 +534,19 @@ document.getElementById('savenote').onclick = async () => {
 };
 document.getElementById('seeddemo').onclick = async () => {
   const st = document.getElementById('seedstatus');
-  st.textContent = 'Seeding…';
+  if (st) st.textContent = 'Seeding…';
   const res = await fetch('/v1/admin/seed-demo', {
     method: 'POST',
     headers: { ...headers(), 'content-type': 'application/json' },
     body: JSON.stringify({ days: 14, perDay: 28 }),
   });
   if (!res.ok) {
-    st.textContent = 'seed failed ' + res.status;
+    if (st) st.textContent = 'seed failed ' + res.status;
     alert('seed-demo ' + res.status);
     return;
   }
   const body = await res.json();
-  st.textContent = 'Appended ' + (body.appended || 0) + ' events';
+  if (st) st.textContent = 'Appended ' + (body.appended || 0) + ' events';
   load();
 };
 function headers() {
