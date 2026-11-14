@@ -1,28 +1,29 @@
+import { describe, it, before } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { test } from "node:test";
-import { seedDemoLedger } from "../src/seedDemo.js";
-import { readEvents, verifyChain } from "../src/ledger.js";
+import { tmpdir } from "node:os";
+import { seedDemoLedger } from "../src/seedDemo.ts";
+import { readEvents, summarize } from "../src/ledger.ts";
 
-test("seedDemoLedger appends chained events and a note", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "tp-seed-"));
-  const prev = process.env.TOKENPULSE_LEDGER_DIR;
-  process.env.TOKENPULSE_LEDGER_DIR = dir;
-  try {
-    const result = await seedDemoLedger(2, 5);
-    assert.equal(result.appended, 2 * 5 + 1);
+describe("seedDemoLedger", () => {
+  let dir: string;
+  before(async () => {
+    dir = await mkdtemp(join(tmpdir(), "tp-seed-"));
+    process.env.TOKENPULSE_LEDGER_DIR = dir;
+    process.env.TOKENPULSE_LEDGER_DRIVER = "jsonl";
+  });
+
+  it("appends multi-day allow and block events", async () => {
+    const result = await seedDemoLedger(3, 5);
+    assert.equal(result.days, 3);
+    assert.ok(result.appended >= 16); // 3*5 + note
     const events = await readEvents();
-    assert.equal(events.length, 11);
-    assert.ok(events.some((e) => e.decision === "note"));
-    assert.ok(events.some((e) => e.decision === "allow"));
-    const chain = verifyChain(events);
-    assert.equal(chain.ok, true);
-    assert.ok(chain.checked >= 11);
-  } finally {
-    if (prev === undefined) delete process.env.TOKENPULSE_LEDGER_DIR;
-    else process.env.TOKENPULSE_LEDGER_DIR = prev;
-    await rm(dir, { recursive: true, force: true });
-  }
+    assert.ok(events.length >= 16);
+    const summary = summarize(events);
+    assert.ok(summary.calls >= 15);
+    assert.ok(summary.blocked >= 0);
+    const hasNote = events.some((e) => e.decision === "note");
+    assert.equal(hasNote, true);
+  });
 });

@@ -998,3 +998,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Gives CISO packs the allow/block/note counts and rates alongside blocked event detail.
 - Visibility only. Does not change policy, metering, or storage. No raw prompts.
 - Complements Session 122 FinOps inclusion.
+
+
+## Live demo seed (Session 124)
+
+- `POST /v1/admin/seed-demo` requires the same gateway auth as other admin routes.
+- Calls `seedDemoLedger(days, perDay)` with caps days≤30, perDay≤50.
+- Dashboard **Seed demo data** button uses defaults (14×28) then refreshes summary.
+- Events are synthetic (teams/apps/models, allow+block mix, one operator note). No raw prompts.
+- Does not change policy evaluation. Ledger hash chain still applies to seeded events.
+- Ephemeral Railway disks lose data on rebuild — re-seed after deploy when needed.

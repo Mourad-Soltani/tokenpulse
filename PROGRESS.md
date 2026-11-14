@@ -3259,3 +3259,38 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief --outreach-snippet --demo-ready --policy-roi --annual --annual-avoided --request-volume --export-finops --export-security
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 124 — live demo seed for buyer dashboards)
+
+- Added `POST /v1/admin/seed-demo` (gateway-token auth) calling existing `seedDemoLedger`.
+- Body optional: `{ "days": 1–30, "perDay": 1–50 }` (defaults 14 / 28). Caps protect disk.
+- Dashboard button **Seed demo data** posts the default payload and refreshes summary.
+- Synthetic multi-team / multi-app / allow+block events only. No raw prompts. Operator note records the seed.
+- Purpose: populate the live Railway (or any) dashboard for buyer/client visits without container shell access.
+- CLI `--seed-demo` unchanged for local recording. Redeploys without a persistent volume wipe the ledger — re-seed after deploy.
+
+## Current Status (Session 124 — 2026-11-14)
+
+Live Railway mock is up. Operators can now seed rich demo data from the dashboard or one authenticated POST.
+
+- [x] Session 124 — `POST /v1/admin/seed-demo` + dashboard Seed demo data control
+
+## Next Up (highest priority)
+
+1. After Railway rebuild: open the public URL, paste gateway token, click **Seed demo data**, confirm tables fill.
+2. **Operator:** record DEMO.md against the seeded Railway URL (no provider keys on camera).
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 124 lets the operator populate the live buyer-facing dashboard without shell access. Re-seed after deploys if the volume is ephemeral. Automation cannot hold the Railway gateway token or record the demo. Do not paste secrets into chat.
+
+```bash
+# After deploy — operator only (token never in git/chat):
+curl -sS -X POST https://tokenpulse-production-456c7fd1.up.railway.app/v1/admin/seed-demo \
+  -H "Authorization: Bearer $TOKENPULSE_GATEWAY_TOKEN" \
+  -H "content-type: application/json" \
+  -d '{"days":14,"perDay":28}'
+```

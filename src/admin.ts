@@ -530,6 +530,23 @@ document.getElementById('savenote').onclick = async () => {
   document.getElementById('note').value = '';
   load();
 };
+document.getElementById('seeddemo').onclick = async () => {
+  const st = document.getElementById('seedstatus');
+  st.textContent = 'Seeding…';
+  const res = await fetch('/v1/admin/seed-demo', {
+    method: 'POST',
+    headers: { ...headers(), 'content-type': 'application/json' },
+    body: JSON.stringify({ days: 14, perDay: 28 }),
+  });
+  if (!res.ok) {
+    st.textContent = 'seed failed ' + res.status;
+    alert('seed-demo ' + res.status);
+    return;
+  }
+  const body = await res.json();
+  st.textContent = 'Appended ' + (body.appended || 0) + ' events';
+  load();
+};
 function headers() {
   const token = tokenEl.value.trim();
   return token ? { 'X-Tokenpulse-Token': token } : {};

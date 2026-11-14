@@ -27,6 +27,7 @@ import { keysConfiguredSync, matchClientKey } from "./keys.js";
 import type { UsageEvent } from "./types.js";
 import { postAlerts, alertIntervalSec } from "./notify.js";
 import { metricsText } from "./metrics.js";
+import { seedDemoLedger } from "./seedDemo.js";
 
 function header(req: IncomingMessage, name: string): string | undefined {
   const v = req.headers[name.toLowerCase()];
@@ -768,6 +769,35 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
     } catch (err) {
       const message = err instanceof Error ? err.message : "note_invalid";
       json(res, 400, { error: { message, type: "invalid_request_error" } });
+    }
+    return;
+  }
+
+  // Populate ledger with synthetic multi-day demo traffic for buyer/demo dashboards.
+  // Auth required. Caps keep a single call from filling the disk.
+  if (req.method === "POST" && url.pathname === "/v1/admin/seed-demo") {
+    const raw = await readBody(req);
+    let body: { days?: number; perDay?: number } = {};
+    try {
+      body = raw ? JSON.parse(raw) : {};
+    } catch {
+      json(res, 400, { error: { message: "invalid json", type: "invalid_request_error" } });
+      return;
+    }
+    const days = Math.min(30, Math.max(1, Number(body.days) || 14));
+    const perDay = Math.min(50, Math.max(1, Number(body.perDay) || 28));
+    try {
+      const result = await seedDemoLedger(days, perDay);
+      json(res, 200, {
+        ok: true,
+        appended: result.appended,
+        days: result.days,
+        perDay,
+        notes: "Synthetic demo events only. No raw prompts. Refresh the dashboard summary.",
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "seed_failed";
+      json(res, 500, { error: { message, type: "seed_error" } });
     }
     return;
   }
