@@ -721,11 +721,11 @@ async function load() {
   const brief = s.buyerBrief || {};
   const briefEl = document.getElementById('buyer-brief-text');
   if (briefEl && brief.headline) {
-    briefEl.textContent = brief.headline + '\n\n' +
-      (brief.bullets || []).map(function(b){ return '• ' + b; }).join('\n') +
-      '\n\n' + (brief.positioning || '') +
-      '\n\nNext: ' + (brief.nextStep || '') +
-      '\n\n' + (brief.note || '');
+    briefEl.textContent = brief.headline + '\\n\\n' +
+      (brief.bullets || []).map(function(b){ return '• ' + b; }).join('\\n') +
+      '\\n\\n' + (brief.positioning || '') +
+      '\\n\\nNext: ' + (brief.nextStep || '') +
+      '\\n\\n' + (brief.note || '');
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
