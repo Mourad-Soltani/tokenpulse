@@ -3383,3 +3383,22 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_L
 
 **Active project:** Tokenpulse only.
 Session 125 makes the seeded mock diligence-safe on timestamps, chain labeling, and demo disclosure. Re-seed after every Railway redeploy (ephemeral disk). Do not paste secrets into chat.
+
+
+## Decisions (Session 127 — enterprise seed discipline)
+
+- Claims check: chain/demo labels were already green; commercial volume targets are presentation goals, not product bugs.
+- Rejected ledger `pricingMultiplier: 50` — invents false spend; diligence risk.
+- Rejected 150k events on current O(n) write path as default (Railway timeout risk). Enterprise cap: 30×120 ≈ 3.6k events, batch-sealed.
+- Re-seed without `force:true` → 409 `ledger_populated`.
+- Enterprise mode: higher perDay, ~22% block rate, larger allow sizes; impact uses `TOKENPULSE_BLOCKED_ASSUME_TOKENS` (default 2048 when enterprise), not fake prices.
+- Timestamps: skip future grid slots (no sub-second "now" artifacts).
+
+## Current Status (Session 127 — 2026-11-15)
+
+- [x] Session 127 — force/wipe guard + enterprise seed mode (honest volume)
+
+## Next Up
+
+1. Deploy → one enterprise seed with force → export → verify chain + demo flags.
+2. Record DEMO.md. Do not treat avoided-$ as CFO proof without separate scale model.

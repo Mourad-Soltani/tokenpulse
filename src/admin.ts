@@ -555,7 +555,7 @@ document.getElementById('seeddemo').onclick = async () => {
   const res = await fetch('/v1/admin/seed-demo', {
     method: 'POST',
     headers: { ...headers(), 'content-type': 'application/json' },
-    body: JSON.stringify({ days: 7, perDay: 12 }),
+    body: JSON.stringify({ days: 30, perDay: 100, mode: 'enterprise', force: true }),
   });
   if (!res.ok) {
     if (st) st.textContent = 'seed failed ' + res.status;
@@ -563,7 +563,7 @@ document.getElementById('seeddemo').onclick = async () => {
     return;
   }
   const body = await res.json();
-  if (st) st.textContent = 'Appended ' + (body.appended || 0) + ' events';
+  if (st) st.textContent = 'Appended ' + (body.appended || 0) + ' events (' + (body.mode || 'demo') + (body.wiped ? ', wiped' : '') + ')';
   load();
 };
 function headers() {

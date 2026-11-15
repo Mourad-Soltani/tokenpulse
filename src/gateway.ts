@@ -775,28 +775,50 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
 
   // Populate ledger with synthetic multi-day demo traffic for buyer/demo dashboards.
   // Auth required. Caps keep a single call from filling the disk.
+  // If ledger already has events, returns 409 unless body.force === true (wipe + seed).
   if (req.method === "POST" && url.pathname === "/v1/admin/seed-demo") {
     const raw = await readBody(req);
-    let body: { days?: number; perDay?: number } = {};
+    let body: { days?: number; perDay?: number; mode?: string; force?: boolean } = {};
     try {
       body = raw ? JSON.parse(raw) : {};
     } catch {
       json(res, 400, { error: { message: "invalid json", type: "invalid_request_error" } });
       return;
     }
-    const days = Math.min(30, Math.max(1, Number(body.days) || 14));
-    const perDay = Math.min(50, Math.max(1, Number(body.perDay) || 28));
+    const mode = body.mode === "enterprise" ? "enterprise" : "demo";
+    // Enterprise: allow higher per-day (capped in seedDemo). Demo keeps small defaults.
+    const days = Math.min(30, Math.max(1, Number(body.days) || (mode === "enterprise" ? 30 : 14)));
+    const perDayDefault = mode === "enterprise" ? 100 : 28;
+    const perDayCap = mode === "enterprise" ? 120 : 50;
+    const perDay = Math.min(perDayCap, Math.max(1, Number(body.perDay) || perDayDefault));
+    // Enterprise impact estimate uses larger assumed blocked tokens (env read by blockedImpact).
+    if (mode === "enterprise") {
+      process.env.TOKENPULSE_BLOCKED_ASSUME_TOKENS = process.env.TOKENPULSE_BLOCKED_ASSUME_TOKENS || "2048";
+    }
     try {
-      const result = await seedDemoLedger(days, perDay);
+      const result = await seedDemoLedger({
+        days,
+        perDay,
+        mode,
+        force: body.force === true,
+      });
       json(res, 200, {
         ok: true,
         appended: result.appended,
         days: result.days,
-        perDay,
-        notes: "Synthetic demo events only. No raw prompts. Refresh the dashboard summary.",
+        perDay: result.perDay,
+        mode: result.mode,
+        wiped: result.wiped,
+        notes:
+          "Synthetic demo events only. No raw prompts. Refresh the dashboard summary. Avoided $ uses TOKENPULSE_BLOCKED_ASSUME_TOKENS (impact estimate only).",
       });
     } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? String((err as { code?: string }).code) : "";
       const message = err instanceof Error ? err.message : "seed_failed";
+      if (code === "LEDGER_POPULATED") {
+        json(res, 409, { error: { message, type: "ledger_populated" } });
+        return;
+      }
       json(res, 500, { error: { message, type: "seed_error" } });
     }
     return;
