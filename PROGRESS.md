@@ -3402,3 +3402,37 @@ Session 125 makes the seeded mock diligence-safe on timestamps, chain labeling, 
 
 1. Deploy → one enterprise seed with force → export → verify chain + demo flags.
 2. Record DEMO.md. Do not treat avoided-$ as CFO proof without separate scale model.
+
+
+## Decisions (Session 128 — enterprise seed CLI)
+
+- CLI `--seed-demo` now accepts `--enterprise` and `--force` and passes the options object to `seedDemoLedger`.
+- `--enterprise` selects the higher-volume honest seed (30× up to 120, ~22% block, larger allow sizes, no fake pricing).
+- `--force` wipes an existing ledger first (matches the 409 guard).
+- Dashboard seed button already posts `mode: "enterprise", force: true`.
+- npm script `seed:enterprise` for one-shot operator use.
+- Does not change policy, metering, or storage. No raw prompts. Avoided-$ remains an assumption, not ledger fact.
+
+## Current Status (Session 128 — 2026-11-15)
+
+- [x] Session 128 — CLI enterprise/force flags for seed-demo
+
+## Next Up
+
+1. Deploy → one enterprise seed with force (CLI or dashboard button) → export → verify chain + demo flags.
+2. Record DEMO.md against the seeded URL. Do not treat avoided-$ as CFO proof without a separate scale model.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 128 makes the Session 127 enterprise seed usable from the CLI (`--seed-demo --enterprise --force` or `npm run seed:enterprise`). Dashboard button already does the same. Automation cannot record the demo or hold Railway tokens. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+# enterprise seed (wipes existing):
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+# or
+npm run seed:enterprise
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

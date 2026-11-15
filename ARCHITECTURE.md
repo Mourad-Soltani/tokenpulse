@@ -1033,3 +1033,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `isDemoDataset()` drives `demoDataset` / `demoLabel` on FinOps + Security packs and admin summary.
 - Dashboard shows an explicit DEMO banner and hero block-rate stats when `demoDataset` is true.
 - Hash chain still applies; seed appends sequentially so `chainOk` should verify on a clean ledger.
+
+
+## Enterprise seed CLI (Session 128)
+
+- `npx tsx src/cli.ts --seed-demo [--enterprise] [--force] [--days=N] [--per-day=N]` passes the options object to `seedDemoLedger`.
+- `--enterprise` uses the honest higher-volume mode (capped, no pricing multiplier).
+- `--force` wipes before seed when the ledger is non-empty.
+- Dashboard POST `/v1/admin/seed-demo` already supports the same body fields.
+- Visibility/demo only. Does not change policy or real pricing.
