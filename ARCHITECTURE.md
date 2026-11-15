@@ -1024,3 +1024,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Export is visibility only. Does not change policy, metering, or storage. No raw prompts.
 - Operators can attach either pack in buyer conversations after the demo recording.
 
+
+
+## Demo dataset (Session 125)
+
+- `seedDemoLedger` clamps all event timestamps to ≤ seed time.
+- Note policy id `demo-seed` marks the ledger as synthetic.
+- `isDemoDataset()` drives `demoDataset` / `demoLabel` on FinOps + Security packs and admin summary.
+- Dashboard shows an explicit DEMO banner and hero block-rate stats when `demoDataset` is true.
+- Hash chain still applies; seed appends sequentially so `chainOk` should verify on a clean ledger.

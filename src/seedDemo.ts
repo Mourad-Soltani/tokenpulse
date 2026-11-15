@@ -24,16 +24,29 @@ function pick<T>(arr: T[]): T {
   return arr[rand(0, arr.length - 1)]!;
 }
 
-/** Generate a realistic multi-day, multi-team demo ledger so dashboard tables are populated for recording. */
+/**
+ * Generate a realistic multi-day, multi-team demo ledger so dashboard tables are populated.
+ * All timestamps are clamped to ≤ now so exports never contain events after generatedAt.
+ * Data is synthetic — labeled as DEMO in the operator note.
+ */
 export async function seedDemoLedger(days = 14, eventsPerDay = 28): Promise<{ appended: number; days: number }> {
   let appended = 0;
   const now = new Date();
+  const nowMs = now.getTime();
   for (let d = days - 1; d >= 0; d--) {
     const base = new Date(now);
     base.setUTCDate(base.getUTCDate() - d);
     base.setUTCHours(8, 0, 0, 0);
     for (let i = 0; i < eventsPerDay; i++) {
-      const ts = new Date(base.getTime() + i * 25 * 60 * 1000); // spread through the day
+      let ts = new Date(base.getTime() + i * 25 * 60 * 1000);
+      // Never invent the future relative to seed time (avoids generatedAt < event timestamp).
+      if (ts.getTime() > nowMs) {
+        // Spread remaining slots in the last few minutes before now.
+        ts = new Date(nowMs - (eventsPerDay - i) * 1000);
+        if (ts.getTime() < base.getTime()) ts = new Date(Math.min(nowMs - 1000, base.getTime() + i * 60 * 1000));
+      }
+      if (ts.getTime() > nowMs) continue; // skip if still in the future
+
       const isBlock = Math.random() < 0.18;
       const isEmbed = Math.random() < 0.22;
       const model = isEmbed ? "text-embedding-3-small" : pick(MODELS.filter((m) => m !== "text-embedding-3-small"));
@@ -74,7 +87,6 @@ export async function seedDemoLedger(days = 14, eventsPerDay = 28): Promise<{ ap
       appended++;
     }
   }
-  // one operator note
   await appendEvent(
     newEvent({
       teamId: "ops",
@@ -86,8 +98,8 @@ export async function seedDemoLedger(days = 14, eventsPerDay = 28): Promise<{ ap
       estimatedCostUsd: 0,
       latencyMs: 0,
       decision: "note",
-      policyIds: ["operator-note"],
-      note: "Demo seed loaded for recording. All data is synthetic.",
+      policyIds: ["operator-note", "demo-seed"],
+      note: "DEMO DATA — SIMULATED multi-day enterprise traffic. Synthetic only. No production customer data. No raw prompts.",
       timestamp: new Date().toISOString(),
     }),
   );

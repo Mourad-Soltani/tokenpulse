@@ -6,6 +6,17 @@ import { requestVolumeStatus } from "./requestVolume.js";
 import { modelBlockRateStatus } from "./modelBlockRate.js";
 import type { UsageEvent } from "./types.js";
 
+/** True when ledger includes the synthetic demo seed note. */
+export function isDemoDataset(events: UsageEvent[]): boolean {
+  return events.some(
+    (e) =>
+      e.decision === "note" &&
+      (e.policyIds?.includes("demo-seed") ||
+        /DEMO DATA|Demo seed|synthetic/i.test(String(e.note || ""))),
+  );
+}
+
+
 export const FINOPS_PACK_VERSION = "tokenpulse-finops-v1";
 export const SECURITY_PACK_VERSION = "tokenpulse-security-v1";
 
@@ -31,6 +42,9 @@ export function exportStatus(): ExportStatus {
 export type FinopsPack = {
   version: typeof FINOPS_PACK_VERSION;
   generatedAt: string;
+  /** Present when ledger was populated by seed-demo (synthetic). */
+  demoDataset?: true;
+  demoLabel?: string;
   day?: string;
   summary: ReturnType<typeof summarize>;
   policyRoi: ReturnType<typeof policyRoiStatus>;
@@ -55,6 +69,8 @@ export type FinopsPack = {
 export type SecurityPack = {
   version: typeof SECURITY_PACK_VERSION;
   generatedAt: string;
+  demoDataset?: true;
+  demoLabel?: string;
   day?: string;
   chainOk: boolean;
   chainChecked: number;
@@ -78,9 +94,16 @@ export type SecurityPack = {
 };
 
 export function buildFinopsPack(events: UsageEvent[], opts?: { day?: string; now?: string }): FinopsPack {
+  const demo = isDemoDataset(events);
   return {
     version: FINOPS_PACK_VERSION,
     generatedAt: opts?.now ?? new Date().toISOString(),
+    ...(demo
+      ? {
+          demoDataset: true as const,
+          demoLabel: "DEMO DATA — SIMULATED multi-day enterprise traffic. No production customer data.",
+        }
+      : {}),
     day: opts?.day,
     summary: summarize(events),
     policyRoi: policyRoiStatus(events),
@@ -114,9 +137,16 @@ export function buildSecurityPack(events: UsageEvent[], opts?: { day?: string; n
     }
   }
   const chain = verifyChain(events);
+  const demo = isDemoDataset(events);
   return {
     version: SECURITY_PACK_VERSION,
     generatedAt: opts?.now ?? new Date().toISOString(),
+    ...(demo
+      ? {
+          demoDataset: true as const,
+          demoLabel: "DEMO DATA — SIMULATED multi-day enterprise traffic. No production customer data.",
+        }
+      : {}),
     day: opts?.day,
     chainOk: chain.ok,
     chainChecked: chain.checked,

@@ -3358,3 +3358,28 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --model-block-rate --request-volume --export-finops --export-security
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 125 — acquisition-grade demo dataset)
+
+- Seed timestamps clamped to ≤ now so FinOps/Security `generatedAt` is never earlier than event times.
+- Operator note policy id `demo-seed` + explicit **DEMO DATA — SIMULATED** wording.
+- Exports carry `demoDataset: true` + `demoLabel` when seed note is present.
+- Admin summary exposes `demoDataset` / `demoLabel`; dashboard shows DEMO banner + hero KPIs (requests / allowed / blocked / **block rate** / spend / audit chain).
+- Small avoided-$ figures stay labeled as demo/visibility only (not enterprise ROI).
+- Target: chainOk true on full seeded set; buyer-safe presentation without inventing larger savings into the ledger.
+
+## Current Status (Session 125 — 2026-11-15)
+
+- [x] Session 125 — seed clamp + demo labeling + hero block-rate for acquisition demo
+
+## Next Up
+
+1. After Railway deploy: clear/re-seed once (Seed demo data → Refresh). Confirm chain ✓ and DEMO banner.
+2. Operator records DEMO.md against seeded URL.
+3. Outreach after recording exists.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 125 makes the seeded mock diligence-safe on timestamps, chain labeling, and demo disclosure. Re-seed after every Railway redeploy (ephemeral disk). Do not paste secrets into chat.

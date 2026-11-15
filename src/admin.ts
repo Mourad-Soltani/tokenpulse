@@ -51,7 +51,7 @@ import { sensitiveStatus, type SensitiveStatus } from "./sensitive.js";
 import { ledgerStatus, readEvents, summarize, verifyChain, type LedgerStatus } from "./ledger.js";
 import { pricingStatus, type PricingStatus } from "./pricing.js";
 import { gatewayStatus, type GatewayRuntimeStatus } from "./runtime.js";
-import { exportStatus, type ExportStatus } from "./export.js";
+import { exportStatus, isDemoDataset, type ExportStatus } from "./export.js";
 import { policyPipelineStatus, type PolicyPipelineStatus } from "./policy.js";
 import { attributionStatus, type AttributionStatus } from "./attribution.js";
 import { correlationStatus, type CorrelationStatus } from "./correlation.js";
@@ -119,6 +119,8 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByMonth: BlockedImpactByMonthStatus;
   recordingPrep: ReturnType<typeof recordingPrep>;
   demoReady: DemoReadyStatus;
+  demoDataset: boolean;
+  demoLabel?: string;
   policyRoi: PolicyRoiStatus;
   buyerBrief: BuyerBrief;
   annual: AnnualProjectionStatus;
@@ -206,6 +208,10 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByMonth: blockedImpactByMonthStatus(events),
     recordingPrep: recordingPrep(events),
     demoReady: demoReadyStatus(events),
+    demoDataset: isDemoDataset(events),
+    demoLabel: isDemoDataset(events)
+      ? "DEMO DATA — SIMULATED multi-day enterprise traffic. No production customer data."
+      : undefined,
     policyRoi: policyRoiStatus(events),
     buyerBrief: buyerBrief(events),
     annual: annualProjectionStatus(events),
@@ -254,6 +260,8 @@ export function dashboardHtml(): string {
     <span id="seedstatus" style="margin-left:8px;opacity:.85;font-size:13px"></span>
   </div>
   <p id="authstatus" class="sub" style="margin:8px 0 12px">Enter the Railway <code>TOKENPULSE_GATEWAY_TOKEN</code>, then tap <b>Refresh</b>.</p>
+  <div id="demobanner" style="display:none;margin:0 0 12px;padding:10px 12px;border-radius:8px;background:#1e3a5f;border:1px solid #3b82f6;color:#e0f2fe;font-size:13px"></div>
+  <div id="herostats" style="display:none;margin:0 0 14px;padding:12px;border-radius:10px;background:#111827;border:1px solid #374151"></div>
   <div class="grid" id="kpis"></div>
   <section class="card">
     
@@ -626,6 +634,36 @@ async function load() {
   }
   setAuthStatus('Authenticated — summary loaded.', false);
   const s = await res.json();
+  const demoBanner = document.getElementById('demobanner');
+  const hero = document.getElementById('herostats');
+  if (demoBanner) {
+    if (s.demoDataset) {
+      demoBanner.style.display = 'block';
+      demoBanner.textContent = s.demoLabel || 'DEMO DATA — SIMULATED multi-day enterprise traffic. Synthetic only. No production customer data.';
+    } else {
+      demoBanner.style.display = 'none';
+    }
+  }
+  if (hero) {
+    const calls = s.calls || 0;
+    const allowed = s.allowed || 0;
+    const blocked = s.blocked || 0;
+    const attempts = allowed + blocked;
+    const blockRate = attempts ? Math.round((blocked / attempts) * 1000) / 10 : 0;
+    const chainOk = !((s.ledger && s.ledger.chainOk === false) || s.chainOk === false);
+    hero.style.display = 'block';
+    hero.innerHTML = '<div style="font-size:12px;opacity:.75;margin-bottom:6px">AI Financial Control Plane · Measure · Govern · Block before egress</div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:baseline">'
+      + '<span><b style="font-size:1.4rem">'+calls+'</b> requests</span>'
+      + '<span><b style="font-size:1.4rem">'+allowed+'</b> allowed</span>'
+      + '<span><b style="font-size:1.4rem;color:#f87171">'+blocked+'</b> blocked</span>'
+      + '<span><b style="font-size:1.4rem;color:#fbbf24">'+blockRate+'%</b> block rate</span>'
+      + '<span><b style="font-size:1.1rem">$'+(s.costUsd||0)+'</b> spend</span>'
+      + '<span class="'+(chainOk?'ok':'bad')+'">Audit ledger '+(chainOk?'✓ verified':'✗ broken')+'</span>'
+      + '</div>'
+      + '<div style="margin-top:8px;font-size:12px;opacity:.8">Observed demo economics only — not enterprise-scale ROI. Avoided $ is fixed-token estimate for visibility.</div>';
+  }
+
   document.getElementById('kpis').innerHTML = [
     ['Calls', s.calls],
     ['Allowed', s.allowed],
