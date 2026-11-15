@@ -3,6 +3,7 @@ import { policyRoiStatus } from "./policyRoi.js";
 import { annualProjectionStatus } from "./annualProjection.js";
 import { annualAvoidedStatus } from "./annualAvoided.js";
 import { requestVolumeStatus } from "./requestVolume.js";
+import { modelBlockRateStatus } from "./modelBlockRate.js";
 import type { UsageEvent } from "./types.js";
 
 export const FINOPS_PACK_VERSION = "tokenpulse-finops-v1";
@@ -36,6 +37,7 @@ export type FinopsPack = {
   annual: ReturnType<typeof annualProjectionStatus>;
   annualAvoided: ReturnType<typeof annualAvoidedStatus>;
   requestVolume: ReturnType<typeof requestVolumeStatus>;
+  modelBlockRate: ReturnType<typeof modelBlockRateStatus>;
   events: Array<{
     id: string;
     timestamp: string;
@@ -59,6 +61,7 @@ export type SecurityPack = {
   blocked: number;
   allowed: number;
   requestVolume: ReturnType<typeof requestVolumeStatus>;
+  modelBlockRate: ReturnType<typeof modelBlockRateStatus>;
   policyHits: Record<string, number>;
   blockedByTeam: Record<string, number>;
   events: Array<{
@@ -84,6 +87,7 @@ export function buildFinopsPack(events: UsageEvent[], opts?: { day?: string; now
     annual: annualProjectionStatus(events),
     annualAvoided: annualAvoidedStatus(events),
     requestVolume: requestVolumeStatus(events),
+    modelBlockRate: modelBlockRateStatus(events),
     events: events.filter((e) => e.decision !== "note").map((e) => ({
       id: e.id,
       timestamp: e.timestamp,
@@ -119,6 +123,7 @@ export function buildSecurityPack(events: UsageEvent[], opts?: { day?: string; n
     blocked: blocked.length,
     allowed: events.filter((e) => e.decision === "allow").length,
     requestVolume: requestVolumeStatus(events),
+    modelBlockRate: modelBlockRateStatus(events),
     policyHits,
     blockedByTeam,
     events: blocked.map((e) => ({

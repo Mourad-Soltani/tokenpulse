@@ -58,6 +58,8 @@ describe("export packs", () => {
     assert.equal(typeof pack.annual.projectedAnnualUsd, "number");
     assert.equal(typeof pack.annual.avgDailyUsd, "number");
     assert.ok(pack.requestVolume);
+    assert.ok(pack.modelBlockRate);
+    assert.equal(typeof pack.modelBlockRate.overallBlockRate, "number");
     assert.equal(typeof pack.requestVolume.totalRequests, "number");
     assert.equal(typeof pack.requestVolume.allowedCount, "number");
     assert.equal(typeof pack.requestVolume.avgCostPerAllowedUsd, "number");
@@ -71,6 +73,8 @@ describe("export packs", () => {
     assert.equal(pack.blocked, 1);
     assert.equal(pack.allowed, 1);
     assert.ok(pack.requestVolume);
+    assert.ok(pack.modelBlockRate);
+    assert.equal(typeof pack.modelBlockRate.overallBlockRate, "number");
     assert.equal(pack.requestVolume.totalRequests, 2);
     assert.equal(pack.requestVolume.blockedCount, 1);
     assert.equal(pack.policyHits["model-denied"], 1);

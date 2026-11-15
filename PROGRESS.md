@@ -3326,3 +3326,35 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --model-block-rate --request-volume
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 126 — model block rate in export packs)
+
+- FinOps pack `tokenpulse-finops-v1` and Security pack `tokenpulse-security-v1` now include `modelBlockRate` (overallBlockRate, uniqueModels, totalAttempts, totalBlocked, top rows ranked by block rate).
+- Complements Session 125 admin / dashboard / CLI visibility.
+- Export is visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Operators can quote or attach the packs in buyer conversations after the demo recording.
+
+## Current Status (Session 126 — 2026-11-15)
+
+Model block rate ranking is now in both FinOps and CISO export packs. Sale materials unchanged. Operator still must record `DEMO.md` before sending outreach.
+
+- [x] Session 126 — model block rate status in FinOps and Security export packs
+
+## Next Up (highest priority)
+
+1. After Railway rebuild: open the public URL, paste gateway token, click **Seed demo data**, confirm tables (including Model block rates) fill.
+2. **Operator:** record DEMO.md against the seeded Railway URL (no provider keys on camera). Mention per-model block rates; packs now include the numbers.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 126 adds model block rate ranking to both downloadable export packs so CFO and CISO packs match the dashboard card. Automation cannot hold the Railway token or record the demo. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --model-block-rate --request-volume --export-finops --export-security
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```

@@ -1016,3 +1016,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--model-block-rate`.
 - Visibility only. Does not change policy evaluation or ledger. Notes excluded. No raw prompts.
 - Complements request volume and block reasons for per-model enforcement visibility.
+
+## Model block rate in export packs (Session 126)
+
+- FinOps pack `tokenpulse-finops-v1` and Security pack `tokenpulse-security-v1` now include `modelBlockRate` (overallBlockRate, uniqueModels, top rows by block rate).
+- Complements Session 125 admin / dashboard / CLI visibility.
+- Export is visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Operators can attach either pack in buyer conversations after the demo recording.
+
