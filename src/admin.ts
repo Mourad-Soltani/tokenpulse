@@ -842,11 +842,11 @@ async function load() {
   document.getElementById('latmeta').textContent = (lat.samples||0) + ' samples · non-note events';
   const latt = document.querySelector('#latency tbody');
   latt.innerHTML = '<tr><td>'+(lat.samples||0)+'</td><td>'+(lat.avgMs||0)+'</td><td>'+(lat.p50Ms||0)+'</td><td>'+(lat.p95Ms||0)+'</td><td>'+(lat.maxMs||0)+'</td></tr>';
-  const uh = s.upstreamHealth || { samples:0, successes:0, failures:0, successRate:100 };
-  document.getElementById('uphealthmeta').textContent = (uh.failures ? uh.failures + ' upstream errors' : 'no upstream errors') + ' · allow vs upstream_error';
+  const uph = s.upstreamHealth || { samples:0, successes:0, failures:0, successRate:100 };
+  document.getElementById('uphealthmeta').textContent = (uph.failures ? uph.failures + ' upstream errors' : 'no upstream errors') + ' · allow vs upstream_error';
   const uht = document.querySelector('#upstreamHealth tbody');
-  const rateCls = (uh.successRate < 95 && uh.samples > 0) ? 'bad' : 'ok';
-  uht.innerHTML = '<tr><td>'+(uh.samples||0)+'</td><td>'+(uh.successes||0)+'</td><td class="'+(uh.failures?'bad':'')+'">'+(uh.failures||0)+'</td><td class="'+rateCls+'">'+(uh.successRate||0)+'</td></tr>';
+  const rateCls = (uph.successRate < 95 && uph.samples > 0) ? 'bad' : 'ok';
+  if (uht) uht.innerHTML = '<tr><td>'+(uph.samples||0)+'</td><td>'+(uph.successes||0)+'</td><td class="'+(uph.failures?'bad':'')+'">'+(uph.failures||0)+'</td><td class="'+rateCls+'">'+(uph.successRate||0)+'</td></tr>';
   const br = s.burnRate || { hoursElapsed:0, exhaustWarnCount:0, rows:[], monthlyRows:[], monthlyExhaustWarnCount:0 };
   document.getElementById('burnmeta').textContent = (br.hoursElapsed||0) + 'h elapsed UTC · ' + (br.exhaustWarnCount||0) + ' daily projected exhaust';
   const brt = document.querySelector('#burnRate tbody');
@@ -925,6 +925,8 @@ async function load() {
     eft.innerHTML = (ef.rows||[]).map(r =>
       '<tr><td>'+esc(r.model)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td><td>'+r.usdPer1MTokens+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
     ).join('') || '<tr><td colspan="6">no efficiency data</td></tr>';
+  }
+
   const te = s.teamEfficiency || { calls:0, totalCostUsd:0, overallUsdPer1MTokens:0, rows:[] };
   const tem = document.getElementById('teamefficiencymeta');
   if (tem) tem.textContent = te.calls + ' calls · $' + (te.totalCostUsd||0).toFixed(4) + ' · overall $' + (te.overallUsdPer1MTokens||0).toFixed(4) + '/1M';
@@ -932,7 +934,6 @@ async function load() {
   if (tet) tet.innerHTML = (te.rows||[]).map(r =>
     '<tr><td>'+esc(r.teamId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
   ).join('') || '<tr><td colspan="6">no team efficiency data</td></tr>';
-  }
 
   const ae = s.appEfficiency || { calls:0, totalCostUsd:0, overallUsdPer1MTokens:0, rows:[] };
   const aem = document.getElementById('appefficiencymeta');
@@ -946,32 +947,8 @@ async function load() {
   const uem = document.getElementById('upstreamefficiencymeta');
   if (uem) uem.textContent = ue.calls + ' calls · $' + (ue.totalCostUsd||0).toFixed(4) + ' · overall $' + (ue.overallUsdPer1MTokens||0).toFixed(4) + '/1M';
   const uet = document.querySelector('#upstreamefficiency tbody');
-
-  const ke = s.keyEfficiency || { calls:0, totalCostUsd:0, overallUsdPer1MTokens:0, rows:[] };
-  const kem = document.getElementById('keyefficiencymeta');
-  if (kem) kem.textContent = ke.calls + ' calls · $' + (ke.totalCostUsd||0).toFixed(4) + ' · overall $' + (ke.overallUsdPer1MTokens||0).toFixed(4) + '/1M';
-  const ket = document.querySelector('#keyefficiency tbody');
-  if (ket) ket.innerHTML = (ke.rows||[]).map(r =>
-    '<tr><td>'+esc(r.keyId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
-  ).join('') || '<tr><td colspan="6">no key efficiency data</td></tr>';
   if (uet) uet.innerHTML = (ue.rows||[]).map(r =>
-
-  const ke = s.keyEfficiency || { calls:0, totalCostUsd:0, overallUsdPer1MTokens:0, rows:[] };
-  const kem = document.getElementById('keyefficiencymeta');
-  if (kem) kem.textContent = ke.calls + ' calls · $' + (ke.totalCostUsd||0).toFixed(4) + ' · overall $' + (ke.overallUsdPer1MTokens||0).toFixed(4) + '/1M';
-  const ket = document.querySelector('#keyefficiency tbody');
-  if (ket) ket.innerHTML = (ke.rows||[]).map(r =>
-    '<tr><td>'+esc(r.keyId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
-  ).join('') || '<tr><td colspan="6">no key efficiency data</td></tr>';
     '<tr><td>'+esc(r.source)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
-
-  const ke = s.keyEfficiency || { calls:0, totalCostUsd:0, overallUsdPer1MTokens:0, rows:[] };
-  const kem = document.getElementById('keyefficiencymeta');
-  if (kem) kem.textContent = ke.calls + ' calls · $' + (ke.totalCostUsd||0).toFixed(4) + ' · overall $' + (ke.overallUsdPer1MTokens||0).toFixed(4) + '/1M';
-  const ket = document.querySelector('#keyefficiency tbody');
-  if (ket) ket.innerHTML = (ke.rows||[]).map(r =>
-    '<tr><td>'+esc(r.keyId)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
-  ).join('') || '<tr><td colspan="6">no key efficiency data</td></tr>';
   ).join('') || '<tr><td colspan="6">no upstream efficiency data</td></tr>';
 
   const ke = s.keyEfficiency || { calls:0, totalCostUsd:0, overallUsdPer1MTokens:0, rows:[] };
@@ -990,12 +967,12 @@ async function load() {
     '<tr><td>'+esc(r.endpoint)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>$'+r.costUsd.toFixed(4)+'</td><td>$'+r.usdPer1MTokens.toFixed(4)+'</td><td>'+r.avgTokensPerCall+'</td></tr>'
   ).join('') || '<tr><td colspan="6">no endpoint efficiency data</td></tr>';
 
-  const ms = s.monthlySpend || { months:0, totalCostUsd:0, rows:[] };
+  const mos = s.monthlySpend || { months:0, totalCostUsd:0, rows:[] };
   const msm = document.getElementById('monthlyspendmeta');
-  if (msm) msm.textContent = (ms.months||0) + ' months · $' + (ms.totalCostUsd||0) + ' total';
-  const mst = document.querySelector('#monthlySpend tbody');
-  if (mst) {
-    mst.innerHTML = (ms.rows||[]).map(r =>
+  if (msm) msm.textContent = (mos.months||0) + ' months · $' + (mos.totalCostUsd||0) + ' total';
+  const most = document.querySelector('#monthlySpend tbody');
+  if (most) {
+    most.innerHTML = (mos.rows||[]).map(r =>
       '<tr><td>'+esc(r.month)+'</td><td>'+r.calls+'</td><td>'+r.tokens+'</td><td>'+r.costUsd+'</td></tr>'
     ).join('') || '<tr><td colspan="4">no monthly spend</td></tr>';
   }
