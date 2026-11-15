@@ -755,8 +755,8 @@ async function load() {
   }).join('') || '<tr><td colspan=\"8\">no client keys configured</td></tr>';
   const attr = s.attribution || { version:'tokenpulse-attribution-v1', storesRawPrompts:false, fieldCount:2, fields:[], notes:'' };
   document.getElementById('attrmeta').textContent = attr.version + ' · ' + (attr.fieldCount||0) + ' fields · ' + (attr.notes||'');
-  const at = document.querySelector('#attribution tbody');
-  at.innerHTML = (attr.fields||[]).map(f =>
+  const attrBody = document.querySelector('#attribution tbody');
+  if (attrBody) attrBody.innerHTML = (attr.fields||[]).map(f =>
     '<tr><td>'+f.header+'</td><td>'+f.ledgerField+'</td><td>'+f.defaultValue+'</td><td>'+(f.required?'yes':'no')+'</td></tr>'
   ).join('') || '<tr><td colspan="4">no fields</td></tr>';
   const corr = s.correlation || { version:'tokenpulse-correlation-v1', header:'X-Tokenpulse-Request-Id', ledgerField:'requestId', inHashChain:false, storesRawPrompts:false, notes:'' };
@@ -824,8 +824,8 @@ async function load() {
   document.getElementById('webhookmeta').textContent = wh.configured
     ? ('Webhook: configured (' + (wh.host||'host') + ')')
     : 'Webhook: not configured (set TOKENPULSE_ALERT_WEBHOOK_URL)';
-  const at = document.querySelector('#alerts tbody');
-  at.innerHTML = (al.rows||[]).map(r =>
+  const alertsBody = document.querySelector('#alerts tbody');
+  if (alertsBody) alertsBody.innerHTML = (al.rows||[]).map(r =>
     '<tr><td>'+esc(r.source)+'</td><td class="bad">'+esc(r.message)+'</td><td>'+esc(r.detail||'')+'</td></tr>'
   ).join('') || '<tr><td colspan="3">none</td></tr>';
 
