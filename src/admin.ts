@@ -18,6 +18,7 @@ import { annualProjectionStatus, type AnnualProjectionStatus } from "./annualPro
 import { annualAvoidedStatus, type AnnualAvoidedStatus } from "./annualAvoided.js";
 import { requestVolumeStatus, type RequestVolumeStatus } from "./requestVolume.js";
 import { modelBlockRateStatus, type ModelBlockRateStatus } from "./modelBlockRate.js";
+import { scaleModelStatus, type ScaleModelStatus } from "./scaleModel.js";
 import { upstreamSpendStatus, type UpstreamSpendStatus } from "./upstreamSpend.js";
 import { teamSpendStatus, type TeamSpendStatus } from "./teamSpend.js";
 import { appSpendStatus, type AppSpendStatus } from "./appSpend.js";
@@ -127,6 +128,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   annualAvoided: AnnualAvoidedStatus;
   requestVolume: RequestVolumeStatus;
   modelBlockRate: ModelBlockRateStatus;
+  scaleModel: ScaleModelStatus;
 };
 
 export async function adminSummary(opts?: { day?: string; blockedLimit?: number }): Promise<AdminSummary> {
@@ -218,6 +220,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     annualAvoided: annualAvoidedStatus(events),
     requestVolume: requestVolumeStatus(events),
     modelBlockRate: modelBlockRateStatus(events),
+    scaleModel: scaleModelStatus(events),
   };
 }
 

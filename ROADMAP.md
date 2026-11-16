@@ -141,3 +141,4 @@
 - [x] Request volume in Security export pack (Session 123)
 - [x] Live dashboard demo seed via admin API (Session 124)
 - [x] Model block rate status (admin + dashboard + CLI) (Session 125)
+- [x] Transparent scale model for projected avoided spend (CLI + SCALE.md) (Session 129)

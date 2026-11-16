@@ -3436,3 +3436,36 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterpri
 npm run seed:enterprise
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 129 — transparent scale model)
+
+- Added `scaleModelStatus()` that projects monthly/annual avoided USD at an operator-chosen volume (default 1M requests/month) using observed block rate × avg allowed cost.
+- Explicit assumptions array is always returned. Linear only; no seasonality or mix shift.
+- CLI `--scale-model` and optional `--monthly-requests=N`. npm script `scale-model`.
+- Documented in `SCALE.md`. Distinct from the fixed-token `blockedImpact` / annual-avoided estimator.
+- Visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Addresses the Session 127/128 note: do not treat avoided-$ as CFO proof without a separate scale model.
+
+## Current Status (Session 129 — 2026-11-16)
+
+- [x] Session 129 — transparent scale model for projected avoided spend (CLI + docs)
+
+## Next Up
+
+1. Deploy → one enterprise seed with force (CLI or dashboard button) → export → verify chain + demo flags.
+2. Record DEMO.md against the seeded URL. Mention the scale model (and its assumptions) when discussing avoided spend; do not treat the fixed-token estimator as CFO proof.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 129 adds the separate scale model requested in prior handoffs. Automation cannot record the demo or hold Railway tokens. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+# enterprise seed (wipes existing):
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --scale-model --monthly-requests=2000000
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```
