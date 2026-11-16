@@ -278,6 +278,9 @@ export function dashboardHtml(): string {
     <p id="annual-avoided">Loading…</p>
     <h2>Request volume</h2>
     <p id="request-volume">Loading…</p>
+    <h2>Scale model (est. avoided at target volume)</h2>
+    <p id="scale-model">Loading…</p>
+    <p class="sub" id="scale-assumptions">Assumptions appear after load.</p>
     <h2>Model block rates</h2>
     <p class="sub" id="mbrmeta">Loading…</p>
     <table id="model-block-rate"><thead><tr><th>Model</th><th>Total</th><th>Allowed</th><th>Blocked</th><th>Block rate</th></tr></thead><tbody></tbody></table>
@@ -585,7 +588,7 @@ function setAuthStatus(msg, bad) {
 }
 function markLoadingFailed(msg) {
   setAuthStatus(msg, true);
-  ['demo-ready','policy-roi','annual-projection','annual-avoided','request-volume'].forEach(id => {
+  ['demo-ready','policy-roi','annual-projection','annual-avoided','request-volume','scale-model'].forEach(id => {
     const n = document.getElementById(id);
     if (n) n.textContent = msg;
   });
@@ -743,6 +746,21 @@ async function load() {
       (rv.requestsPerDay || 0) + '/day over ' + (rv.daysWithData || 0) + ' day(s) · ' +
       'avg $' + (rv.avgCostPerAllowedUsd || 0) + ' and ' + (rv.avgTokensPerAllowed || 0) + ' tokens per allow' +
       '<br>' + esc(rv.notes || '');
+  }
+
+  const sm = s.scaleModel || {};
+  const smEl = document.getElementById('scale-model');
+  const smAss = document.getElementById('scale-assumptions');
+  if (smEl) {
+    smEl.innerHTML = 'Observed block rate ' + ((sm.observedBlockRate || 0) * 100).toFixed(2) +
+      '% · Avg allowed $' + (sm.avgCostPerAllowedUsd || 0) +
+      ' · Target ' + (sm.targetMonthlyRequests || 0).toLocaleString() + ' req/mo' +
+      '<br>Projected monthly avoided $' + (sm.projectedMonthlyAvoidedUsd || 0) +
+      ' · Projected annual avoided $' + (sm.projectedAnnualAvoidedUsd || 0) +
+      '<br>' + esc(sm.notes || '');
+  }
+  if (smAss && sm.assumptions) {
+    smAss.innerHTML = (sm.assumptions || []).map(function(a){ return '• ' + esc(a); }).join('<br>');
   }
 
   const mbr = s.modelBlockRate || {};

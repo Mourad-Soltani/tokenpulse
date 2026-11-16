@@ -4,6 +4,7 @@ import { annualProjectionStatus } from "./annualProjection.js";
 import { annualAvoidedStatus } from "./annualAvoided.js";
 import { requestVolumeStatus } from "./requestVolume.js";
 import { modelBlockRateStatus } from "./modelBlockRate.js";
+import { scaleModelStatus } from "./scaleModel.js";
 import type { UsageEvent } from "./types.js";
 
 /** True when ledger includes the synthetic demo seed note. */
@@ -52,6 +53,7 @@ export type FinopsPack = {
   annualAvoided: ReturnType<typeof annualAvoidedStatus>;
   requestVolume: ReturnType<typeof requestVolumeStatus>;
   modelBlockRate: ReturnType<typeof modelBlockRateStatus>;
+  scaleModel: ReturnType<typeof scaleModelStatus>;
   events: Array<{
     id: string;
     timestamp: string;
@@ -111,6 +113,7 @@ export function buildFinopsPack(events: UsageEvent[], opts?: { day?: string; now
     annualAvoided: annualAvoidedStatus(events),
     requestVolume: requestVolumeStatus(events),
     modelBlockRate: modelBlockRateStatus(events),
+    scaleModel: scaleModelStatus(events),
     events: events.filter((e) => e.decision !== "note").map((e) => ({
       id: e.id,
       timestamp: e.timestamp,

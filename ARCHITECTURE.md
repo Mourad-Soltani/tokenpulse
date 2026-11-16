@@ -1042,3 +1042,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `--force` wipes before seed when the ledger is non-empty.
 - Dashboard POST `/v1/admin/seed-demo` already supports the same body fields.
 - Visibility/demo only. Does not change policy or real pricing.
+
+
+## Scale model status (Session 129–130)
+
+- `scaleModelStatus()` projects monthly/annual avoided USD at an operator-chosen volume (default 1M requests/month) from observed block rate × avg allowed cost.
+- Always returns an assumptions array. Linear only.
+- Admin summary exposes `scaleModel`. Dashboard renders the Scale model section. FinOps pack includes it.
+- CLI: `--scale-model` / `--monthly-requests=N`. Docs: `SCALE.md`.
+- Visibility only. Distinct from fixed-token `blockedImpact` / annual-avoided. Does not change policy.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

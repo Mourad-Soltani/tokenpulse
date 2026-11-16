@@ -3469,3 +3469,37 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterpri
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --scale-model --monthly-requests=2000000
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 130 — scale model on dashboard + FinOps pack)
+
+- Scale model status (Session 129) is now rendered on the loopback dashboard (block rate, avg allowed cost, target volume, projected monthly/annual avoided, assumptions).
+- FinOps pack `tokenpulse-finops-v1` includes `scaleModel` so CFO packs carry the transparent projection.
+- Visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Complements CLI `--scale-model`. Operator should still state the assumptions when using the numbers.
+
+## Current Status (Session 130 — 2026-11-16)
+
+Scale model is now on the dashboard and in the FinOps export pack.
+
+- [x] Session 130 — scale model visibility on dashboard + FinOps pack
+
+## Next Up (highest priority)
+
+1. Deploy → one enterprise seed with force (CLI or dashboard button) → export → verify chain + demo flags. Confirm scale model numbers appear on dashboard and in FinOps pack.
+2. Record DEMO.md against the seeded URL. Mention the scale model (and its assumptions) when discussing avoided spend; do not treat the fixed-token estimator as CFO proof.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 130 surfaces the Session 129 scale model on the operator dashboard and FinOps packs. Automation cannot record the demo or hold Railway tokens. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+# enterprise seed (wipes existing):
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --scale-model --monthly-requests=2000000
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard and check Scale model section; download FinOps pack and confirm scaleModel field
+```
