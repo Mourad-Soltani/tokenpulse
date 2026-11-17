@@ -47,3 +47,7 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --scale-model --monthl
 | **Scale model** | Observed block rate × avg allowed cost × target volume | Honest enterprise projection for buyer conversations |
 
 Do not present the fixed-token avoided-$ numbers as CFO proof. Use the scale model and state the assumptions.
+
+## Buyer brief
+
+The same projection is included in `buyerBrief()` (CLI `--buyer-brief` and the dashboard Buyer brief card). The operator should state the four assumptions when using the number in a CFO conversation.

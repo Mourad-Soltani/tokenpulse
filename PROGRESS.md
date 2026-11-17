@@ -3536,3 +3536,37 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --scale-model --monthl
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; download Security pack and confirm scaleModel field; scrape /v1/admin/metrics for tokenpulse_scale_model_*
 ```
+
+## Decisions (Session 132 — scale model in buyer brief)
+
+- `buyerBrief()` now includes a `scaleModel` object (target volume, observed block rate, projected monthly/annual avoided, assumptions).
+- A dedicated bullet surfaces the transparent projection for CFO conversations.
+- `nextStep` reminds the operator to state the four assumptions when discussing avoided spend.
+- Visibility only. Does not change policy, metering, or storage. Default target remains 1M requests/month (optional override via function opts).
+- Complements dashboard, FinOps pack, Security pack, and CLI `--scale-model`. No raw prompts.
+
+## Current Status (Session 132 — 2026-11-17)
+
+Scale model is now part of the buyer brief so the operator has CFO talking points ready for DEMO.md recording and outreach.
+
+- [x] Session 132 — scale model integrated into buyer brief (CLI `--buyer-brief` + admin/dashboard)
+
+## Next Up (highest priority)
+
+1. Deploy → enterprise seed with force → run `--buyer-brief` and confirm scale model numbers appear.
+2. Record DEMO.md against the seeded URL. Mention the scale model and its assumptions when discussing avoided spend; do not treat the fixed-token estimator as CFO proof.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 132 puts the transparent scale model into the buyer brief so operator talking points include projected avoided spend at target volume. Automation cannot record the demo or hold Railway tokens. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+# enterprise seed (wipes existing):
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; buyer brief card should include scale projection
+```

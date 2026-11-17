@@ -2,6 +2,7 @@ import type { UsageEvent } from "./types.js";
 import { policyRoiStatus } from "./policyRoi.js";
 import { summarize } from "./ledger.js";
 import { demoReadyStatus } from "./demoReady.js";
+import { scaleModelStatus } from "./scaleModel.js";
 
 export type BuyerBrief = {
   version: "tokenpulse-buyer-brief-v1";
@@ -16,6 +17,13 @@ export type BuyerBrief = {
     uniqueTeams: number;
     uniqueModels: number;
   };
+  scaleModel: {
+    targetMonthlyRequests: number;
+    observedBlockRate: number;
+    projectedMonthlyAvoidedUsd: number;
+    projectedAnnualAvoidedUsd: number;
+    assumptions: string[];
+  };
   valuation: {
     floor: string;
     base: string;
@@ -29,10 +37,11 @@ export type BuyerBrief = {
 };
 
 /** Concise executive brief for buyer calls / teaser follow-up. Visibility only. Uses current ledger. */
-export function buyerBrief(events: UsageEvent[]): BuyerBrief {
+export function buyerBrief(events: UsageEvent[], opts?: { monthlyRequests?: number }): BuyerBrief {
   const roi = policyRoiStatus(events);
   const summary = summarize(events);
   const ready = demoReadyStatus(events);
+  const scale = scaleModelStatus(events, { monthlyRequests: opts?.monthlyRequests });
 
   const allowCount = events.filter((e) => e.decision === "allow").length;
   const blockCount = events.filter((e) => e.decision === "block").length;
@@ -49,6 +58,7 @@ export function buyerBrief(events: UsageEvent[]): BuyerBrief {
     ready.ready
       ? `Demo ledger is rich enough for recording (${allowCount} allows, ${blockCount} blocks).`
       : `Seed the demo ledger for richer numbers before the call.`,
+    `Transparent scale model (not a ledger fact): at ${scale.targetMonthlyRequests.toLocaleString()} requests/month, observed ${(scale.observedBlockRate * 100).toFixed(1)}% block rate projects ~$${scale.projectedAnnualAvoidedUsd.toLocaleString()} annual avoided. State the four assumptions.`,
     `Valuation posture (public comps): floor $3–8M · base $15–40M · strategic $60–150M. Current honest mark ~$20–30M. Do not lead with $1B.`,
   ];
 
@@ -65,6 +75,13 @@ export function buyerBrief(events: UsageEvent[]): BuyerBrief {
       uniqueTeams,
       uniqueModels,
     },
+    scaleModel: {
+      targetMonthlyRequests: scale.targetMonthlyRequests,
+      observedBlockRate: scale.observedBlockRate,
+      projectedMonthlyAvoidedUsd: scale.projectedMonthlyAvoidedUsd,
+      projectedAnnualAvoidedUsd: scale.projectedAnnualAvoidedUsd,
+      assumptions: scale.assumptions,
+    },
     valuation: {
       floor: "$3–8M (asset-only walk-away)",
       base: "$15–40M (MVP + demo-ready, early/no revenue)",
@@ -74,7 +91,7 @@ export function buyerBrief(events: UsageEvent[]): BuyerBrief {
     },
     positioning:
       "Private AI FinOps + shadow-AI control plane. Meter, attribute, enforce, export. Adjacent to Portkey/TRiSM; self-host first. Not a workflow orchestrator.",
-    nextStep: "Record 3-min mock DEMO.md (no keys on camera). Then personalize ≤10 emails from OUTREACH_DRAFTS.md. Lead with control-plane gap + time-to-deploy.",
-    note: "Generated from current ledger (seed or real). Numbers are estimates for demo. Valuation bands are internal posture, not an offer. No secrets. Not a commitment.",
+    nextStep: "Record 3-min mock DEMO.md (no keys on camera). Mention scale model assumptions when discussing avoided spend. Then personalize ≤10 emails from OUTREACH_DRAFTS.md. Lead with control-plane gap + time-to-deploy.",
+    note: "Generated from current ledger (seed or real). Numbers are estimates for demo. Scale model is a transparent projection, not a ledger fact. Valuation bands are internal posture, not an offer. No secrets. Not a commitment.",
   };
 }
