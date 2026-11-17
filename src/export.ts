@@ -80,6 +80,7 @@ export type SecurityPack = {
   allowed: number;
   requestVolume: ReturnType<typeof requestVolumeStatus>;
   modelBlockRate: ReturnType<typeof modelBlockRateStatus>;
+  scaleModel: ReturnType<typeof scaleModelStatus>;
   policyHits: Record<string, number>;
   blockedByTeam: Record<string, number>;
   events: Array<{
@@ -157,6 +158,7 @@ export function buildSecurityPack(events: UsageEvent[], opts?: { day?: string; n
     allowed: events.filter((e) => e.decision === "allow").length,
     requestVolume: requestVolumeStatus(events),
     modelBlockRate: modelBlockRateStatus(events),
+    scaleModel: scaleModelStatus(events),
     policyHits,
     blockedByTeam,
     events: blocked.map((e) => ({

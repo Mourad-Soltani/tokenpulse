@@ -3503,3 +3503,36 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --scale-model --monthl
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard and check Scale model section; download FinOps pack and confirm scaleModel field
 ```
+
+## Decisions (Session 131 — scale model on Security pack + metrics)
+
+- Scale model status (Session 129–130) is now included in the Security pack `tokenpulse-security-v1`.
+- Prometheus `/v1/admin/metrics` exposes scale-model gauges (block rate, projected monthly/annual avoided, target monthly requests).
+- Complements FinOps pack and dashboard. Visibility only. Does not change policy or storage. No raw prompts.
+- Assumptions array remains on the status object so packs stay transparent.
+
+## Current Status (Session 131 — 2026-11-17)
+
+Scale model is now on the Security pack and in Prometheus metrics.
+
+- [x] Session 131 — scale model on Security pack + Prometheus metrics
+
+## Next Up (highest priority)
+
+1. Deploy → one enterprise seed with force (CLI or dashboard button) → export → verify chain + demo flags. Confirm scale model numbers appear on dashboard, FinOps pack, and Security pack.
+2. Record DEMO.md against the seeded URL. Mention the scale model (and its assumptions) when discussing avoided spend; do not treat the fixed-token estimator as CFO proof.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 131 adds the transparent scale model to the CISO Security pack and to Prometheus metrics. Automation cannot record the demo or hold Railway tokens. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+# enterprise seed (wipes existing):
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --scale-model --monthly-requests=2000000
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; download Security pack and confirm scaleModel field; scrape /v1/admin/metrics for tokenpulse_scale_model_*
+```

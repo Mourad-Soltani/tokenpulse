@@ -210,6 +210,19 @@ export function metricsText(summary: AdminSummary): string {
     "# TYPE tokenpulse_blocked_impact_by_month_avoided_usd gauge",
     `tokenpulse_blocked_impact_by_month_avoided_usd ${summary.blockedImpactByMonth?.estimatedAvoidedUsd ?? 0}`,
 
+    "# HELP tokenpulse_scale_model_block_rate Observed block rate used by the transparent scale model",
+    "# TYPE tokenpulse_scale_model_block_rate gauge",
+    `tokenpulse_scale_model_block_rate ${summary.scaleModel?.observedBlockRate ?? 0}`,
+    "# HELP tokenpulse_scale_model_projected_monthly_avoided_usd Projected monthly avoided USD at target volume",
+    "# TYPE tokenpulse_scale_model_projected_monthly_avoided_usd gauge",
+    `tokenpulse_scale_model_projected_monthly_avoided_usd ${summary.scaleModel?.projectedMonthlyAvoidedUsd ?? 0}`,
+    "# HELP tokenpulse_scale_model_projected_annual_avoided_usd Projected annual avoided USD at target volume",
+    "# TYPE tokenpulse_scale_model_projected_annual_avoided_usd gauge",
+    `tokenpulse_scale_model_projected_annual_avoided_usd ${summary.scaleModel?.projectedAnnualAvoidedUsd ?? 0}`,
+    "# HELP tokenpulse_scale_model_target_monthly_requests Operator-chosen target monthly requests for the scale model",
+    "# TYPE tokenpulse_scale_model_target_monthly_requests gauge",
+    `tokenpulse_scale_model_target_monthly_requests ${summary.scaleModel?.targetMonthlyRequests ?? 0}`,
+
   ];
   return lines.join("\n") + "\n";
 }

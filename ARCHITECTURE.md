@@ -1052,3 +1052,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--scale-model` / `--monthly-requests=N`. Docs: `SCALE.md`.
 - Visibility only. Distinct from fixed-token `blockedImpact` / annual-avoided. Does not change policy.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Scale model in Security pack + metrics (Session 131)
+
+- Security pack `tokenpulse-security-v1` now includes `scaleModel` (observed block rate, target volume, projected monthly/annual avoided, assumptions).
+- Complements Session 130 FinOps + dashboard visibility so CISO packs carry the same transparent projection.
+- Prometheus metrics expose `tokenpulse_scale_model_block_rate`, `tokenpulse_scale_model_projected_monthly_avoided_usd`, `tokenpulse_scale_model_projected_annual_avoided_usd`, `tokenpulse_scale_model_target_monthly_requests`.
+- Visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Operators should still state the assumptions when citing the numbers.
