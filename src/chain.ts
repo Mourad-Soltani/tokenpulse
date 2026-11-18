@@ -23,8 +23,10 @@ export function eventDigest(event: UsageEvent, prevHash: string): string {
   return createHash("sha256").update(JSON.stringify(body)).digest("hex");
 }
 
-export function sealEvent(event: UsageEvent, prevHash: string): UsageEvent {
-  return { ...event, prevHash, hash: eventDigest(event, prevHash) };
+export function sealEvent(event: UsageEvent, prevHash: string = ""): UsageEvent {
+  // Coerce so JSON.stringify always includes "prevHash":"" for genesis (undefined would omit the key and break verifyChain).
+  const link = prevHash ?? "";
+  return { ...event, prevHash: link, hash: eventDigest(event, link) };
 }
 
 export type ChainReport = {

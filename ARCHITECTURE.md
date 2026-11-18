@@ -1070,3 +1070,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Intended for the operator to read while recording DEMO.md so the assumptions are stated on camera.
 - Does not change policy, metering, or storage. No raw prompts.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Seed chain genesis (Session 134)
+
+- Demo seed must seal with `prevHash = ""` (empty string), never `undefined`.
+- `sealEvent` coerces `prevHash ?? ""` so the digest matches `verifyChain`.
+- Force re-seed after deploy to replace any ledger written before this fix.

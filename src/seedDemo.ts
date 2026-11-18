@@ -169,11 +169,12 @@ export async function seedDemoLedger(
   draft.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   // Single-pass chain seal then write by day file (fast path; avoids O(n²) read-on-each-append).
-  let prev: string | undefined;
+  // Genesis must use empty-string prevHash (not undefined) so JSON.stringify matches verifyChain.
+  let prev = "";
   const byDay = new Map<string, UsageEvent[]>();
   for (const ev of draft) {
     const sealed = sealEvent(ev, prev);
-    prev = sealed.hash;
+    prev = sealed.hash!;
     const day = sealed.timestamp.slice(0, 10);
     const list = byDay.get(day) ?? [];
     list.push(sealed);

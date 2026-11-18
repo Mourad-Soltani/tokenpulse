@@ -3605,3 +3605,32 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-talking-po
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; buyer brief card should include scale projection
 ```
+
+
+## Decisions (Session 134 — seed chain genesis fix)
+
+- Root cause: `seedDemoLedger` sealed the first event with `prevHash: undefined`. `JSON.stringify` omits the key; `verifyChain` recomputes with `""` → hash mismatch → `chainOk: false` after any Seed demo data.
+- Live `appendEvent` path was already correct (`lastHash` returns `""`).
+- Fix: seed uses `let prev = ""`; `sealEvent` coerces `prevHash ?? ""` so genesis always stores `"prevHash":""`.
+- After deploy: operator must **force re-seed** once (Seed demo data with force, or CLI `--seed-demo --force`) so the ledger is rewritten with a valid chain. Old broken seed files stay broken until wiped.
+
+## Current Status (Session 134 — 2026-11-18)
+
+- [x] Session 134 — fix audit ledger broken after seed (genesis prevHash)
+
+## Next Up (highest priority)
+
+1. Redeploy Railway (and Render if used) with this commit.
+2. On Railway: force re-seed (wipe + enterprise seed). Confirm `chainOk: true` and DEMO banner.
+3. Record DEMO.md; then personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 134 fixes the post-seed broken hash chain. Redeploy + force re-seed required on Railway/Render ephemeral disks. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --verify-ledger
+```
