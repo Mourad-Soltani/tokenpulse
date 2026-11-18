@@ -1060,3 +1060,13 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Prometheus metrics expose `tokenpulse_scale_model_block_rate`, `tokenpulse_scale_model_projected_monthly_avoided_usd`, `tokenpulse_scale_model_projected_annual_avoided_usd`, `tokenpulse_scale_model_target_monthly_requests`.
 - Visibility only. Does not change policy, metering, or storage. No raw prompts.
 - Operators should still state the assumptions when citing the numbers.
+
+
+## Recording talking points (Session 133)
+
+- `recordingTalkingPoints()` builds a short script + one CFO line that includes the transparent scale model and its four assumptions.
+- CLI: `--recording-talking-points` (optional `--monthly-requests=N`). npm script `recording-talking-points`.
+- Uses the same `scaleModelStatus` and `demoReadyStatus`. Visibility only.
+- Intended for the operator to read while recording DEMO.md so the assumptions are stated on camera.
+- Does not change policy, metering, or storage. No raw prompts.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

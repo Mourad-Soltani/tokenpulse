@@ -3570,3 +3570,38 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --buyer-brief
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; buyer brief card should include scale projection
 ```
+
+
+## Decisions (Session 133 — recording talking points)
+
+- `recordingTalkingPoints()` produces a short script and one CFO line that surfaces the transparent scale model and its four assumptions.
+- CLI: `--recording-talking-points` (optional `--monthly-requests=N`). npm script `recording-talking-points`.
+- Uses existing `scaleModelStatus` + `demoReadyStatus`. Visibility only.
+- Intended so the operator can read the script while recording DEMO.md and state the assumptions on camera.
+- Does not change policy, metering, or storage. No raw prompts.
+
+## Current Status (Session 133 — 2026-11-18)
+
+Recording talking points are available so the operator can state the scale model assumptions while recording DEMO.md.
+
+- [x] Session 133 — recording talking points (CLI + npm script)
+
+## Next Up (highest priority)
+
+1. Deploy → enterprise seed with force → run `--recording-talking-points` (and `--buyer-brief`) and confirm the scale model numbers and four assumptions appear.
+2. Record DEMO.md against the seeded URL. Read or paraphrase the script; explicitly state the four assumptions when discussing avoided spend. Do not treat the fixed-token estimator as CFO proof.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 133 adds ready-to-read talking points that include the transparent scale model and its four assumptions. Automation cannot record the demo or hold Railway tokens. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+# enterprise seed (wipes existing):
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-talking-points
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; buyer brief card should include scale projection
+```

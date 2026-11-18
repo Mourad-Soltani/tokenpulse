@@ -51,3 +51,13 @@ Do not present the fixed-token avoided-$ numbers as CFO proof. Use the scale mod
 ## Buyer brief
 
 The same projection is included in `buyerBrief()` (CLI `--buyer-brief` and the dashboard Buyer brief card). The operator should state the four assumptions when using the number in a CFO conversation.
+
+## Recording talking points (Session 133)
+
+```bash
+npx tsx src/cli.ts --recording-talking-points
+# or
+npm run recording-talking-points
+```
+
+Prints a short script and one CFO line that already includes the four assumptions. Read or paraphrase while recording DEMO.md.

@@ -143,3 +143,5 @@
 - [x] Model block rate status (admin + dashboard + CLI) (Session 125)
 - [x] Transparent scale model for projected avoided spend (CLI + SCALE.md) (Session 129)
 - [x] Scale model on Security pack + Prometheus metrics (Session 131)
+
+- [x] Recording talking points with scale model assumptions (CLI `--recording-talking-points`) (Session 133)
