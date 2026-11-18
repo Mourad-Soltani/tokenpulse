@@ -3,9 +3,10 @@ import assert from "node:assert/strict";
 import { mkdtemp } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { seedDemoLedger, ledgerEventCount } from "../src/seedDemo.ts";
-import { readEvents, verifyChain } from "../src/ledger.ts";
+import { seedDemoLedger } from "../src/seedDemo.ts";
+import { readEvents, verifyChain, newEvent } from "../src/ledger.ts";
 import { buildFinopsPack, buildSecurityPack, isDemoDataset } from "../src/export.ts";
+import { sealEvent } from "../src/chain.ts";
 
 describe("seedDemoLedger", () => {
   before(async () => {
@@ -33,11 +34,13 @@ describe("seedDemoLedger", () => {
     for (const e of events) {
       const t = new Date(e.timestamp).getTime();
       assert.ok(t <= now, e.timestamp);
-      // grid or trailing .000Z note — no random sub-second except sealed note which we zero
       if (e.decision !== "note") {
         assert.match(e.timestamp, /\d{2}:\d{2}:00\.000Z$/);
       }
     }
+    // Genesis must store prevHash as empty string so verifyChain matches (Session 134 fix).
+    assert.equal(events[0]?.prevHash, "");
+    assert.ok(events[0]?.hash);
     const chain = verifyChain(events);
     assert.equal(chain.ok, true);
     assert.equal(isDemoDataset(events), true);
@@ -46,5 +49,24 @@ describe("seedDemoLedger", () => {
     assert.equal(sec.demoDataset, true);
     const fin = buildFinopsPack(events);
     assert.equal(fin.demoDataset, true);
+  });
+
+  it("sealEvent coerces undefined prevHash to empty string", () => {
+    const ev = newEvent({
+      teamId: "test",
+      appId: "test",
+      model: "gpt-4o-mini",
+      promptTokens: 1,
+      completionTokens: 1,
+      totalTokens: 2,
+      estimatedCostUsd: 0,
+      latencyMs: 1,
+      decision: "allow",
+      policyIds: ["allow"],
+    });
+    // Simulate the pre-Session-134 bug path.
+    const sealed = sealEvent(ev, undefined as unknown as string);
+    assert.equal(sealed.prevHash, "");
+    assert.ok(sealed.hash);
   });
 });

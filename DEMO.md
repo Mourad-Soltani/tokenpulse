@@ -50,6 +50,20 @@ TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token npm run star
 
 Open `http://127.0.0.1:8788/`. Paste `dev-local-token`. Confirm KPIs, **By team**, **By app**, recent blocks, chain badge.
 
+## Important after deploy (Session 134+)
+
+After any Railway or Render redeploy (ephemeral disk), **force re-seed** once so the hash chain is valid:
+
+```bash
+# Local or via CLI against the same ledger dir
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --verify-ledger
+# Expect: chainOk true
+```
+
+Or use the dashboard **Seed demo data** button with force. Confirm the DEMO banner and chain ✓ before recording. Old seed files from before the genesis fix stay broken until wiped.
+
+
 ## 4. Attribution check
 
 ```bash

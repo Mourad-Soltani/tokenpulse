@@ -3634,3 +3634,33 @@ npm install && npm test
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --verify-ledger
 ```
+
+
+## Decisions (Session 135 — seed chain regression test)
+
+- Strengthened `tests/seedDemo.test.ts` to assert the first sealed event has `prevHash === ""` and that `sealEvent` coerces `undefined` to `""`.
+- Updated `DEMO.md` with an explicit post-deploy force re-seed step so operators know old seed files stay broken until wiped.
+- No product behavior change. Chain fix from Session 134 remains the source of truth.
+
+## Current Status (Session 135 — 2026-11-18)
+
+Regression coverage for the genesis prevHash fix + clearer operator reseed instructions.
+
+- [x] Session 135 — seed chain regression test + DEMO.md reseed note
+
+## Next Up (highest priority)
+
+1. Redeploy Railway (and Render if used) with the latest commits.
+2. On Railway: force re-seed (wipe + enterprise seed). Confirm `chainOk: true` and DEMO banner.
+3. Record DEMO.md; then personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 135 adds a regression test for the seed genesis hash and documents the required force re-seed after deploy. Operator still must redeploy + reseed + record. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --verify-ledger
+```
