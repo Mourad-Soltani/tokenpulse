@@ -3795,3 +3795,34 @@ Dashboard client JS is syntactically valid again. Buttons and auto-load should w
 
 **Active project:** Tokenpulse only.
 Session 139 fixes the SyntaxError that disabled the whole dashboard script. Redeploy + hard refresh. Do not paste secrets into chat.
+
+## Decisions (Session 140 — dashboard JS syntax guard)
+
+- Added `tests/dashboard-syntax.test.ts`.
+- Extracts the largest inline `<script>` from `dashboardHtml()` and runs `node --check` on it.
+- Fails the suite if the client script is not valid JavaScript.
+- Prevents recurrence of the Session 139 template-literal newline escape that aborted the whole dashboard.
+- No product behavior change. Visibility / CI only.
+
+## Current Status (Session 140 — 2026-11-19)
+
+Dashboard client JS is protected by a CI syntax check. Redeploy still required for the Session 139 fix to appear on Render.
+
+- [x] Session 140 — regression test that dashboard client script is valid JS
+
+## Next Up (highest priority)
+
+1. Redeploy Render (wait until latest commit is live).
+2. Hard-refresh the dashboard — cards should fill; Refresh / Seed / packs should respond.
+3. Record DEMO.md; personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 140 adds a `node --check` regression test for the dashboard client script. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+# confirm the new syntax test passes
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+```
