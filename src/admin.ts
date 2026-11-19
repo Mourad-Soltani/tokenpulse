@@ -11,6 +11,7 @@ import { blockedImpactByHourStatus, type BlockedImpactByHourStatus } from "./blo
 import { blockedImpactByWeekStatus, type BlockedImpactByWeekStatus } from "./blockedImpactByWeek.js";
 import { blockedImpactByMonthStatus, type BlockedImpactByMonthStatus } from "./blockedImpactByMonth.js";
 import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
+import { recordingTalkingPoints, type RecordingTalkingPoints } from "./recordingTalkingPoints.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
 import { policyRoiStatus, type PolicyRoiStatus } from "./policyRoi.js";
 import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
@@ -119,6 +120,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByWeek: BlockedImpactByWeekStatus;
   blockedImpactByMonth: BlockedImpactByMonthStatus;
   recordingPrep: ReturnType<typeof recordingPrep>;
+  recordingTalkingPoints: RecordingTalkingPoints;
   demoReady: DemoReadyStatus;
   demoDataset: boolean;
   demoLabel?: string;
@@ -209,6 +211,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByWeek: blockedImpactByWeekStatus(events),
     blockedImpactByMonth: blockedImpactByMonthStatus(events),
     recordingPrep: recordingPrep(events),
+    recordingTalkingPoints: recordingTalkingPoints(events),
     demoReady: demoReadyStatus(events),
     demoDataset: isDemoDataset(events),
     demoLabel: isDemoDataset(events)
@@ -286,6 +289,8 @@ export function dashboardHtml(): string {
     <table id="model-block-rate"><thead><tr><th>Model</th><th>Total</th><th>Allowed</th><th>Blocked</th><th>Block rate</th></tr></thead><tbody></tbody></table>
 <h2>Buyer brief</h2>
     <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
+    <h2>Recording talking points</h2>
+    <pre id="recording-talking-points" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -785,6 +790,15 @@ async function load() {
       '\\n\\n' + (brief.positioning || '') +
       '\\n\\nNext: ' + (brief.nextStep || '') +
       '\\n\\n' + (brief.note || '');
+  }
+
+  const tp = s.recordingTalkingPoints || {};
+  const tpEl = document.getElementById('recording-talking-points');
+  if (tpEl && tp.script) {
+    tpEl.textContent = (tp.ready ? 'READY for recording\n\n' : 'Needs more data\n\n') +
+      (tp.script || []).map(function(line, i){ return (i+1) + '. ' + line; }).join('\n\n') +
+      '\n\nCFO line: ' + (tp.cfoLine || '') +
+      '\n\n' + (tp.note || '');
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };

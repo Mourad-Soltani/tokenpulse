@@ -3685,3 +3685,34 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --verify-ledger
 
 **Active project:** Tokenpulse only.
 Session 135 fixes buyer-brief contrast on the dark dashboard. Redeploy before recording if the brief is on screen.
+
+## Decisions (Session 136 — recording talking points on dashboard)
+
+- Dashboard now shows the Session 133 recording talking points script (numbered lines + CFO one-liner + note) next to the buyer brief.
+- Pulls from the same `recordingTalkingPoints()` function. Visibility only for the operator while recording DEMO.md.
+- States the four scale-model assumptions on screen so they can be read on camera.
+- Does not change policy, metering, or storage. No raw prompts.
+
+## Current Status (Session 136 — 2026-11-19)
+
+Recording talking points are now visible on the dark dashboard so the operator can read the script and CFO line during DEMO.md recording.
+
+- [x] Session 136 — recording talking points on admin summary + dashboard
+
+## Next Up (highest priority)
+
+1. Redeploy Render + Railway so the new talking-points card is live.
+2. Record DEMO.md (chain already verified on Railway). Mention the on-screen script and scale-model assumptions.
+3. After recording: personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 136 surfaces the recording talking points on the dashboard so the operator can read the scale-model assumptions and CFO line on camera. Redeploy before recording. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Recording talking points card should appear after buyer brief
+```

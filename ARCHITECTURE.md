@@ -1077,3 +1077,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Demo seed must seal with `prevHash = ""` (empty string), never `undefined`.
 - `sealEvent` coerces `prevHash ?? ""` so the digest matches `verifyChain`.
 - Force re-seed after deploy to replace any ledger written before this fix.
+
+## Recording talking points (Session 136)
+
+- Dashboard renders the Session 133 `recordingTalkingPoints()` script under the buyer brief.
+- Operator can read the numbered lines and CFO one-liner on camera while recording DEMO.md.
+- Visibility only. Does not change policy or storage. States the four scale-model assumptions.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
