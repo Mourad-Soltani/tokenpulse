@@ -1084,3 +1084,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Operator can read the numbered lines and CFO one-liner on camera while recording DEMO.md.
 - Visibility only. Does not change policy or storage. States the four scale-model assumptions.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Dashboard load behavior (Session 137)
+
+- On page open the script restores the token from localStorage and, if non-empty, immediately calls `load()` against `GET /v1/admin/summary`.
+- Without a token the auth status prompts the operator to paste `TOKENPULSE_GATEWAY_TOKEN` and tap Refresh.
+- Failed loads (network / 401 / other) update the main status cards via `markLoadingFailed` so the UI does not remain on permanent "Loading…".
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

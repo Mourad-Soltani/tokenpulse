@@ -3716,3 +3716,33 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterpri
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Recording talking points card should appear after buyer brief
 ```
+
+## Decisions (Session 137 — dashboard auto-load + loading fixes)
+
+- Dashboard JS now auto-calls `load()` on page open when a token is already in localStorage / the input field. Previously the page stayed on permanent "Loading…" until the operator manually clicked Refresh.
+- Expanded `markLoadingFailed` to also update recording talking points, mbrmeta, and recording-prep so failed auth is visible across the main cards.
+- Fixed buyer-brief textContent: was emitting literal `\\n` instead of real newlines (escape artifact from Session 136 edit).
+- Softened the static auth hint to mention Render or Railway (deploy is currently on Render).
+- Visibility / UX only. No policy or metering change.
+
+## Current Status (Session 137 — 2026-11-19)
+
+Dashboard no longer stays stuck on Loading when a saved token exists. Operator still needs a valid TOKENPULSE_GATEWAY_TOKEN for the summary call.
+
+- [x] Session 137 — dashboard auto-load on open + loading-failed coverage + buyer-brief newlines
+
+## Next Up (highest priority)
+
+1. Redeploy Render (and Railway if used) so the auto-load fix is live.
+2. Paste TOKENPULSE_GATEWAY_TOKEN → page should load summary automatically (or after one Refresh).
+3. Force re-seed if needed, then record DEMO.md; personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 137 fixes the stuck "Loading…" state: auto-load when a token is present + clearer failure messages. Redeploy before recording. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+# after deploy: open dashboard, paste token once; subsequent visits auto-load
+```

@@ -265,7 +265,7 @@ export function dashboardHtml(): string {
     <button id="seeddemo" type="button" title="Append synthetic multi-day ledger for buyer demos">Seed demo data</button>
     <span id="seedstatus" style="margin-left:8px;opacity:.85;font-size:13px"></span>
   </div>
-  <p id="authstatus" class="sub" style="margin:8px 0 12px">Enter the Railway <code>TOKENPULSE_GATEWAY_TOKEN</code>, then tap <b>Refresh</b>.</p>
+  <p id="authstatus" class="sub" style="margin:8px 0 12px">Paste the gateway token (Render/Railway <code>TOKENPULSE_GATEWAY_TOKEN</code>), then tap <b>Refresh</b>.</p>
   <div id="demobanner" style="display:none;margin:0 0 12px;padding:10px 12px;border-radius:8px;background:#1e3a5f;border:1px solid #3b82f6;color:#e0f2fe;font-size:13px"></div>
   <div id="herostats" style="display:none;margin:0 0 14px;padding:12px;border-radius:10px;background:#111827;border:1px solid #374151"></div>
   <div class="grid" id="kpis"></div>
@@ -550,6 +550,12 @@ tokenEl.value = localStorage.getItem('tokenpulse.token') || '';
 tokenEl.addEventListener('change', load);
 tokenEl.addEventListener('blur', () => { if (tokenEl.value.trim()) load(); });
 document.getElementById('load').onclick = load;
+// Auto-load when a saved token is present so the dashboard does not stay on "Loading…"
+if (tokenEl.value.trim()) {
+  load();
+} else {
+  setAuthStatus('Paste the gateway token (Render/Railway TOKENPULSE_GATEWAY_TOKEN), then tap Refresh.', false);
+}
 document.getElementById('lookup').onclick = lookupRequest;
 document.getElementById('finops').onclick = () => download('/v1/admin/export/finops');
 document.getElementById('security').onclick = () => download('/v1/admin/export/security');
@@ -593,12 +599,14 @@ function setAuthStatus(msg, bad) {
 }
 function markLoadingFailed(msg) {
   setAuthStatus(msg, true);
-  ['demo-ready','policy-roi','annual-projection','annual-avoided','request-volume','scale-model'].forEach(id => {
+  ['demo-ready','policy-roi','annual-projection','annual-avoided','request-volume','scale-model','mbrmeta','recording-prep'].forEach(id => {
     const n = document.getElementById(id);
     if (n) n.textContent = msg;
   });
   const bb = document.getElementById('buyer-brief-text');
   if (bb) bb.textContent = msg;
+  const tp = document.getElementById('recording-talking-points');
+  if (tp) tp.textContent = msg;
 }
 async function download(path) {
   const res = await fetch(path, { headers: headers() });
@@ -785,11 +793,11 @@ async function load() {
   const brief = s.buyerBrief || {};
   const briefEl = document.getElementById('buyer-brief-text');
   if (briefEl && brief.headline) {
-    briefEl.textContent = brief.headline + '\\n\\n' +
-      (brief.bullets || []).map(function(b){ return '• ' + b; }).join('\\n') +
-      '\\n\\n' + (brief.positioning || '') +
-      '\\n\\nNext: ' + (brief.nextStep || '') +
-      '\\n\\n' + (brief.note || '');
+    briefEl.textContent = brief.headline + '\n\n' +
+      (brief.bullets || []).map(function(b){ return '• ' + b; }).join('\n') +
+      '\n\n' + (brief.positioning || '') +
+      '\n\nNext: ' + (brief.nextStep || '') +
+      '\n\n' + (brief.note || '');
   }
 
   const tp = s.recordingTalkingPoints || {};
