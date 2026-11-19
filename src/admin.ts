@@ -285,7 +285,7 @@ export function dashboardHtml(): string {
     <p class="sub" id="mbrmeta">Loading…</p>
     <table id="model-block-rate"><thead><tr><th>Model</th><th>Total</th><th>Allowed</th><th>Blocked</th><th>Block rate</th></tr></thead><tbody></tbody></table>
 <h2>Buyer brief</h2>
-    <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;margin:0;background:#f8f8f8;padding:10px;border-radius:6px">Loading…</pre>
+    <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>

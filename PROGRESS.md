@@ -3664,3 +3664,24 @@ npm install && npm test
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
 TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --verify-ledger
 ```
+
+
+## Decisions (Session 135 — buyer brief contrast)
+
+- Dashboard buyer brief `<pre>` used `background:#f8f8f8` under dark `color-scheme`, so body `color:var(--fg)` made text unreadable on Render/Railway.
+- Fixed to dark panel: `#0f141b` bg, `var(--fg)` text, border matching inputs. Visibility only.
+
+## Current Status (Session 135 — 2026-11-19)
+
+- [x] Session 135 — buyer brief readable on dark dashboard
+
+## Next Up
+
+1. Redeploy Render + Railway so buyer brief is readable on camera.
+2. Record DEMO.md (chain already verified on Railway).
+3. Personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 135 fixes buyer-brief contrast on the dark dashboard. Redeploy before recording if the brief is on screen.
