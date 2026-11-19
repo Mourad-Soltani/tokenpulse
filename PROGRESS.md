@@ -3746,3 +3746,28 @@ Session 137 fixes the stuck "Loading…" state: auto-load when a token is presen
 npm install && npm test
 # after deploy: open dashboard, paste token once; subsequent visits auto-load
 ```
+
+## Decisions (Session 138 — dashboard works without gateway token)
+
+- Live Render instance has `authRequired: false` (TOKENPULSE_GATEWAY_TOKEN unset). `/v1/admin/summary` returns 200 with no Authorization header.
+- Dashboard JS previously hard-required a non-empty token and aborted, leaving permanent "Loading…".
+- `load()` now always attempts the summary fetch. Empty token is allowed; 401 still surfaces a clear message when auth is later enabled.
+- Page always auto-loads on open (no longer gated on localStorage token).
+- Visibility / UX only. No policy change.
+
+## Current Status (Session 138 — 2026-11-19)
+
+Dashboard should populate on open against the current open Render deploy. After redeploy, hard-refresh the page (or clear site data if a stale service worker is present).
+
+- [x] Session 138 — allow summary load when gateway auth is open
+
+## Next Up (highest priority)
+
+1. Redeploy Render so Session 138 is live, then hard-refresh the dashboard (should fill without a token).
+2. Optional: set TOKENPULSE_GATEWAY_TOKEN on Render if you want auth on; then paste the same value in the UI.
+3. Force re-seed + record DEMO.md; personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 138 removes the frontend hard-requirement for a gateway token so open deploys (authRequired=false) actually show data. Redeploy + hard refresh. Do not paste secrets into chat.

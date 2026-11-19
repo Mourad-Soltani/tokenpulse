@@ -1091,3 +1091,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Without a token the auth status prompts the operator to paste `TOKENPULSE_GATEWAY_TOKEN` and tap Refresh.
 - Failed loads (network / 401 / other) update the main status cards via `markLoadingFailed` so the UI does not remain on permanent "Loading…".
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Dashboard auth vs gateway auth (Session 138)
+
+- Frontend no longer aborts when the token field is empty. It always calls `GET /v1/admin/summary`.
+- If the process has no `TOKENPULSE_GATEWAY_TOKEN`, gateway reports `authRequired: false` and the summary is public; the dashboard loads without a pasted token.
+- If a token is configured, a missing/wrong token yields HTTP 401 and the UI shows the unauthorized message.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

@@ -265,7 +265,7 @@ export function dashboardHtml(): string {
     <button id="seeddemo" type="button" title="Append synthetic multi-day ledger for buyer demos">Seed demo data</button>
     <span id="seedstatus" style="margin-left:8px;opacity:.85;font-size:13px"></span>
   </div>
-  <p id="authstatus" class="sub" style="margin:8px 0 12px">Paste the gateway token (Render/Railway <code>TOKENPULSE_GATEWAY_TOKEN</code>), then tap <b>Refresh</b>.</p>
+  <p id="authstatus" class="sub" style="margin:8px 0 12px">Optional: paste gateway token if auth is required, then tap <b>Refresh</b>. Page auto-loads on open.</p>
   <div id="demobanner" style="display:none;margin:0 0 12px;padding:10px 12px;border-radius:8px;background:#1e3a5f;border:1px solid #3b82f6;color:#e0f2fe;font-size:13px"></div>
   <div id="herostats" style="display:none;margin:0 0 14px;padding:12px;border-radius:10px;background:#111827;border:1px solid #374151"></div>
   <div class="grid" id="kpis"></div>
@@ -550,12 +550,9 @@ tokenEl.value = localStorage.getItem('tokenpulse.token') || '';
 tokenEl.addEventListener('change', load);
 tokenEl.addEventListener('blur', () => { if (tokenEl.value.trim()) load(); });
 document.getElementById('load').onclick = load;
-// Auto-load when a saved token is present so the dashboard does not stay on "Loading…"
-if (tokenEl.value.trim()) {
-  load();
-} else {
-  setAuthStatus('Paste the gateway token (Render/Railway TOKENPULSE_GATEWAY_TOKEN), then tap Refresh.', false);
-}
+// Always attempt load on open. Backend may have authRequired=false (open summary).
+setAuthStatus(tokenEl.value.trim() ? 'Loading summary…' : 'Loading summary (no token — open mode if auth is off)…', false);
+load();
 document.getElementById('lookup').onclick = lookupRequest;
 document.getElementById('finops').onclick = () => download('/v1/admin/export/finops');
 document.getElementById('security').onclick = () => download('/v1/admin/export/security');
@@ -631,11 +628,7 @@ function esc(v) { return String(v ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<
 async function load() {
   const token = tokenEl.value.trim();
   localStorage.setItem('tokenpulse.token', token);
-  if (!token) {
-    markLoadingFailed('No token — paste TOKENPULSE_GATEWAY_TOKEN from Railway, then Refresh.');
-    return;
-  }
-  setAuthStatus('Loading summary…', false);
+  setAuthStatus(token ? 'Loading summary…' : 'Loading summary (open / no token)…', false);
   let res;
   try {
     res = await fetch('/v1/admin/summary', { headers: headers() });
@@ -645,13 +638,13 @@ async function load() {
   }
   if (!res.ok) {
     const msg = res.status === 401
-      ? 'Unauthorized (401) — token does not match Railway TOKENPULSE_GATEWAY_TOKEN. Copy it again from Variables, Refresh.'
+      ? 'Unauthorized (401) — paste the correct TOKENPULSE_GATEWAY_TOKEN (Render/Railway Variables), then Refresh.'
       : ('summary failed HTTP ' + res.status);
     markLoadingFailed(msg);
     try { alert(msg); } catch (_) {}
     return;
   }
-  setAuthStatus('Authenticated — summary loaded.', false);
+  setAuthStatus(token ? 'Authenticated — summary loaded.' : 'Summary loaded (auth open / no token required).', false);
   const s = await res.json();
   const demoBanner = document.getElementById('demobanner');
   const hero = document.getElementById('herostats');
