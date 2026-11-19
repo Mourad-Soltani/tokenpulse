@@ -1098,3 +1098,9 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - If the process has no `TOKENPULSE_GATEWAY_TOKEN`, gateway reports `authRequired: false` and the summary is public; the dashboard loads without a pasted token.
 - If a token is configured, a missing/wrong token yields HTTP 401 and the UI shows the unauthorized message.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Dashboard HTML generation (Session 139)
+
+- `dashboardHtml()` returns a template literal. Any client-side JS string that needs a newline must be written as `\\n` in the TypeScript source so the template emits `\n` for the browser.
+- A single `\n` inside the template becomes a real newline and produces invalid JS (SyntaxError, dead buttons, permanent Loading).
+- Boot `load()` runs at the end of the script inside try/catch.

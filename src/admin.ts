@@ -550,9 +550,6 @@ tokenEl.value = localStorage.getItem('tokenpulse.token') || '';
 tokenEl.addEventListener('change', load);
 tokenEl.addEventListener('blur', () => { if (tokenEl.value.trim()) load(); });
 document.getElementById('load').onclick = load;
-// Always attempt load on open. Backend may have authRequired=false (open summary).
-setAuthStatus(tokenEl.value.trim() ? 'Loading summary…' : 'Loading summary (no token — open mode if auth is off)…', false);
-load();
 document.getElementById('lookup').onclick = lookupRequest;
 document.getElementById('finops').onclick = () => download('/v1/admin/export/finops');
 document.getElementById('security').onclick = () => download('/v1/admin/export/security');
@@ -786,20 +783,20 @@ async function load() {
   const brief = s.buyerBrief || {};
   const briefEl = document.getElementById('buyer-brief-text');
   if (briefEl && brief.headline) {
-    briefEl.textContent = brief.headline + '\n\n' +
-      (brief.bullets || []).map(function(b){ return '• ' + b; }).join('\n') +
-      '\n\n' + (brief.positioning || '') +
-      '\n\nNext: ' + (brief.nextStep || '') +
-      '\n\n' + (brief.note || '');
+    briefEl.textContent = brief.headline + '\\n\\n' +
+      (brief.bullets || []).map(function(b){ return '• ' + b; }).join('\\n') +
+      '\\n\\n' + (brief.positioning || '') +
+      '\\n\\nNext: ' + (brief.nextStep || '') +
+      '\\n\\n' + (brief.note || '');
   }
 
   const tp = s.recordingTalkingPoints || {};
   const tpEl = document.getElementById('recording-talking-points');
   if (tpEl && tp.script) {
-    tpEl.textContent = (tp.ready ? 'READY for recording\n\n' : 'Needs more data\n\n') +
-      (tp.script || []).map(function(line, i){ return (i+1) + '. ' + line; }).join('\n\n') +
-      '\n\nCFO line: ' + (tp.cfoLine || '') +
-      '\n\n' + (tp.note || '');
+    tpEl.textContent = (tp.ready ? 'READY for recording\\n\\n' : 'Needs more data\\n\\n') +
+      (tp.script || []).map(function(line, i){ return (i+1) + '. ' + line; }).join('\\n\\n') +
+      '\\n\\nCFO line: ' + (tp.cfoLine || '') +
+      '\\n\\n' + (tp.note || '');
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
@@ -1209,7 +1206,15 @@ async function load() {
   bb.innerHTML = (s.recentBlocked || []).map(e =>
     '<tr><td>'+e.timestamp+'</td><td>'+e.teamId+'</td><td>'+e.model+'</td><td class="bad">'+(e.policyIds||[]).join(', ')+'</td></tr>').join('') || '<tr><td colspan="4">none</td></tr>';
 }
-load();
+// Boot: always load once all functions are defined (works with or without gateway token)
+try {
+  setAuthStatus(tokenEl.value.trim() ? 'Loading summary…' : 'Loading summary (open / no token)…', false);
+  load();
+} catch (err) {
+  console.error('Tokenpulse dashboard boot failed', err);
+  var as = document.getElementById('authstatus');
+  if (as) { as.textContent = 'Dashboard script error — see console'; as.style.color = '#f87171'; }
+}
 </script>
 </body>
 </html>`;

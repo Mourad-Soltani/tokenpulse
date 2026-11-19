@@ -3771,3 +3771,27 @@ Dashboard should populate on open against the current open Render deploy. After 
 
 **Active project:** Tokenpulse only.
 Session 138 removes the frontend hard-requirement for a gateway token so open deploys (authRequired=false) actually show data. Redeploy + hard refresh. Do not paste secrets into chat.
+
+## Decisions (Session 139 — fix dashboard JS syntax break)
+
+- Root cause of "stuck Loading + dead buttons": Session 136/137 edits put single-escaped `\n` inside the TypeScript template literal that builds the dashboard HTML. The template expanded them into real newlines inside single-quoted JS strings → SyntaxError → entire client script aborted.
+- Fixed by double-escaping (`\\n` in the TS template source) so the browser receives valid `'\n\n'` string literals.
+- Moved the auto-load boot to the end of the script (after all function declarations) and wrapped it in try/catch so a future error surfaces in the auth status line instead of silently killing handlers.
+- Confirmed with `node --check` on the emitted client JS.
+
+## Current Status (Session 139 — 2026-11-19)
+
+Dashboard client JS is syntactically valid again. Buttons and auto-load should work after Render redeploys this commit.
+
+- [x] Session 139 — fix template-literal newline escape that broke dashboard JS
+
+## Next Up (highest priority)
+
+1. Redeploy Render (wait until latest commit is live).
+2. Hard-refresh the dashboard — cards should fill; Refresh / Seed / packs should respond.
+3. Record DEMO.md; personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 139 fixes the SyntaxError that disabled the whole dashboard script. Redeploy + hard refresh. Do not paste secrets into chat.
