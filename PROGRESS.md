@@ -3884,3 +3884,33 @@ Dashboard client JS is valid again after the Session 141 regression.
 
 **Active project:** Tokenpulse only.
 Session 142 fixes the reintroduced template-literal SyntaxError from the recording-pack card. Always run `npm test -- tests/dashboard-syntax.test.ts` (or full suite) before pushing dashboard HTML changes. Do not paste secrets into chat.
+
+## Decisions (Session 143 — copy buttons for recording materials)
+
+- Dashboard now has Copy buttons under Buyer brief, Recording talking points, and Recording pack.
+- Uses navigator.clipboard.writeText on the rendered pre text. Feedback on the button itself ("Copied" / "Nothing to copy").
+- Visibility / operator convenience only while recording DEMO.md. No policy, metering, or storage change. Raw prompts remain off.
+- Client script addition uses real newlines in the TS template (valid in the emitted <script>), avoiding the prior single-quoted \n pitfall.
+
+## Current Status (Session 143 — 2026-11-20)
+
+Copy buttons shipped for the three recording surfaces on the dashboard.
+
+- [x] Session 143 — copy buttons for buyer brief, talking points, and recording pack
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm cards fill, buttons work, and Copy buttons succeed.
+3. Record DEMO.md (use on-screen pack + copy if needed); then personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 143 adds Copy buttons so the operator can pull the recording pack / talking points / brief into notes or email drafts without retyping. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Copy buttons should appear under the three pre blocks
+```

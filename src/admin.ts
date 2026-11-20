@@ -292,10 +292,13 @@ export function dashboardHtml(): string {
     <table id="model-block-rate"><thead><tr><th>Model</th><th>Total</th><th>Allowed</th><th>Blocked</th><th>Block rate</th></tr></thead><tbody></tbody></table>
 <h2>Buyer brief</h2>
     <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
+    <button id="copy-brief" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy brief</button>
     <h2>Recording talking points</h2>
     <pre id="recording-talking-points" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
+    <button id="copy-points" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy points</button>
     <h2>Recording pack</h2>
     <pre id="recording-pack" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
+    <button id="copy-pack" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy pack</button>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -565,6 +568,23 @@ document.getElementById('savenote').onclick = async () => {
   document.getElementById('note').value = '';
   load();
 };
+
+function copyText(id, btnId) {
+  const el = document.getElementById(id);
+  const btn = document.getElementById(btnId);
+  if (!el || !btn) return;
+  const text = el.textContent || '';
+  if (!text || text === 'Loading…') { btn.textContent = 'Nothing to copy'; setTimeout(() => btn.textContent = btnId.includes('brief') ? 'Copy brief' : btnId.includes('points') ? 'Copy points' : 'Copy pack', 1500); return; }
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(() => btn.textContent = orig, 1200);
+  }).catch(() => { btn.textContent = 'Copy failed'; setTimeout(() => btn.textContent = 'Copy', 1500); });
+}
+document.getElementById('copy-brief').onclick = () => copyText('buyer-brief-text', 'copy-brief');
+document.getElementById('copy-points').onclick = () => copyText('recording-talking-points', 'copy-points');
+document.getElementById('copy-pack').onclick = () => copyText('recording-pack', 'copy-pack');
+
 document.getElementById('seeddemo').onclick = async () => {
   const st = document.getElementById('seedstatus');
   if (st) st.textContent = 'Seeding…';
