@@ -3826,3 +3826,37 @@ npm install && npm test && npm run demo
 # confirm the new syntax test passes
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 ```
+
+
+## Decisions (Session 141 — recording pack for DEMO.md)
+
+- Added `recordingPack()` that consolidates readiness, ROI %, annual projected, annual avoided, scale-model monthly avoided, talking-point script, CFO line, and assumptions.
+- CLI flag `--recording-pack` (accepts optional `--monthly-requests=`).
+- Admin summary and loopback dashboard now include a Recording pack card so the operator can read the key numbers without switching tools.
+- Visibility / sale-prep only. No change to policy evaluation, metering, or ledger storage. Raw prompts remain off.
+- Operator demo recording remains the hard gate before outreach. No keys in git or chat.
+
+## Current Status (Session 141 — 2026-11-20)
+
+Recording pack shipped on CLI, admin summary, and dashboard. Product otherwise unchanged from Session 140.
+
+- [x] Session 141 — recording pack aggregator for DEMO.md operator glance
+
+## Next Up (highest priority)
+
+1. Redeploy Render (wait until latest commit is live).
+2. Hard-refresh the dashboard — confirm Recording pack card fills along with other cards.
+3. Record DEMO.md (use the on-screen pack + talking points); then personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 141 adds a single recording pack so the operator can glance key numbers and the script while recording DEMO.md. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test && npm run demo
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-pack
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Recording pack card should appear after talking points
+```

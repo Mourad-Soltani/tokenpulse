@@ -1104,3 +1104,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `dashboardHtml()` returns a template literal. Any client-side JS string that needs a newline must be written as `\\n` in the TypeScript source so the template emits `\n` for the browser.
 - A single `\n` inside the template becomes a real newline and produces invalid JS (SyntaxError, dead buttons, permanent Loading).
 - Boot `load()` runs at the end of the script inside try/catch.
+
+
+## Recording pack (Session 141)
+
+- `recordingPack()` aggregates demo readiness, policy ROI, annual projection, annual avoided, scale model, talking points, and CFO line into one object.
+- CLI: `--recording-pack` (optional `--monthly-requests=`). Admin summary exposes `recordingPack`. Dashboard renders a Recording pack card.
+- Visibility only. Does not change policy, metering, or storage. No raw prompts.
+- Complements existing talking points and demo-ready checks so the operator has one place to glance while recording DEMO.md.

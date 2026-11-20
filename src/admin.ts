@@ -12,6 +12,7 @@ import { blockedImpactByWeekStatus, type BlockedImpactByWeekStatus } from "./blo
 import { blockedImpactByMonthStatus, type BlockedImpactByMonthStatus } from "./blockedImpactByMonth.js";
 import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
 import { recordingTalkingPoints, type RecordingTalkingPoints } from "./recordingTalkingPoints.js";
+import { recordingPack, type RecordingPack } from "./recordingPack.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
 import { policyRoiStatus, type PolicyRoiStatus } from "./policyRoi.js";
 import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
@@ -121,6 +122,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   blockedImpactByMonth: BlockedImpactByMonthStatus;
   recordingPrep: ReturnType<typeof recordingPrep>;
   recordingTalkingPoints: RecordingTalkingPoints;
+  recordingPack: RecordingPack;
   demoReady: DemoReadyStatus;
   demoDataset: boolean;
   demoLabel?: string;
@@ -212,6 +214,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     blockedImpactByMonth: blockedImpactByMonthStatus(events),
     recordingPrep: recordingPrep(events),
     recordingTalkingPoints: recordingTalkingPoints(events),
+    recordingPack: recordingPack(events),
     demoReady: demoReadyStatus(events),
     demoDataset: isDemoDataset(events),
     demoLabel: isDemoDataset(events)
@@ -291,6 +294,8 @@ export function dashboardHtml(): string {
     <pre id="buyer-brief-text" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
     <h2>Recording talking points</h2>
     <pre id="recording-talking-points" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
+    <h2>Recording pack</h2>
+    <pre id="recording-pack" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -797,6 +802,19 @@ async function load() {
       (tp.script || []).map(function(line, i){ return (i+1) + '. ' + line; }).join('\\n\\n') +
       '\\n\\nCFO line: ' + (tp.cfoLine || '') +
       '\\n\\n' + (tp.note || '');
+  }
+
+
+  const pack = s.recordingPack || {};
+  const packEl = document.getElementById('recording-pack');
+  if (packEl && pack.version) {
+    const sum = pack.summary || {};
+    packEl.textContent = (pack.ready ? 'READY\n\n' : 'Needs more data\n\n') +
+      'Allows: ' + (sum.allowCount || 0) + ' · Blocks: ' + (sum.blockCount || 0) + ' · Days: ' + (sum.daySpan || 0) + '\n' +
+      'Policy ROI: ' + (sum.policyRoiPct || 0) + '% · Annual projected: $' + (sum.annualProjectedUsd || 0) + '\n' +
+      'Annual avoided: $' + (sum.annualAvoidedUsd || 0) + ' · Scale monthly avoided: $' + (sum.scaleMonthlyAvoidedUsd || 0) + '\n\n' +
+      'Assumptions:\n' + (pack.assumptions || []).map(function(a){ return '• ' + a; }).join('\n') + '\n\n' +
+      (pack.notes || []).join('\n');
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
