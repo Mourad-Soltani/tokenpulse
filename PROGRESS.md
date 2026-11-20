@@ -3860,3 +3860,27 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-pack
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Recording pack card should appear after talking points
 ```
+
+## Decisions (Session 142 — recording pack template-literal fix)
+
+- Session 141 added a "Recording pack" card with single-escaped `\n` inside the TypeScript template literal that builds the dashboard HTML.
+- Same failure mode as Session 136/139: template expanded `\n` into real newlines inside single-quoted JS → SyntaxError → entire client script dead (Loading… + dead buttons).
+- Fixed by double-escaping every newline in the packEl.textContent block (`\\n` in TS source so the browser receives `\n`).
+- Confirmed with `node --check` on emitted client JS and `tests/dashboard-syntax.test.ts` (must stay green before every dashboard HTML change).
+
+## Current Status (Session 142 — 2026-11-20)
+
+Dashboard client JS is valid again after the Session 141 regression.
+
+- [x] Session 142 — fix recording-pack newline escapes that re-broke the dashboard
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm cards fill and buttons work.
+3. Record DEMO.md; outreach.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 142 fixes the reintroduced template-literal SyntaxError from the recording-pack card. Always run `npm test -- tests/dashboard-syntax.test.ts` (or full suite) before pushing dashboard HTML changes. Do not paste secrets into chat.

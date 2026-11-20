@@ -809,12 +809,12 @@ async function load() {
   const packEl = document.getElementById('recording-pack');
   if (packEl && pack.version) {
     const sum = pack.summary || {};
-    packEl.textContent = (pack.ready ? 'READY\n\n' : 'Needs more data\n\n') +
-      'Allows: ' + (sum.allowCount || 0) + ' · Blocks: ' + (sum.blockCount || 0) + ' · Days: ' + (sum.daySpan || 0) + '\n' +
-      'Policy ROI: ' + (sum.policyRoiPct || 0) + '% · Annual projected: $' + (sum.annualProjectedUsd || 0) + '\n' +
-      'Annual avoided: $' + (sum.annualAvoidedUsd || 0) + ' · Scale monthly avoided: $' + (sum.scaleMonthlyAvoidedUsd || 0) + '\n\n' +
-      'Assumptions:\n' + (pack.assumptions || []).map(function(a){ return '• ' + a; }).join('\n') + '\n\n' +
-      (pack.notes || []).join('\n');
+        packEl.textContent = (pack.ready ? 'READY\\n\\n' : 'Needs more data\\n\\n') +
+      'Allows: ' + (sum.allowCount || 0) + ' · Blocks: ' + (sum.blockCount || 0) + ' · Days: ' + (sum.daySpan || 0) + '\\n' +
+      'Policy ROI: ' + (sum.policyRoiPct || 0) + '% · Annual projected: $' + (sum.annualProjectedUsd || 0) + '\\n' +
+      'Annual avoided: $' + (sum.annualAvoidedUsd || 0) + ' · Scale monthly avoided: $' + (sum.scaleMonthlyAvoidedUsd || 0) + '\\n\\n' +
+      'Assumptions:\\n' + (pack.assumptions || []).map(function(a){ return '• ' + a; }).join('\\n') + '\\n\\n' +
+      (pack.notes || []).join('\\n')
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
