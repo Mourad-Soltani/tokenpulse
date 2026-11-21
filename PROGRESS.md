@@ -3914,3 +3914,34 @@ npm install && npm test
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Copy buttons should appear under the three pre blocks
 ```
+
+## Decisions (Session 144 — Copy all recording materials)
+
+- Added a "Copy all" button next to the individual copy buttons.
+- Concatenates Buyer brief + Recording talking points + Recording pack (with section headers) into one clipboard payload.
+- Operator can paste the full set into notes or an email draft in one click while recording DEMO.md.
+- Visibility only. No policy, metering, or storage change. Raw prompts remain off.
+- Escapes in the client JS use double-backslash in the TS template so the emitted script stays valid (node --check style).
+
+## Current Status (Session 144 — 2026-11-21)
+
+Copy-all button shipped for the three recording surfaces.
+
+- [x] Session 144 — Copy all button for brief + talking points + recording pack
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm cards fill, individual Copy buttons, and the new Copy all button succeed.
+3. Record DEMO.md (use Copy all if helpful); then personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 144 adds a single Copy all button so the operator can pull the entire recording set into notes or outreach drafts without three separate copies. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Copy all button should appear under the recording pack
+```

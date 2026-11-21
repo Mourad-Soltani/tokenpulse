@@ -299,6 +299,7 @@ export function dashboardHtml(): string {
     <h2>Recording pack</h2>
     <pre id="recording-pack" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
     <button id="copy-pack" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy pack</button>
+    <button id="copy-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Copy all</button>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -584,6 +585,23 @@ function copyText(id, btnId) {
 document.getElementById('copy-brief').onclick = () => copyText('buyer-brief-text', 'copy-brief');
 document.getElementById('copy-points').onclick = () => copyText('recording-talking-points', 'copy-points');
 document.getElementById('copy-pack').onclick = () => copyText('recording-pack', 'copy-pack');
+document.getElementById('copy-all').onclick = () => {
+  const btn = document.getElementById('copy-all');
+  if (!btn) return;
+  const brief = (document.getElementById('buyer-brief-text') || {}).textContent || '';
+  const points = (document.getElementById('recording-talking-points') || {}).textContent || '';
+  const pack = (document.getElementById('recording-pack') || {}).textContent || '';
+  const parts = [];
+  if (brief && brief !== 'Loading…') parts.push('=== Buyer brief ===\\n' + brief);
+  if (points && points !== 'Loading…') parts.push('=== Recording talking points ===\\n' + points);
+  if (pack && pack !== 'Loading…') parts.push('=== Recording pack ===\\n' + pack);
+  const text = parts.join('\\n\\n');
+  if (!text) { btn.textContent = 'Nothing to copy'; setTimeout(() => btn.textContent = 'Copy all', 1500); return; }
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied all';
+    setTimeout(() => btn.textContent = 'Copy all', 1200);
+  }).catch(() => { btn.textContent = 'Copy failed'; setTimeout(() => btn.textContent = 'Copy all', 1500); });
+};
 
 document.getElementById('seeddemo').onclick = async () => {
   const st = document.getElementById('seedstatus');
