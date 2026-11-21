@@ -300,6 +300,7 @@ export function dashboardHtml(): string {
     <pre id="recording-pack" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
     <button id="copy-pack" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy pack</button>
     <button id="copy-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Copy all</button>
+    <button id="download-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Download .md</button>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -601,6 +602,30 @@ document.getElementById('copy-all').onclick = () => {
     btn.textContent = 'Copied all';
     setTimeout(() => btn.textContent = 'Copy all', 1200);
   }).catch(() => { btn.textContent = 'Copy failed'; setTimeout(() => btn.textContent = 'Copy all', 1500); });
+};
+
+document.getElementById('download-all').onclick = () => {
+  const btn = document.getElementById('download-all');
+  const brief = (document.getElementById('buyer-brief-text') || {}).textContent || '';
+  const points = (document.getElementById('recording-talking-points') || {}).textContent || '';
+  const pack = (document.getElementById('recording-pack') || {}).textContent || '';
+  const parts = [];
+  if (brief && brief !== 'Loading…') parts.push('## Buyer brief\\n\\n' + brief);
+  if (points && points !== 'Loading…') parts.push('## Recording talking points\\n\\n' + points);
+  if (pack && pack !== 'Loading…') parts.push('## Recording pack\\n\\n' + pack);
+  const md = parts.join('\\n\\n');
+  if (!md) { btn.textContent = 'Nothing to download'; setTimeout(() => btn.textContent = 'Download .md', 1500); return; }
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tokenpulse-recording-materials.md';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  btn.textContent = 'Downloaded';
+  setTimeout(() => btn.textContent = 'Download .md', 1200);
 };
 
 document.getElementById('seeddemo').onclick = async () => {

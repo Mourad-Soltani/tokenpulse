@@ -3945,3 +3945,34 @@ npm install && npm test
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Copy all button should appear under the recording pack
 ```
+
+## Decisions (Session 145 — Download recording materials as Markdown)
+
+- Added a "Download .md" button next to Copy all on the dashboard.
+- Builds the same three sections (Buyer brief, Recording talking points, Recording pack) into a single Markdown file and triggers a browser download as `tokenpulse-recording-materials.md`.
+- Useful when clipboard is unavailable or the operator wants a persistent file for notes / email drafts while recording DEMO.md.
+- Visibility / UX only. No policy, metering, ledger, or storage change. Raw prompts remain off.
+- Escapes in the client JS use double-backslash in the TS template so the emitted script stays valid.
+
+## Current Status (Session 145 — 2026-11-21)
+
+Download .md button shipped for the three recording surfaces.
+
+- [x] Session 145 — Download recording materials as Markdown
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm cards fill, Copy buttons, Copy all, and the new Download .md button succeed.
+3. Record DEMO.md (use Copy all or Download .md if helpful); then personalize ≤10 emails from OUTREACH_DRAFTS.md.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 145 adds a Download .md button so the operator can save the full recording set as a file for notes or outreach drafts. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Download .md button should appear under the recording pack
+```
