@@ -3976,3 +3976,35 @@ npm install && npm test
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Download .md button should appear under the recording pack
 ```
+
+
+## Decisions (Session 146 — Outreach snippet on dashboard + recording materials)
+
+- Added `outreachSnippet` to admin summary (computed from current ledger).
+- Dashboard now shows an "Outreach snippet (post-recording)" card with subject hint + body + note.
+- Copy snippet button added.
+- Copy all and Download .md now include the outreach snippet as a fourth section.
+- Visibility / UX only. Helps the operator personalize emails immediately after DEMO.md recording. No policy or storage change. Raw prompts remain off.
+
+## Current Status (Session 146 — 2026-11-22)
+
+Outreach snippet is now part of the recording materials set on the dashboard.
+
+- [x] Session 146 — Outreach snippet on admin summary, dashboard card, Copy all, and Download .md
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm the new Outreach snippet card fills, Copy snippet works, and Copy all / Download .md include the fourth section.
+3. Record DEMO.md (use Copy all or Download .md); then personalize ≤10 emails from OUTREACH_DRAFTS.md using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 146 surfaces the ready-to-paste outreach snippet alongside the recording materials so the operator can copy or download everything needed for notes and email drafts in one place. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Outreach snippet card should appear under the recording pack
+```
