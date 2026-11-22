@@ -275,10 +275,13 @@ test("key status idle warns unused matchable keys only", async () => {
       },
       async () => {
         const now = Date.parse("2026-10-09T00:00:00.000Z");
-        const status = await keyStatus([
-          { timestamp: "2026-10-08T00:00:00.000Z", policyIds: ["key:fresh"] },
-          { timestamp: "2026-08-01T00:00:00.000Z", policyIds: ["key:stale"] },
-        ]);
+        const status = await keyStatus(
+          [
+            { timestamp: "2026-10-08T00:00:00.000Z", policyIds: ["key:fresh"] },
+            { timestamp: "2026-08-01T00:00:00.000Z", policyIds: ["key:stale"] },
+          ],
+          now,
+        );
         const fresh = status.keys.find((k) => k.id === "fresh");
         const stale = status.keys.find((k) => k.id === "stale");
         const off = status.keys.find((k) => k.id === "off");
