@@ -4008,3 +4008,34 @@ npm install && npm test
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Outreach snippet card should appear under the recording pack
 ```
+
+## Decisions (Session 147 — buyer map refresh + outreach polish)
+
+- Added DoiT (Attribute acquirer, July 2026) as a strong adjacent AI FinOps buyer/partner in `BUYERS.md` and a ready draft in `OUTREACH_DRAFTS.md`.
+- Refreshed Nov 2026 public signals (Falcon AI Gateway GA, Galileo close, category consolidation) without changing product or positioning.
+- Documented how to insert the Session 146 outreach snippet (CLI or dashboard) into personalized drafts.
+- Visibility / sale-readiness only. No gateway, ledger, policy, or dashboard code change. Raw prompts remain off.
+- Operator recording gate unchanged.
+
+## Current Status (Session 147 — 2026-11-22)
+
+Buyer map and outreach drafts updated with fresh market signals. Sale materials remain ready. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 147 — buyer map refresh (DoiT + Nov signals) + snippet insertion guide in OUTREACH_DRAFTS.md
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Outreach snippet card fills, Copy snippet works, and Copy all / Download .md include the fourth section.
+3. Record DEMO.md (use Copy all or Download .md); then personalize ≤10 emails from the updated OUTREACH_DRAFTS.md using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 147 refreshes the strategic buyer map with DoiT / Attribute and latest public signals, and adds a clear insertion path for the outreach snippet into drafts. Redeploy + hard refresh + DEMO.md recording still required before outbound. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Outreach snippet card should appear under the recording pack
+```

@@ -79,3 +79,34 @@ Copy the `body` field into the personalized drafts above. Still do not send unti
 ## Session 112 personalization hooks
 
 Use the public product names above (Prisma AIRS AI Gateway, Splunk Tokenomics / Galileo, Falcon Guardian AI Gateway) in the opening sentence. Still do not send until a DEMO.md recording exists. Numbers can be filled from `--outreach-snippet` / `--buyer-brief` after seeding.
+
+## DoiT (Attribute / AI token FinOps)
+
+**Subject:** Request-path budget enforcement next to Attribute token visibility
+
+Hi {{Name}},
+
+Tokenpulse is a self-hosted OpenAI-compatible gateway that meters tokens, attributes spend to team/app, and hard-blocks requests that violate budget, model, rate, or sensitive-payload policy before they leave the network. Decisions go into a hash-chained ledger with FinOps and CISO export packs.
+
+Given DoiT’s July 2026 acquisition of Attribute and the new AI token / model / GPU cost product, a sovereign control plane that both attributes *and enforces* (daily/monthly caps, rate, sensitive block) before egress may complement kernel-level visibility for customers who need hard stops and an append-only audit that stays inside their VPC. Demo runs with zero provider keys.
+
+I can send a 3-minute mock demo recording (no keys) or jump on a short technical call. Repo: https://github.com/Mourad-Soltani/tokenpulse
+
+Best,  
+Mourad Soltani
+
+---
+
+## Snippet-ready insertion example (after DEMO.md recording)
+
+Run on the seeded or real ledger:
+
+```bash
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --outreach-snippet
+```
+
+Or copy from the dashboard “Outreach snippet” card (Session 146). Paste the `body` (and optionally the numbers) into any of the drafts above in place of or after the second paragraph. Example shape:
+
+> In a recent Tokenpulse pilot run, allowed model spend was $X.XX while policy blocks are estimated to have avoided $Y.YY (Z% of potential). Top team was … The gateway is self-hosted, OpenAI-compatible, and writes a hash-chained ledger with FinOps + CISO packs. No raw prompts stored by default. Happy to share the 3-minute mock demo recording.
+
+Still do not send until the DEMO.md recording exists and is linked or attached. Max ~10 total. No bulk.

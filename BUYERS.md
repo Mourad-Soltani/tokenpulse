@@ -66,3 +66,15 @@ Tokenpulse today is **earlier than Portkey-at-exit** (pre-revenue, pre-demo reco
 3. Sample FinOps + security JSON/CSV exports  
 4. Security notes: no secrets in git, no raw prompts by default, loopback default, gateway token  
 5. Test suite green (`npm test`)  
+
+## Recent market signals (Session 147 — Nov 2026)
+
+Public signals used to tighten outreach angles. No product change.
+
+- **DoiT → Attribute (July 7, 2026)**: DoiT (cloud-cost FinOps) acquired AI FinOps startup Attribute and launched an AI token / model / GPU cost product. Strong adjacent buyer or partner for request-path metering + hard budget blocks that Attribute-style visibility can feed. Pitch: self-hosted OpenAI-compatible control plane that attributes and *enforces* before egress, with hash-chained ledger and CFO/CISO packs.
+- **CrowdStrike Falcon AI Gateway**: Now GA and included with Falcon Guardian (Nov 2026). Routes traffic, applies usage limits and policy before/after provider. Tokenpulse remains a lightweight sovereign complement for customers who want hard budget/sensitive blocks + append-only ledger inside their network without the full Falcon agent surface.
+- **Palo Alto / Prisma AIRS**: Portkey closed May 29, 2026 (~$120–140M). Prisma AIRS AI Gateway is the managed control plane. Adjacent sovereign / air-gap FinOps-hard pitch unchanged.
+- **Cisco / Splunk**: Galileo closed May 22, 2026. Continues agent observability + Tokenomics narrative. Request-path meter + budget block + audit chain remains the gap.
+- **Other 2026 moves**: Stripe–OpenRouter (agreed), ClickHouse–Langfuse, Helicone maintenance / ownership flux. Category is consolidating into cyber, data, and cloud platforms.
+
+Use public product names (Prisma AIRS AI Gateway, Falcon AI Gateway, Galileo / Tokenomics, DoiT Attribute) in the first sentence of personalized emails. Still wait for DEMO.md recording before any send. Numbers come from `--outreach-snippet` / dashboard after seed or real traffic.
