@@ -13,6 +13,7 @@ import { blockedImpactByMonthStatus, type BlockedImpactByMonthStatus } from "./b
 import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
 import { recordingTalkingPoints, type RecordingTalkingPoints } from "./recordingTalkingPoints.js";
 import { recordingPack, type RecordingPack } from "./recordingPack.js";
+import { outreachSnippet, type OutreachSnippet } from "./outreachSnippet.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
 import { policyRoiStatus, type PolicyRoiStatus } from "./policyRoi.js";
 import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
@@ -123,6 +124,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   recordingPrep: ReturnType<typeof recordingPrep>;
   recordingTalkingPoints: RecordingTalkingPoints;
   recordingPack: RecordingPack;
+  outreachSnippet: OutreachSnippet;
   demoReady: DemoReadyStatus;
   demoDataset: boolean;
   demoLabel?: string;
@@ -215,6 +217,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     recordingPrep: recordingPrep(events),
     recordingTalkingPoints: recordingTalkingPoints(events),
     recordingPack: recordingPack(events),
+    outreachSnippet: outreachSnippet(events),
     demoReady: demoReadyStatus(events),
     demoDataset: isDemoDataset(events),
     demoLabel: isDemoDataset(events)
@@ -301,6 +304,9 @@ export function dashboardHtml(): string {
     <button id="copy-pack" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy pack</button>
     <button id="copy-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Copy all</button>
     <button id="download-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Download .md</button>
+    <h2>Outreach snippet (post-recording)</h2>
+    <pre id="outreach-snippet" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
+    <button id="copy-snippet" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy snippet</button>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -586,6 +592,7 @@ function copyText(id, btnId) {
 document.getElementById('copy-brief').onclick = () => copyText('buyer-brief-text', 'copy-brief');
 document.getElementById('copy-points').onclick = () => copyText('recording-talking-points', 'copy-points');
 document.getElementById('copy-pack').onclick = () => copyText('recording-pack', 'copy-pack');
+document.getElementById('copy-snippet').onclick = () => copyText('outreach-snippet', 'copy-snippet');
 document.getElementById('copy-all').onclick = () => {
   const btn = document.getElementById('copy-all');
   if (!btn) return;
@@ -596,6 +603,8 @@ document.getElementById('copy-all').onclick = () => {
   if (brief && brief !== 'Loading…') parts.push('=== Buyer brief ===\\n' + brief);
   if (points && points !== 'Loading…') parts.push('=== Recording talking points ===\\n' + points);
   if (pack && pack !== 'Loading…') parts.push('=== Recording pack ===\\n' + pack);
+  const snippet = (document.getElementById('outreach-snippet') || {}).textContent || '';
+  if (snippet && snippet !== 'Loading…') parts.push('=== Outreach snippet ===\\n' + snippet);
   const text = parts.join('\\n\\n');
   if (!text) { btn.textContent = 'Nothing to copy'; setTimeout(() => btn.textContent = 'Copy all', 1500); return; }
   navigator.clipboard.writeText(text).then(() => {
@@ -613,6 +622,8 @@ document.getElementById('download-all').onclick = () => {
   if (brief && brief !== 'Loading…') parts.push('## Buyer brief\\n\\n' + brief);
   if (points && points !== 'Loading…') parts.push('## Recording talking points\\n\\n' + points);
   if (pack && pack !== 'Loading…') parts.push('## Recording pack\\n\\n' + pack);
+  const snippet = (document.getElementById('outreach-snippet') || {}).textContent || '';
+  if (snippet && snippet !== 'Loading…') parts.push('## Outreach snippet\\n\\n' + snippet);
   const md = parts.join('\\n\\n');
   if (!md) { btn.textContent = 'Nothing to download'; setTimeout(() => btn.textContent = 'Download .md', 1500); return; }
   const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
@@ -878,6 +889,13 @@ async function load() {
       'Annual avoided: $' + (sum.annualAvoidedUsd || 0) + ' · Scale monthly avoided: $' + (sum.scaleMonthlyAvoidedUsd || 0) + '\\n\\n' +
       'Assumptions:\\n' + (pack.assumptions || []).map(function(a){ return '• ' + a; }).join('\\n') + '\\n\\n' +
       (pack.notes || []).join('\\n')
+  }
+
+  const snip = s.outreachSnippet || {};
+  const snipEl = document.getElementById('outreach-snippet');
+  if (snipEl && snip.body) {
+    snipEl.textContent = (snip.subjectHint ? 'Subject: ' + snip.subjectHint + '\\n\\n' : '') +
+      snip.body + '\\n\\n' + (snip.note || '');
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
@@ -1300,3 +1318,4 @@ try {
 </body>
 </html>`;
 }
+
