@@ -4073,3 +4073,37 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-checklist
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Recording checklist card should appear under the outreach snippet
 ```
+
+
+## Decisions (Session 149 — recording script)
+
+- Added `recordingScript()` that produces a single linear Markdown script (pre-flight checklist, key numbers, spoken outline, CFO line, assumptions, outreach snippet).
+- CLI: `--recording-script` (add `--md` for pure Markdown).
+- Admin summary exposes `recordingScript`. Dashboard adds a "Download script.md" button next to the existing Download .md.
+- Visibility / operator convenience only. No policy, metering, or storage change. Raw prompts remain off.
+- Operator recording gate unchanged.
+
+## Current Status (Session 149 — 2026-11-23)
+
+Recording script shipped on CLI, admin summary, and dashboard. Sale materials otherwise unchanged from Session 148. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 149 — linear recording script for DEMO.md
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Recording checklist fills, Outreach snippet, and new Download script.md works.
+3. Record DEMO.md (use Download script.md or Copy all); then personalize ≤10 emails from the updated OUTREACH_DRAFTS.md using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 149 adds a single linear Markdown recording script so the operator can read from one document while the dashboard is open. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-script --md
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Download script.md button appears next to Download .md
+```

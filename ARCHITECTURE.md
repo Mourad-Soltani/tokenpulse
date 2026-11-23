@@ -1120,3 +1120,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI `--recording-checklist`. Visibility only.
 - Does not change policy evaluation or storage. Raw prompts remain off.
 
+
+
+## Recording script (Session 149)
+
+- `recordingScript()` builds a linear Markdown document: checklist status, key numbers from the recording pack, spoken outline, CFO one-liner, scale-model assumptions, and the outreach snippet.
+- Admin summary exposes `recordingScript`. Dashboard provides a "Download script.md" button.
+- CLI: `--recording-script` (plain Markdown with `--md`).
+- Does not change policy evaluation, metering, or ledger storage. Raw prompts remain off.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

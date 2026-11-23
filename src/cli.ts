@@ -63,7 +63,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, ...result, note: "Synthetic events written. Dashboard and summary will show rich tables. No real provider calls. Use --force to wipe an existing ledger." }, null, 2));
     return;
   }
-  if (args.includes("--recording-prep") || args.includes("--demo-ready") || args.includes("--policy-roi") || args.includes("--outreach-snippet") || args.includes("--buyer-brief") || args.includes("--annual") || args.includes("--annual-avoided") || args.includes("--request-volume") || args.includes("--model-block-rate") || args.includes("--scale-model") || args.includes("--recording-talking-points") || args.includes("--recording-pack") || args.includes("--recording-checklist")) {
+  if (args.includes("--recording-prep") || args.includes("--demo-ready") || args.includes("--policy-roi") || args.includes("--outreach-snippet") || args.includes("--buyer-brief") || args.includes("--annual") || args.includes("--annual-avoided") || args.includes("--request-volume") || args.includes("--model-block-rate") || args.includes("--scale-model") || args.includes("--recording-talking-points") || args.includes("--recording-pack") || args.includes("--recording-checklist") || args.includes("--recording-script")) {
     const events = await readEvents();
     if (args.includes("--recording-prep")) {
       const { recordingPrep } = await import("./recordingPrep.js");
@@ -121,6 +121,15 @@ async function main() {
       const { recordingChecklist } = await import("./recordingChecklist.js");
       const cl = recordingChecklist(events);
       console.log(JSON.stringify({ ok: true, ...cl, hint: "Checklist before recording DEMO.md. Confirm dashboard after hard-refresh." }, null, 2));
+    }
+    if (args.includes("--recording-script")) {
+      const { recordingScript } = await import("./recordingScript.js");
+      const script = recordingScript(events);
+      if (args.includes("--md")) {
+        console.log(script.markdown);
+      } else {
+        console.log(JSON.stringify({ ok: true, ...script, hint: "Linear script for DEMO.md. Use --md to print pure Markdown." }, null, 2));
+      }
     }
         if (args.includes("--recording-talking-points")) {
       const monthlyRaw = args.find((a) => a.startsWith("--monthly-requests="))?.slice("--monthly-requests=".length);
@@ -352,7 +361,7 @@ async function main() {
     console.log(JSON.stringify({ ok: true, id: event.id, decision: event.decision, note: event.note }, null, 2));
     return;
   }
-  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text|--seed-demo [--enterprise] [--force] [--days=N] [--per-day=N]|--recording-prep|--demo-ready|--policy-roi|--outreach-snippet|--buyer-brief|--annual|--annual-avoided|--request-volume|--model-block-rate|--scale-model [--monthly-requests=N]|--recording-talking-points [--monthly-requests=N]|--recording-pack [--monthly-requests=N]|--recording-checklist] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
+  console.error("usage: tsx src/cli.ts [--summary|--export|--export-finops|--export-security|--discovery|--unattributed|--alerts|--block-reasons|--model-spend|--team-spend|--app-spend|--daily-spend|--weekly-spend|--hourly-spend|--efficiency|--team-efficiency|--app-efficiency|--endpoint-efficiency|--upstream-efficiency|--key-efficiency|--monthly-spend|--endpoint-spend|--upstream-spend|--blocked-impact|--blocked-impact-by-team|--blocked-impact-by-app|--blocked-impact-by-endpoint|--blocked-impact-by-upstream|--blocked-impact-by-key|--blocked-impact-by-reason|--blocked-impact-by-day|--blocked-impact-by-hour|--blocked-impact-by-week|--blocked-impact-by-month|--high-cost|--slow|--token-volume|--verify-ledger|--request-id=id|--issue-key --id= --team= --app= [--expires=YYYY-MM-DD]|--revoke-key --id=|--enable-key --id=|--rotate-key --id=|--list-keys|--note=text|--seed-demo [--enterprise] [--force] [--days=N] [--per-day=N]|--recording-prep|--demo-ready|--policy-roi|--outreach-snippet|--buyer-brief|--annual|--annual-avoided|--request-volume|--model-block-rate|--scale-model [--monthly-requests=N]|--recording-talking-points [--monthly-requests=N]|--recording-pack [--monthly-requests=N]|--recording-checklist|--recording-script [--md]] [--team=id] [--app=id] [--csv] [--day=YYYY-MM-DD]");
   process.exit(1);
 }
 

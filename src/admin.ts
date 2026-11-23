@@ -15,6 +15,7 @@ import { recordingTalkingPoints, type RecordingTalkingPoints } from "./recording
 import { recordingPack, type RecordingPack } from "./recordingPack.js";
 import { outreachSnippet, type OutreachSnippet } from "./outreachSnippet.js";
 import { recordingChecklist, type RecordingChecklist } from "./recordingChecklist.js";
+import { recordingScript, type RecordingScript } from "./recordingScript.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
 import { policyRoiStatus, type PolicyRoiStatus } from "./policyRoi.js";
 import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
@@ -127,6 +128,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   recordingPack: RecordingPack;
   outreachSnippet: OutreachSnippet;
   recordingChecklist: RecordingChecklist;
+  recordingScript: RecordingScript;
   demoReady: DemoReadyStatus;
   demoDataset: boolean;
   demoLabel?: string;
@@ -221,6 +223,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     recordingPack: recordingPack(events),
     outreachSnippet: outreachSnippet(events),
     recordingChecklist: recordingChecklist(events),
+    recordingScript: recordingScript(events),
     demoReady: demoReadyStatus(events),
     demoDataset: isDemoDataset(events),
     demoLabel: isDemoDataset(events)
@@ -307,6 +310,8 @@ export function dashboardHtml(): string {
     <button id="copy-pack" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy pack</button>
     <button id="copy-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Copy all</button>
     <button id="download-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Download .md</button>
+    <button id="download-script" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Download script.md</button>
+    <pre id="recording-script" style="display:none;white-space:pre-wrap"></pre>
     <h2>Outreach snippet (post-recording)</h2>
     <pre id="outreach-snippet" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
     <button id="copy-snippet" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy snippet</button>
@@ -905,6 +910,23 @@ async function load() {
   }
 
   const cl = s.recordingChecklist || {};
+
+  const rs = s.recordingScript || {};
+  const rsEl = document.getElementById('recording-script');
+  if (rsEl) rsEl.textContent = rs.markdown || '';
+  const dlScript = document.getElementById('download-script');
+  if (dlScript && !dlScript._bound) {
+    dlScript._bound = true;
+    dlScript.onclick = () => {
+      const md = (document.getElementById('recording-script') || {}).textContent || '';
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'tokenpulse-demo-script.md';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+  }
   const clMeta = document.getElementById('recording-checklist-meta');
   const clList = document.getElementById('recording-checklist');
   if (clMeta && cl.version) {

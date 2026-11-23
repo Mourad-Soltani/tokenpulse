@@ -26,7 +26,8 @@
     "seed:enterprise": "tsx src/cli.ts --seed-demo --enterprise --force",
     "request-volume": "tsx src/cli.ts --request-volume",
     "scale-model": "tsx src/cli.ts --scale-model",
-    "recording-talking-points": "tsx src/cli.ts --recording-talking-points"
+    "recording-talking-points": "tsx src/cli.ts --recording-talking-points",
+    "recording-script": "tsx src/cli.ts --recording-script --md"
   },
   "devDependencies": {
     "typescript": "^5.6.0",
