@@ -4039,3 +4039,37 @@ npm install && npm test
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Outreach snippet card should appear under the recording pack
 ```
+
+
+## Decisions (Session 148 — recording checklist)
+
+- Added `recordingChecklist()`: operator items for ledger richness, recording pack, outreach snippet, dashboard hard-refresh, and no-secrets-on-camera.
+- Admin summary exposes `recordingChecklist`. Dashboard renders a Recording checklist list + next action under the recording materials.
+- CLI: `--recording-checklist`.
+- Visibility / operator convenience only. No policy, metering, or storage change. Raw prompts remain off.
+- Operator recording gate unchanged.
+
+## Current Status (Session 148 — 2026-11-23)
+
+Recording checklist shipped on CLI, admin summary, and dashboard. Sale materials otherwise unchanged from Session 147. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 148 — recording checklist for DEMO.md operator glance
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Recording checklist fills (READY or notes), Outreach snippet, Copy all / Download .md work.
+3. Record DEMO.md (use Copy all or Download .md); then personalize ≤10 emails from the updated OUTREACH_DRAFTS.md using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 148 adds a single recording checklist so the operator can see remaining steps before recording DEMO.md. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-checklist
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Recording checklist card should appear under the outreach snippet
+```

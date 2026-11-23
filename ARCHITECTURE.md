@@ -1112,3 +1112,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--recording-pack` (optional `--monthly-requests=`). Admin summary exposes `recordingPack`. Dashboard renders a Recording pack card.
 - Visibility only. Does not change policy, metering, or storage. No raw prompts.
 - Complements existing talking points and demo-ready checks so the operator has one place to glance while recording DEMO.md.
+
+## Recording checklist (Session 148)
+
+- `recordingChecklist()` lists operator steps before DEMO.md recording (ledger richness, pack, snippet, hard-refresh, no secrets).
+- Admin summary exposes `recordingChecklist`. Dashboard renders the list + next action.
+- CLI `--recording-checklist`. Visibility only.
+- Does not change policy evaluation or storage. Raw prompts remain off.
+

@@ -14,6 +14,7 @@ import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
 import { recordingTalkingPoints, type RecordingTalkingPoints } from "./recordingTalkingPoints.js";
 import { recordingPack, type RecordingPack } from "./recordingPack.js";
 import { outreachSnippet, type OutreachSnippet } from "./outreachSnippet.js";
+import { recordingChecklist, type RecordingChecklist } from "./recordingChecklist.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
 import { policyRoiStatus, type PolicyRoiStatus } from "./policyRoi.js";
 import { buyerBrief, type BuyerBrief } from "./buyerBrief.js";
@@ -125,6 +126,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   recordingTalkingPoints: RecordingTalkingPoints;
   recordingPack: RecordingPack;
   outreachSnippet: OutreachSnippet;
+  recordingChecklist: RecordingChecklist;
   demoReady: DemoReadyStatus;
   demoDataset: boolean;
   demoLabel?: string;
@@ -218,6 +220,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     recordingTalkingPoints: recordingTalkingPoints(events),
     recordingPack: recordingPack(events),
     outreachSnippet: outreachSnippet(events),
+    recordingChecklist: recordingChecklist(events),
     demoReady: demoReadyStatus(events),
     demoDataset: isDemoDataset(events),
     demoLabel: isDemoDataset(events)
@@ -307,6 +310,9 @@ export function dashboardHtml(): string {
     <h2>Outreach snippet (post-recording)</h2>
     <pre id="outreach-snippet" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
     <button id="copy-snippet" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy snippet</button>
+    <h2>Recording checklist</h2>
+    <p class="sub" id="recording-checklist-meta">Loading…</p>
+    <ul id="recording-checklist" style="margin:6px 0 0;padding-left:18px;font-size:13px"></ul>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -896,6 +902,18 @@ async function load() {
   if (snipEl && snip.body) {
     snipEl.textContent = (snip.subjectHint ? 'Subject: ' + snip.subjectHint + '\\n\\n' : '') +
       snip.body + '\\n\\n' + (snip.note || '');
+  }
+
+  const cl = s.recordingChecklist || {};
+  const clMeta = document.getElementById('recording-checklist-meta');
+  const clList = document.getElementById('recording-checklist');
+  if (clMeta && cl.version) {
+    clMeta.textContent = (cl.ready ? 'READY to record' : 'Incomplete') + ' · Next: ' + (cl.nextAction || '—');
+  }
+  if (clList && cl.items) {
+    clList.innerHTML = cl.items.map(function(it) {
+      return '<li>' + (it.done ? '✓' : '○') + ' ' + it.label + ' — ' + it.detail + '</li>';
+    }).join('');
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };
