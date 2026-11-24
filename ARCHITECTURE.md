@@ -1129,3 +1129,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - CLI: `--recording-script` (plain Markdown with `--md`).
 - Does not change policy evaluation, metering, or ledger storage. Raw prompts remain off.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Copy script button (Session 150)
+
+- Dashboard recording materials section adds a "Copy script" button next to "Download script.md".
+- Copies the linear Markdown from `recordingScript()` via the existing clipboard helper.
+- Visibility / operator convenience only. No policy or ledger change.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

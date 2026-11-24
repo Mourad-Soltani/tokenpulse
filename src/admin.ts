@@ -310,6 +310,7 @@ export function dashboardHtml(): string {
     <button id="copy-pack" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy pack</button>
     <button id="copy-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Copy all</button>
     <button id="download-all" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Download .md</button>
+    <button id="copy-script" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Copy script</button>
     <button id="download-script" type="button" style="margin-top:6px;margin-left:6px;font-size:12px;padding:4px 8px">Download script.md</button>
     <pre id="recording-script" style="display:none;white-space:pre-wrap"></pre>
     <h2>Outreach snippet (post-recording)</h2>
@@ -915,6 +916,11 @@ async function load() {
   const rsEl = document.getElementById('recording-script');
   if (rsEl) rsEl.textContent = rs.markdown || '';
   const dlScript = document.getElementById('download-script');
+  const copyScript = document.getElementById('copy-script');
+  if (copyScript && !copyScript._bound) {
+    copyScript._bound = true;
+    copyScript.onclick = () => copyText('recording-script', 'copy-script');
+  }
   if (dlScript && !dlScript._bound) {
     dlScript._bound = true;
     dlScript.onclick = () => {

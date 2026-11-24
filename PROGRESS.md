@@ -4107,3 +4107,35 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-script --m
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Download script.md button appears next to Download .md
 ```
+
+## Decisions (Session 150 — Copy script button)
+
+- Added "Copy script" button next to "Download script.md" on the dashboard recording materials section.
+- Uses the existing copyText helper; copies the linear Markdown recording script to clipboard.
+- Visibility / operator convenience only. No policy, metering, or storage change. Raw prompts remain off.
+- Operator recording gate unchanged.
+
+## Current Status (Session 150 — 2026-11-24)
+
+Copy script button shipped on dashboard. Sale materials otherwise unchanged from Session 149. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 150 — Copy script button for recording materials
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Recording checklist fills, Outreach snippet, Copy script, and Download script.md work.
+3. Record DEMO.md (use Copy script or Download script.md); then personalize ≤10 emails from the updated OUTREACH_DRAFTS.md using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 150 adds a Copy script button so the operator can copy the linear recording script without downloading. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --seed-demo --enterprise --force
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-script --md
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Copy script button appears next to Download script.md
+```
