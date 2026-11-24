@@ -37,6 +37,7 @@ import { adminSummary } from "./admin.js";
 import { postAlerts, webhookStatus } from "./notify.js";
 import { seedDemoLedger } from "./seedDemo.js";
 import { outreachSnippet } from "./outreachSnippet.js";
+import { outreachDraft } from "./outreachDraft.js";
 import { buyerBrief } from "./buyerBrief.js";
 import { recordingTalkingPoints } from "./recordingTalkingPoints.js";
 import { annualProjectionStatus } from "./annualProjection.js";
@@ -79,6 +80,13 @@ async function main() {
       const { policyRoiStatus } = await import("./policyRoi.js");
       const roi = policyRoiStatus(events);
       console.log(JSON.stringify({ ok: true, ...roi }, null, 2));
+    }
+    if (args.includes("--outreach-draft") || args.some(a => a.startsWith("--outreach-draft="))) {
+      const arg = args.find(a => a.startsWith("--outreach-draft="));
+      const buyer = arg ? arg.split("=", 2)[1] : "default";
+      const draft = outreachDraft(events, buyer);
+      console.log(JSON.stringify({ ok: true, ...draft, hint: "Paste into email after DEMO.md recording. Fill {{Name}}." }, null, 2));
+      return;
     }
     if (args.includes("--outreach-snippet")) {
       const snip = outreachSnippet(events);

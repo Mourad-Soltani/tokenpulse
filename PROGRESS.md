@@ -4139,3 +4139,34 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --recording-script --m
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Copy script button appears next to Download script.md
 ```
+
+## Decisions (Session 151 — outreach draft CLI)
+
+- Added `src/outreachDraft.ts` with buyer-keyed templates (palo-alto, cisco, crowdstrike, doit, default).
+- CLI flag `--outreach-draft=<buyer>` generates a full paste-ready email that injects the live `outreachSnippet` body and numbers.
+- Visibility / sale-readiness only. No gateway, ledger, policy, or dashboard change. Raw prompts remain off.
+- Operator recording gate unchanged. Do not send until DEMO.md recording exists.
+
+## Current Status (Session 151 — 2026-11-24)
+
+Outreach draft generator shipped. Sale materials otherwise unchanged from Session 150. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 151 — CLI `--outreach-draft=<buyer>` (injects live snippet)
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Recording checklist fills, Outreach snippet, Copy script, and Download script.md work.
+3. Record DEMO.md (use Copy script or Download script.md); then personalize ≤10 emails from the updated OUTREACH_DRAFTS.md (or use `--outreach-draft`) using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 151 adds a CLI helper that produces a complete personalized outreach email draft with current ledger numbers already inserted. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --outreach-draft=palo-alto
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Copy script button appears next to Download script.md
+```
