@@ -4170,3 +4170,34 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --outreach-draft=palo-
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Copy script button appears next to Download script.md
 ```
+
+## Decisions (Session 152 — outreach drafts on dashboard)
+
+- Admin summary now includes `outreachDrafts` (Record of buyer key → full OutreachDraft) for palo-alto, cisco, crowdstrike, doit, default.
+- Dashboard adds an “Outreach drafts (post-recording)” card with buyer `<select>`, pre, and Copy draft button.
+- Uses the same templates and snippet injection as the Session 151 CLI. Visibility only. No policy or ledger change. Raw prompts remain off.
+- Operator recording gate unchanged. Do not send until DEMO.md recording exists.
+
+## Current Status (Session 152 — 2026-11-25)
+
+Outreach drafts are now one-click on the dashboard (buyer select + copy). Sale materials otherwise unchanged. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 152 — Outreach drafts on admin summary + dashboard (select + copy)
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Recording checklist fills, Outreach snippet, Outreach drafts select/copy, Copy script, and Download script.md work.
+3. Record DEMO.md (use Copy script or Download script.md); then personalize ≤10 emails from the dashboard drafts (or `--outreach-draft`) using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 152 surfaces the Session 151 outreach drafts directly on the dashboard so the operator can pick a buyer and copy a complete paste-ready email without the CLI. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --outreach-draft=palo-alto
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Outreach drafts card appears under the snippet; select buyer and Copy draft
+```

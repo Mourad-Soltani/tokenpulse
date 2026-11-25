@@ -1136,3 +1136,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Copies the linear Markdown from `recordingScript()` via the existing clipboard helper.
 - Visibility / operator convenience only. No policy or ledger change.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Outreach drafts on dashboard (Session 152)
+
+- `adminSummary` includes `outreachDrafts`: buyer-keyed map (`palo-alto`, `cisco`, `crowdstrike`, `doit`, `default`) of full `OutreachDraft` objects.
+- Dashboard renders a buyer `<select>`, the selected draft (subject + body + note), and a Copy draft button.
+- Same templates and live-snippet injection as the Session 151 CLI. Visibility only.
+- Does not change policy, metering, or storage. Raw prompts remain off.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

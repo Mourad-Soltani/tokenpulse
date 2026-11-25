@@ -14,6 +14,7 @@ import { recordingPrep, type RecordingPrep } from "./recordingPrep.js";
 import { recordingTalkingPoints, type RecordingTalkingPoints } from "./recordingTalkingPoints.js";
 import { recordingPack, type RecordingPack } from "./recordingPack.js";
 import { outreachSnippet, type OutreachSnippet } from "./outreachSnippet.js";
+import { outreachDraft, type OutreachDraft } from "./outreachDraft.js";
 import { recordingChecklist, type RecordingChecklist } from "./recordingChecklist.js";
 import { recordingScript, type RecordingScript } from "./recordingScript.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
@@ -127,6 +128,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   recordingTalkingPoints: RecordingTalkingPoints;
   recordingPack: RecordingPack;
   outreachSnippet: OutreachSnippet;
+  outreachDrafts: Record<string, OutreachDraft>;
   recordingChecklist: RecordingChecklist;
   recordingScript: RecordingScript;
   demoReady: DemoReadyStatus;
@@ -222,6 +224,9 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     recordingTalkingPoints: recordingTalkingPoints(events),
     recordingPack: recordingPack(events),
     outreachSnippet: outreachSnippet(events),
+    outreachDrafts: Object.fromEntries(
+      ["palo-alto", "cisco", "crowdstrike", "doit", "default"].map((b) => [b, outreachDraft(events, b)])
+    ),
     recordingChecklist: recordingChecklist(events),
     recordingScript: recordingScript(events),
     demoReady: demoReadyStatus(events),
@@ -316,6 +321,17 @@ export function dashboardHtml(): string {
     <h2>Outreach snippet (post-recording)</h2>
     <pre id="outreach-snippet" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
     <button id="copy-snippet" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy snippet</button>
+    <h2>Outreach drafts (post-recording)</h2>
+    <p class="sub">Buyer-specific paste-ready email. Numbers from current ledger. Fill {{Name}}.</p>
+    <select id="draft-buyer" style="margin:6px 0;font-size:13px;padding:4px 8px;background:#0f141b;color:var(--fg);border:1px solid #2a3646;border-radius:6px">
+      <option value="palo-alto">Palo Alto</option>
+      <option value="cisco">Cisco</option>
+      <option value="crowdstrike">CrowdStrike</option>
+      <option value="doit">DoiT</option>
+      <option value="default">Default</option>
+    </select>
+    <pre id="outreach-draft" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
+    <button id="copy-draft" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy draft</button>
     <h2>Recording checklist</h2>
     <p class="sub" id="recording-checklist-meta">Loading…</p>
     <ul id="recording-checklist" style="margin:6px 0 0;padding-left:18px;font-size:13px"></ul>
@@ -908,6 +924,26 @@ async function load() {
   if (snipEl && snip.body) {
     snipEl.textContent = (snip.subjectHint ? 'Subject: ' + snip.subjectHint + '\\n\\n' : '') +
       snip.body + '\\n\\n' + (snip.note || '');
+  }
+
+  const drafts = s.outreachDrafts || {};
+  const draftSelect = document.getElementById('draft-buyer');
+  const draftEl = document.getElementById('outreach-draft');
+  function renderDraft() {
+    if (!draftEl || !draftSelect) return;
+    const key = draftSelect.value || 'default';
+    const d = drafts[key] || drafts.default || {};
+    draftEl.textContent = d.subject ? ('Subject: ' + d.subject + '\\n\\n' + (d.body || '') + '\\n\\n' + (d.note || '')) : 'No draft';
+  }
+  if (draftSelect && !draftSelect._bound) {
+    draftSelect._bound = true;
+    draftSelect.onchange = renderDraft;
+  }
+  renderDraft();
+  const copyDraft = document.getElementById('copy-draft');
+  if (copyDraft && !copyDraft._bound) {
+    copyDraft._bound = true;
+    copyDraft.onclick = () => copyText('outreach-draft', 'copy-draft');
   }
 
   const cl = s.recordingChecklist || {};

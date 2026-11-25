@@ -145,3 +145,4 @@
 - [x] Scale model on Security pack + Prometheus metrics (Session 131)
 
 - [x] Recording talking points with scale model assumptions (CLI `--recording-talking-points`) (Session 133)
+- [x] Outreach drafts on dashboard (buyer select + copy) (Session 152)
