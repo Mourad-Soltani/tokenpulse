@@ -1144,3 +1144,10 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Same templates and live-snippet injection as the Session 151 CLI. Visibility only.
 - Does not change policy, metering, or storage. Raw prompts remain off.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Sale readiness checklist (Session 153)
+
+- `saleReadyStatus()` returns a short checklist: sale materials, recording aids, outreach drafts count, and the operator recording gate.
+- Admin summary exposes `saleReady`. Dashboard renders the list with done/not-done marks and next action.
+- Visibility only. Recording remains an operator action. No policy or ledger change.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

@@ -4201,3 +4201,33 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --outreach-draft=palo-
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Outreach drafts card appears under the snippet; select buyer and Copy draft
 ```
+
+## Decisions (Session 153 — sale readiness checklist)
+
+- `saleReadyStatus()` aggregates materials, recording aids, outreach drafts, and the operator recording gate.
+- Admin summary exposes `saleReady`. Dashboard renders a Sale readiness list (checkmarks + next action).
+- Visibility only. No policy, metering, or storage change. Raw prompts remain off.
+- Operator recording gate unchanged. Automation still cannot record or send emails.
+
+## Current Status (Session 153 — 2026-11-25)
+
+Sale readiness checklist is now on the admin summary and dashboard. Sale materials and recording aids otherwise unchanged. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 153 — Sale readiness checklist on admin summary + dashboard
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Sale readiness, Recording checklist, Outreach drafts select/copy, Copy script, and Download script.md work.
+3. Record DEMO.md (use Copy script or Download script.md); then personalize ≤10 emails from the dashboard drafts (or `--outreach-draft`) using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 153 adds a single Sale readiness card so the operator can see at a glance what is done and what remains (the recording). Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Sale readiness list appears under Outreach drafts
+```

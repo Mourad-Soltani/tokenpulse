@@ -15,6 +15,7 @@ import { recordingTalkingPoints, type RecordingTalkingPoints } from "./recording
 import { recordingPack, type RecordingPack } from "./recordingPack.js";
 import { outreachSnippet, type OutreachSnippet } from "./outreachSnippet.js";
 import { outreachDraft, type OutreachDraft } from "./outreachDraft.js";
+import { saleReadyStatus, type SaleReadyStatus } from "./saleReady.js";
 import { recordingChecklist, type RecordingChecklist } from "./recordingChecklist.js";
 import { recordingScript, type RecordingScript } from "./recordingScript.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
@@ -129,6 +130,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   recordingPack: RecordingPack;
   outreachSnippet: OutreachSnippet;
   outreachDrafts: Record<string, OutreachDraft>;
+  saleReady: SaleReadyStatus;
   recordingChecklist: RecordingChecklist;
   recordingScript: RecordingScript;
   demoReady: DemoReadyStatus;
@@ -227,6 +229,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     outreachDrafts: Object.fromEntries(
       ["palo-alto", "cisco", "crowdstrike", "doit", "default"].map((b) => [b, outreachDraft(events, b)])
     ),
+    saleReady: saleReadyStatus(events),
     recordingChecklist: recordingChecklist(events),
     recordingScript: recordingScript(events),
     demoReady: demoReadyStatus(events),
@@ -332,6 +335,9 @@ export function dashboardHtml(): string {
     </select>
     <pre id="outreach-draft" style="white-space:pre-wrap;font-size:13px;line-height:1.45;margin:0;background:#0f141b;color:var(--fg);border:1px solid #2a3646;padding:12px 14px;border-radius:8px">Loading…</pre>
     <button id="copy-draft" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Copy draft</button>
+    <h2>Sale readiness</h2>
+    <p class="sub" id="sale-ready-meta">Loading…</p>
+    <ul id="sale-ready" style="margin:6px 0 0;padding-left:18px;font-size:13px"></ul>
     <h2>Recording checklist</h2>
     <p class="sub" id="recording-checklist-meta">Loading…</p>
     <ul id="recording-checklist" style="margin:6px 0 0;padding-left:18px;font-size:13px"></ul>
@@ -976,6 +982,18 @@ async function load() {
   }
   if (clList && cl.items) {
     clList.innerHTML = cl.items.map(function(it) {
+      return '<li>' + (it.done ? '✓' : '○') + ' ' + it.label + ' — ' + it.detail + '</li>';
+    }).join('');
+  }
+
+  const sr = s.saleReady || {};
+  const srMeta = document.getElementById('sale-ready-meta');
+  const srList = document.getElementById('sale-ready');
+  if (srMeta && sr.version) {
+    srMeta.textContent = (sr.ready ? 'SALE READY' : 'Not ready') + ' · Next: ' + (sr.nextAction || '—') + ' · drafts ' + (sr.buyerDraftsReady || 0);
+  }
+  if (srList && sr.items) {
+    srList.innerHTML = sr.items.map(function(it) {
       return '<li>' + (it.done ? '✓' : '○') + ' ' + it.label + ' — ' + it.detail + '</li>';
     }).join('');
   }
