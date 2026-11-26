@@ -1394,11 +1394,11 @@ async function load() {
 
 
   const hc = s.highCost || { rows: [] };
-  const sr = s.slowRequests || { rows: [] };
+  const slow = s.slowRequests || { rows: [] };
   const tv = s.tokenVolume || { rows: [] };
   const srt = document.querySelector('#slowRequests tbody');
   if (srt) {
-    srt.innerHTML = (sr.rows||[]).map(r =>
+    srt.innerHTML = (slow.rows||[]).map(r =>
       '<tr><td>'+(r.timestamp||'').slice(0,19)+'</td><td>'+esc(r.teamId)+'</td><td>'+esc(r.appId)+'</td><td>'+esc(r.model)+'</td><td>'+r.latencyMs+'</td><td>'+r.totalTokens+'</td><td>'+r.estimatedCostUsd+'</td><td>'+(r.requestId||'')+'</td></tr>'
     ).join('') || '<tr><td colspan="8">no slow requests</td></tr>';
   }
