@@ -148,3 +148,4 @@
 - [x] Outreach drafts on dashboard (buyer select + copy) (Session 152)
 - [x] Sale readiness checklist on admin summary + dashboard (Session 153)
 - [x] Sale package download (single Markdown for recording + outreach; admin + dashboard + CLI) (Session 154)
+- [x] Full multi-buyer drafts in sale package (Session 155)

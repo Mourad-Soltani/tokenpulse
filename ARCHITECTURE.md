@@ -1160,3 +1160,9 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Visibility / operator convenience only. No policy, metering, or storage change. Raw prompts remain off.
 - Operator recording gate unchanged.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Sale package (Session 155)
+
+- `salePackage()` Markdown includes full paste-ready outreach drafts for palo-alto, cisco, crowdstrike, doit, and default.
+- Admin summary, dashboard Download, and CLI `--sale-package` surface the expanded pack.
+- Visibility only. Recording gate unchanged.

@@ -4263,3 +4263,34 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --sale-package --md
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Download sale-package.md button appears under Sale readiness
 ```
+
+## Decisions (Session 155 — full multi-buyer drafts in sale package)
+
+- `salePackage()` Markdown now includes full paste-ready outreach drafts for all key buyers (palo-alto, cisco, crowdstrike, doit, default) instead of a single Palo Alto sample.
+- Admin summary, dashboard Download sale-package.md, and CLI `--sale-package` surface the expanded pack.
+- Visibility / operator convenience only. No policy, metering, or storage change. Raw prompts remain off.
+- Operator recording gate unchanged.
+
+## Current Status (Session 155 — 2026-11-26)
+
+Sale package now contains complete drafts for every key buyer. Sale materials otherwise unchanged. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 155 — Full multi-buyer drafts in sale package
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Download sale-package.md now contains all buyer drafts, Sale readiness, Recording checklist, Outreach drafts select/copy, and Copy script work.
+3. Record DEMO.md (use Download sale-package.md); then personalize ≤10 emails from the package drafts (or dashboard / `--outreach-draft`) using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 155 expands the single Download sale-package.md so the operator receives checklist + script + snippet + complete drafts for Palo Alto, Cisco, CrowdStrike, DoiT, and default in one file. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --sale-package --md
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Download sale-package.md now includes all buyer drafts
+```
