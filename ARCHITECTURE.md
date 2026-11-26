@@ -1151,3 +1151,12 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Admin summary exposes `saleReady`. Dashboard renders the list with done/not-done marks and next action.
 - Visibility only. Recording remains an operator action. No policy or ledger change.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+## Sale package (Session 154)
+
+- `salePackage()` builds one Markdown document: sale readiness items, recording checklist, full `recordingScript` markdown, outreach snippet, and a sample Palo Alto draft.
+- Admin summary exposes `salePackage`. Dashboard has a Download sale-package.md button.
+- CLI: `--sale-package` (optional `--md` for pure Markdown).
+- Visibility / operator convenience only. No policy, metering, or storage change. Raw prompts remain off.
+- Operator recording gate unchanged.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

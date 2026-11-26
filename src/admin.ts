@@ -16,6 +16,7 @@ import { recordingPack, type RecordingPack } from "./recordingPack.js";
 import { outreachSnippet, type OutreachSnippet } from "./outreachSnippet.js";
 import { outreachDraft, type OutreachDraft } from "./outreachDraft.js";
 import { saleReadyStatus, type SaleReadyStatus } from "./saleReady.js";
+import { salePackage, type SalePackage } from "./salePackage.js";
 import { recordingChecklist, type RecordingChecklist } from "./recordingChecklist.js";
 import { recordingScript, type RecordingScript } from "./recordingScript.js";
 import { demoReadyStatus, type DemoReadyStatus } from "./demoReady.js";
@@ -133,6 +134,7 @@ export type AdminSummary = ReturnType<typeof summarize> & {
   saleReady: SaleReadyStatus;
   recordingChecklist: RecordingChecklist;
   recordingScript: RecordingScript;
+  salePackage: SalePackage;
   demoReady: DemoReadyStatus;
   demoDataset: boolean;
   demoLabel?: string;
@@ -232,6 +234,7 @@ export async function adminSummary(opts?: { day?: string; blockedLimit?: number 
     saleReady: saleReadyStatus(events),
     recordingChecklist: recordingChecklist(events),
     recordingScript: recordingScript(events),
+    salePackage: salePackage(events),
     demoReady: demoReadyStatus(events),
     demoDataset: isDemoDataset(events),
     demoLabel: isDemoDataset(events)
@@ -338,6 +341,8 @@ export function dashboardHtml(): string {
     <h2>Sale readiness</h2>
     <p class="sub" id="sale-ready-meta">Loading…</p>
     <ul id="sale-ready" style="margin:6px 0 0;padding-left:18px;font-size:13px"></ul>
+    <button id="download-sale-package" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px">Download sale-package.md</button>
+    <pre id="sale-package" style="display:none;white-space:pre-wrap"></pre>
     <h2>Recording checklist</h2>
     <p class="sub" id="recording-checklist-meta">Loading…</p>
     <ul id="recording-checklist" style="margin:6px 0 0;padding-left:18px;font-size:13px"></ul>
@@ -996,6 +1001,21 @@ async function load() {
     srList.innerHTML = sr.items.map(function(it) {
       return '<li>' + (it.done ? '✓' : '○') + ' ' + it.label + ' — ' + it.detail + '</li>';
     }).join('');
+  }
+  const sp = s.salePackage || {};
+  const spPre = document.getElementById('sale-package');
+  if (spPre && sp.markdown) spPre.textContent = sp.markdown;
+  const dlSp = document.getElementById('download-sale-package');
+  if (dlSp) {
+    dlSp.onclick = function() {
+      const md = (s.salePackage && s.salePackage.markdown) || '';
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'tokenpulse-sale-package.md';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
   }
 
   const gw = s.gateway || { host:'127.0.0.1', port:8788, loopback:true, mockUpstream:false, authRequired:false };

@@ -4231,3 +4231,35 @@ npm install && npm test
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Sale readiness list appears under Outreach drafts
 ```
+
+## Decisions (Session 154 — sale package download)
+
+- Added `salePackage()` that produces a single Markdown document combining sale readiness, recording checklist, full recording script, outreach snippet, and a sample Palo Alto draft.
+- Admin summary exposes `salePackage`. Dashboard has a Download sale-package.md button.
+- CLI: `--sale-package` (add `--md` for pure Markdown).
+- Visibility / operator convenience only. No policy, metering, or storage change. Raw prompts remain off.
+- Operator recording gate unchanged.
+
+## Current Status (Session 154 — 2026-11-26)
+
+Sale package download is available on CLI, admin summary, and dashboard. Sale materials otherwise unchanged from Session 153. Operator still must redeploy, confirm dashboard, and record DEMO.md before any send.
+
+- [x] Session 154 — Sale package (single Markdown for recording + outreach)
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Sale readiness, Download sale-package.md, Recording checklist, Outreach drafts select/copy, and Copy script work.
+3. Record DEMO.md (use Download sale-package.md or Copy script); then personalize ≤10 emails from the dashboard drafts (or `--outreach-draft` / the sample in the package) using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 154 adds a single Download sale-package.md so the operator can open one file containing the checklist, script, snippet, and a sample draft while recording and then sending. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --sale-package --md
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Download sale-package.md button appears under Sale readiness
+```

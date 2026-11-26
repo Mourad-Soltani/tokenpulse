@@ -147,3 +147,4 @@
 - [x] Recording talking points with scale model assumptions (CLI `--recording-talking-points`) (Session 133)
 - [x] Outreach drafts on dashboard (buyer select + copy) (Session 152)
 - [x] Sale readiness checklist on admin summary + dashboard (Session 153)
+- [x] Sale package download (single Markdown for recording + outreach; admin + dashboard + CLI) (Session 154)
