@@ -986,9 +986,28 @@ async function load() {
     clMeta.textContent = (cl.ready ? 'READY to record' : 'Incomplete') + ' · Next: ' + (cl.nextAction || '—');
   }
   if (clList && cl.items) {
+    const stored = JSON.parse(localStorage.getItem('tp-recording-checks') || '{}');
     clList.innerHTML = cl.items.map(function(it) {
-      return '<li>' + (it.done ? '✓' : '○') + ' ' + it.label + ' — ' + it.detail + '</li>';
+      const checked = stored[it.id] !== undefined ? stored[it.id] : it.done;
+      return '<li><label style="cursor:pointer"><input type="checkbox" data-id="' + it.id + '" ' + (checked ? 'checked' : '') + '> ' + it.label + ' — ' + it.detail + '</label></li>';
     }).join('');
+    clList.querySelectorAll('input[type=checkbox]').forEach(function(cb) {
+      cb.onchange = function() {
+        const map = JSON.parse(localStorage.getItem('tp-recording-checks') || '{}');
+        map[cb.dataset.id] = cb.checked;
+        localStorage.setItem('tp-recording-checks', JSON.stringify(map));
+        updateChecklistMeta();
+      };
+    });
+    function updateChecklistMeta() {
+      if (!clMeta) return;
+      const boxes = clList.querySelectorAll('input[type=checkbox]');
+      const allChecked = Array.from(boxes).every(b => b.checked);
+      const pending = Array.from(boxes).find(b => !b.checked);
+      const next = allChecked ? 'Record DEMO.md (use Download sale-package.md), then personalize emails' : (pending ? pending.parentElement.textContent.trim().split('—')[0].trim() : 'Complete items');
+      clMeta.textContent = (allChecked ? 'READY to record' : 'Incomplete') + ' · Next: ' + next + ' (local checks)';
+    }
+    updateChecklistMeta();
   }
 
   const sr = s.saleReady || {};
