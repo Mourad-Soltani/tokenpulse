@@ -1166,3 +1166,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - `salePackage()` Markdown includes full paste-ready outreach drafts for palo-alto, cisco, crowdstrike, doit, and default.
 - Admin summary, dashboard Download, and CLI `--sale-package` surface the expanded pack.
 - Visibility only. Recording gate unchanged.
+
+## Interactive recording checklist (Session 156)
+
+- Dashboard Recording checklist renders as checkboxes.
+- Operator checked state persists in browser localStorage (`tp-recording-checks`).
+- Defaults to server `done` flags when no local override is present.
+- Visibility / operator convenience only. Does not change policy evaluation, metering, or ledger storage.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
