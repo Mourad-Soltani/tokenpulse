@@ -4294,3 +4294,36 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --sale-package --md
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Download sale-package.md now includes all buyer drafts
 ```
+
+## Decisions (Session 156 — interactive recording checklist)
+
+- Dashboard Recording checklist items are now checkboxes.
+- Checked state persists in browser localStorage (`tp-recording-checks`).
+- Defaults to server-computed `done` when no local override exists.
+- Meta line updates to show local progress and next action.
+- Visibility / operator convenience only. No policy, metering, or storage change. Raw prompts remain off.
+- Operator recording gate unchanged.
+
+## Current Status (Session 156 — 2026-11-27)
+
+Recording checklist is now interactive on the dashboard. Sale materials otherwise unchanged. Operator still must redeploy, hard-refresh, confirm the checklist, and record DEMO.md before any send.
+
+- [x] Session 156 — Interactive recording checklist (localStorage)
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Recording checklist checkboxes work and persist across refresh, Download sale-package.md contains all buyer drafts, Sale readiness, and Copy script work.
+3. Record DEMO.md (use Download sale-package.md); then personalize ≤10 emails from the package drafts (or dashboard / `--outreach-draft`) using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 156 makes the recording checklist interactive so the operator can tick items while preparing the DEMO.md recording; state is local to the browser. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --sale-package --md
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Recording checklist items are checkboxes that persist in localStorage
+```
