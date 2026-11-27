@@ -4327,3 +4327,36 @@ TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --sale-package --md
 TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
 # open dashboard; Recording checklist items are checkboxes that persist in localStorage
 ```
+
+
+## Decisions (Session 157 — local recording-complete flag)
+
+- Dashboard button "Mark DEMO.md recording complete" under the Recording checklist.
+- Toggles `localStorage` key `tp-recording-complete`.
+- Updates a note and prefixes the Sale readiness meta line with "RECORDING DONE (local)" when set.
+- Visibility / operator convenience only. No policy, metering, storage, or server state change. Raw prompts remain off.
+- Operator recording gate unchanged — the button is a local reminder after the video exists. Automation still cannot record or send emails.
+
+## Current Status (Session 157 — 2026-11-27)
+
+Local recording-complete reminder shipped on the dashboard. Sale materials otherwise unchanged from Session 156. Operator still must redeploy, hard-refresh, confirm the checklist + button, record DEMO.md, then mark complete before personalizing outreach.
+
+- [x] Session 157 — Local DEMO.md recording-complete flag (dashboard button + localStorage)
+
+## Next Up (highest priority)
+
+1. Redeploy Render; hard-refresh the dashboard.
+2. Confirm Recording checklist checkboxes, the new Mark complete button, Download sale-package.md (all buyer drafts), Sale readiness, and Copy script work.
+3. Record DEMO.md (use Download sale-package.md); click the button to set the local flag; then personalize ≤10 emails from the package drafts (or dashboard / `--outreach-draft`) using the snippet numbers.
+
+## Handoff for next session
+
+**Active project:** Tokenpulse only.
+Session 157 adds a local reminder button so the operator can mark the DEMO.md recording as done in the browser after the video exists. Redeploy + hard refresh still required. Do not paste secrets into chat.
+
+```bash
+npm install && npm test
+TOKENPULSE_LEDGER_DIR=data/ledger-seed npx tsx src/cli.ts --sale-package --md
+TOKENPULSE_MOCK_UPSTREAM=1 TOKENPULSE_GATEWAY_TOKEN=dev-local-token TOKENPULSE_LEDGER_DIR=data/ledger-seed npm run start:gateway
+# open dashboard; Mark DEMO.md recording complete button appears under the checklist
+```

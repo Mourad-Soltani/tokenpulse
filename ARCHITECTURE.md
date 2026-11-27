@@ -1174,3 +1174,11 @@ Optional SQLite (Session 8): set `TOKENPULSE_LEDGER_DRIVER=sqlite` and optional 
 - Defaults to server `done` flags when no local override is present.
 - Visibility / operator convenience only. Does not change policy evaluation, metering, or ledger storage.
 - Chat-pasted tokens remain unusable. Live upstream stays operator-env only.
+
+
+## Local recording-complete flag (Session 157)
+
+- Dashboard button under Recording checklist toggles `localStorage` key `tp-recording-complete`.
+- When set, a note appears and the Sale readiness meta line is prefixed with "RECORDING DONE (local)".
+- Pure client-side reminder after the operator has recorded DEMO.md. No server write, no policy or ledger change.
+- Chat-pasted tokens remain unusable. Live upstream stays operator-env only.

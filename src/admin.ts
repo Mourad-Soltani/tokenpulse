@@ -346,6 +346,8 @@ export function dashboardHtml(): string {
     <h2>Recording checklist</h2>
     <p class="sub" id="recording-checklist-meta">Loading…</p>
     <ul id="recording-checklist" style="margin:6px 0 0;padding-left:18px;font-size:13px"></ul>
+    <button id="mark-recording-complete" type="button" style="margin-top:8px;font-size:12px;padding:4px 8px;background:#1a3a2a;color:#c8f0d0;border:1px solid #2a5a3a;border-radius:6px">Mark DEMO.md recording complete</button>
+    <p class="sub" id="recording-complete-note" style="margin-top:4px;font-size:12px;color:#8ab"></p>
 <h2>Recording cheat sheet</h2>
     <p class="sub" id="recording-prep">Load summary to see voiceover numbers.</p>
   </section>
@@ -1009,6 +1011,38 @@ async function load() {
     }
     updateChecklistMeta();
   }
+
+  // Session 157: local "recording complete" flag (operator convenience only)
+  const markBtn = document.getElementById('mark-recording-complete');
+  const completeNote = document.getElementById('recording-complete-note');
+  function refreshRecordingComplete() {
+    const done = localStorage.getItem('tp-recording-complete') === 'true';
+    if (completeNote) {
+      completeNote.textContent = done
+        ? 'Local flag set: DEMO.md recording marked complete. Next: personalize ≤10 emails from the sale package drafts (or dashboard / --outreach-draft). Do not send until you have the video.'
+        : 'After you record DEMO.md (no keys on camera), click the button to set a local reminder. Does not change server state.';
+    }
+    if (markBtn) {
+      markBtn.textContent = done ? 'Recording complete (click to clear)' : 'Mark DEMO.md recording complete';
+      markBtn.style.background = done ? '#2a4a3a' : '#1a3a2a';
+    }
+    // Optionally update sale-ready meta if present
+    const srMetaEl = document.getElementById('sale-ready-meta');
+    if (srMetaEl && done) {
+      const base = srMetaEl.textContent || '';
+      if (!base.includes('RECORDING DONE')) {
+        srMetaEl.textContent = 'RECORDING DONE (local) · ' + base;
+      }
+    }
+  }
+  if (markBtn) {
+    markBtn.onclick = function() {
+      const current = localStorage.getItem('tp-recording-complete') === 'true';
+      localStorage.setItem('tp-recording-complete', current ? 'false' : 'true');
+      refreshRecordingComplete();
+    };
+  }
+  refreshRecordingComplete();
 
   const sr = s.saleReady || {};
   const srMeta = document.getElementById('sale-ready-meta');
